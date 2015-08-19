@@ -29,8 +29,8 @@ def scanner_read(device_file):
         return device.readline().strip("\2\3\r\n")
 
 
-def send_scanner_data(user, book):
-    self.browser.RunScript("send_scanner_data({!r}, {!r})".format(user, book))
+def send_scanner_data(user, book, terminal_uuid):
+    self.browser.RunScript("send_scanner_data({!r}, {!r}, {!r})".format(user, book, terminal_uuid))
 
 
 def scan_user(device_file):
@@ -44,7 +44,8 @@ def scan_user(device_file):
     else:
         curent_user = user
         send_scanner_data(curent_user, curent_book)
-        curent_user is None and curent_book is None
+        curent_user = None
+        curent_book = None
 
 
 def scan_book(device_file):
@@ -58,11 +59,13 @@ def scan_book(device_file):
     else:
         curent_book = book
         send_scanner_data(curent_user, curent_book)
-        curent_user is None and curent_book is None
+        curent_user = None
+        curent_book = None
 
 
 def main():
     config = load_config()
+    global terminal_uuid
     terminal_uuid = requests.get("http://localhost:5000/connect").json()["terminal_uuid"]
     thread_user = Thread(target=scan_user, args=config.get("Demon", "userScanner"))
     thread_book = Thread(target=scan_book, args=config.get("Demon", "bookScanner"))

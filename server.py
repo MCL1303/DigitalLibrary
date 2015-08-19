@@ -7,7 +7,6 @@ from flask import Flask, jsonify, request
 import flask
 import logging
 import pymongo
-import requests
 import uuid
 
 
@@ -20,60 +19,123 @@ def load_config():
     return config['Server']
 
 
-def open_db():
-    return pymongo.MongoClient().digital_library
-
-db = open_db()
+class Collection():
+    pass
 
 
-def db_terminal_add(client_ip, terminal_uuid):
-    global db
-    db.terminals.insert({"ip": client_ip, "uuid": str(terminal_uuid)})
+class Terminals(Collection):
+    def __init__(self):
+        super().__init__()
+        self.db = pymongo.MongoClient().digital_library
+
+    def add(self, client_ip, terminal_uuid):
+        self.db.terminals.insert({"ip": client_ip, "uuid": str(terminal_uuid)})
+
+    def get(self, client_ip):
+        return self.db.terminals.find_one({'ip': client_ip})
 
 
-def db_terminal_get(client_ip):
-    global db
-    return db.terminals.find_one({'ip': client_ip})
+class Hands(Collection):
+    def __init__(self):
+        super().__init__()
+        self.db = pymongo.MongoClient().digital_library
+
+    def add(self, user, book):
+        now = datetime.utcnow()
+        self.db.hands.insert({
+            "user": user,
+            "book": book,
+            "datetime": now,
+        })
+
+    def get(self, user, book):
+        return self.db.hands.find_one({'user': user, 'book': book})
+
+    def exists(self, user, book):
+        return self.get(user, book) is not None
+
+    def delete(self, user, book):
+        self.db.hands.remove({"user": user, "book": book})
 
 
-def db_terminal_get_uuid(client_ip):
-    return db_terminal_get(client_ip)["uuid"]
+class Handlog(Collection):
+    def __init__(self):
+        super().__init__()
+        self.db = pymongo.MongoClient().digital_library
+
+    def add(self, user, book, event):
+        assert event in {'take', 'return'}
+        now = datetime.utcnow()
+        self.db.handlog.insert({
+            "user": user,
+            "book": book,
+            "datetime": now,
+            "event": event,
+        })
 
 
-def db_hand_add(user, book):
-    global db
-    now = datetime.utcnow()
-    db.hands.insert({
-        "user": user,
-        "book": book,
-        "datetime": now,
-    })
+class Database:
+    def __init__(self):
+        super().__init__()
+        self.terminals = Terminals()
+        self.hands = Hands()
+        self.handlog = Handlog()
 
 
-def db_hand_get(user, book):
-    global db
-    return db.hands.find_one({'user': user, 'book': book})
+# def db_hand_add(user, book):
+#     global db
+#     now = datetime.utcnow()
 
 
-def db_hand_exists(user, book):
-    return db_hand_get(user, book) is not None
+# def db_handlog_add(user, book, event):
+#     global db
+#     assert event in {'take', 'return'}
+#     now = datetime.utcnow()
+#     db.handlog.insert({
+#         "user": user,
+#         "book": book,
+#         "datetime": now,
+#         "event": event,
+#     })
 
 
-def db_hand_delete(user, book):
-    global db
-    db.hands.remove({"user": user, "book": book})
+# def open_db():
+#     return pymongo.MongoClient().digital_library
+
+# db = open_db()
+
+#     db.hands.insert({
+#         "user": user,
+#         "book": book,
+#         "datetime": now,
+#     })
 
 
-def db_handlog_add(user, book, event):
-    global db
-    assert event in {'take', 'return'}
-    now = datetime.utcnow()
-    db.handlog.insert({
-        "user": user,
-        "book": book,
-        "datetime": now,
-        "event": event,
-    })
+# def db_hand_get(user, book):
+#     global db
+#     return db.hands.find_one({'user': user, 'book': book})
+
+
+# def db_hand_exists(user, book):
+#     return db_hand_get(user, book) is not None
+
+
+# def db_hand_delete(user, book):
+#     global db
+#     db.hands.remove({"user": user, "book": book})
+
+# def db_terminal_add(client_ip, terminal_uuid):
+#     global db
+#     db.terminals.insert({"ip": client_ip, "uuid": str(terminal_uuid)})
+
+
+# def db_terminal_get(client_ip):
+#     global db
+#     return db.terminals.find_one({'ip': client_ip})
+
+
+# def db_terminal_get_uuid(client_ip):
+#     return db_terminal_get(client_ip)["uuid"]
 
 
 def render_template(template_name, **context):
@@ -145,27 +207,29 @@ def operations():
 
 @app.route('/connect')
 def get_current_user():
+    db = Database()
     client_ip = request.remote_addr
-    terminal = db_terminal_get(client_ip)
+    terminal = db.terminals.get(client_ip)
     if terminal is not None:
         return jsonify(terminal_uuid=terminal['uuid'])
     else:
         terminal_uuid = uuid.uuid4()
-        db_terminal_add(client_ip, terminal_uuid)
+        db.terminals.add(client_ip, terminal_uuid)
         return jsonify(terminal_uuid=terminal_uuid)
 
 
 @app.route('/api/book/action', methods=['POST'])
 def api_book_action():
     form = request.form
+    db = Database()
     user, book = form["user"], form["book"]
-    if db_hand_exists(user, book):
-        db_hand_delete(user, book)
-        db_handlog_add(user, book, "return")
+    if db.hands.exists(user, book):
+        db.hands.delete(user, book)
+        db.handlog.add(user, book, "return")
         action = "return"
     else:
-        db_hand_add(user, book)
-        db_handlog_add(user, book, "take")
+        db.hands.add(user, book)
+        db.handlog.add(user, book, "take")
         action = "take"
     return jsonify(action=action, book=book)
 

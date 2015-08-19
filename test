@@ -3,6 +3,7 @@ set -eux
 set -o pipefail
 
 pep8_options=(
+    --ignore=E501  # line too long. TODO don't ignore
     --show-source
 )
 
@@ -18,22 +19,7 @@ pylint_options=(
 
 find . -name '*.py' | xargs pep8 ${pep8_options[*]}
 
-py2files=()
-py3files=()
-for pyfile in *.py; do
-    if head -n 1 "$pyfile" | grep python3; then
-        py3files[${#py3files[@]}]="$pyfile"
-    else
-        py2files[${#py2files[@]}]="$pyfile"
-    fi
-done
-
-if [[ ${#py2files[@]} != 0 ]]; then
-    pylint "${pylint_options[@]}" "${py2files[@]}"
-fi
-if [[ ${#py3files[@]} != 0 ]]; then
-    pylint3 "${pylint_options[@]}" "${py3files[@]}"
-fi
+pylint3 ${pylint_options[*]} *.py
 
 py.test-3
 
