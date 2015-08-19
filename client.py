@@ -40,7 +40,7 @@ def send_scanner_data(user, book, terminal_uuid, dialog):
         ))
 
 
-def scan_user(device_file, terminal_uuid, dialog):
+def scan_user(device_file, terminal_uuid, dialog, curent_user, curent_book):
     global curent_user, curent_book
     user = scanner_read(device_file)
     if curent_user is not None and curent_book is None:
@@ -55,7 +55,7 @@ def scan_user(device_file, terminal_uuid, dialog):
         curent_book = None
 
 
-def scan_book(device_file, terminal_uuid, dialog):
+def scan_book(device_file, terminal_uuid, dialog, curent_user, curent_book):
     global curent_user, curent_book
     book = scanner_read(device_file)
     if curent_book is not None and curent_user is None:
@@ -72,17 +72,18 @@ def scan_book(device_file, terminal_uuid, dialog):
 
 def main():
     config = load_config()
+    curent_user, curent_book = None, None
     app = wx.App()
     dialog = MyBrowser(None, -1)
     terminal_uuid = requests.get(
         "http://localhost:5000/connect"
     ).json()["terminal_uuid"]
     thread_user = Thread(
-        target=scan_user("path", terminal_uuid, dialog),
+        target=scan_user("path", terminal_uuid, dialog, curent_user, curent_book),
         args=config.get("Demon", "userScanner")
     )
     thread_book = Thread(
-        target=scan_book("path", terminal_uuid, dialog),
+        target=scan_book("path", terminal_uuid, dialog, curent_user, curent_book),
         args=config.get("Demon", "bookScanner")
     )
     thread_book.start()
