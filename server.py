@@ -82,62 +82,6 @@ class Database:
         self.handlog = Handlog()
 
 
-# def db_hand_add(user, book):
-#     global db
-#     now = datetime.utcnow()
-
-
-# def db_handlog_add(user, book, event):
-#     global db
-#     assert event in {'take', 'return'}
-#     now = datetime.utcnow()
-#     db.handlog.insert({
-#         "user": user,
-#         "book": book,
-#         "datetime": now,
-#         "event": event,
-#     })
-
-
-# def open_db():
-#     return pymongo.MongoClient().digital_library
-
-# db = open_db()
-
-#     db.hands.insert({
-#         "user": user,
-#         "book": book,
-#         "datetime": now,
-#     })
-
-
-# def db_hand_get(user, book):
-#     global db
-#     return db.hands.find_one({'user': user, 'book': book})
-
-
-# def db_hand_exists(user, book):
-#     return db_hand_get(user, book) is not None
-
-
-# def db_hand_delete(user, book):
-#     global db
-#     db.hands.remove({"user": user, "book": book})
-
-# def db_terminal_add(client_ip, terminal_uuid):
-#     global db
-#     db.terminals.insert({"ip": client_ip, "uuid": str(terminal_uuid)})
-
-
-# def db_terminal_get(client_ip):
-#     global db
-#     return db.terminals.find_one({'ip': client_ip})
-
-
-# def db_terminal_get_uuid(client_ip):
-#     return db_terminal_get(client_ip)["uuid"]
-
-
 def render_template(template_name, **context):
     test_books = [
         {
