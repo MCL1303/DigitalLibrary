@@ -19,7 +19,6 @@ def load_config():
     return config['Server']
 
 
-# pylint: disable=too-few-public-methods
 class Collection():
     pass
 
@@ -59,7 +58,6 @@ class Hands(Collection):
         self.db.hands.remove({"user": user, "book": book})
 
 
-# pylint: disable=too-few-public-methods
 class Handlog(Collection):
     def __init__(self):
         super().__init__()
@@ -76,7 +74,6 @@ class Handlog(Collection):
         })
 
 
-# pylint: disable=too-few-public-methods
 class Database:
     def __init__(self):
         super().__init__()
