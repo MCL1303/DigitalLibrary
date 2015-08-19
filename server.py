@@ -155,11 +155,11 @@ def get_current_user():
     client_ip = request.remote_addr
     terminal = db.terminals.get(client_ip)
     if terminal is not None:
-        return jsonify(terminal_uuid=terminal['uuid'])
+        return jsonify(uuid=terminal['uuid'])
     else:
         terminal_uuid = uuid.uuid4()
         db.terminals.add(client_ip, terminal_uuid)
-        return jsonify(terminal_uuid=terminal_uuid)
+        return jsonify(uuid=terminal_uuid)
 
 
 @app.route('/api/book/action', methods=['POST'])

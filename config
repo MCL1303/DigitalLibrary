@@ -2,10 +2,9 @@
 host = ::
 [Demon]
 uuid_url = http://localhost:5000/connect
-url = http://localhost:5000
+url = http://localhost:5000/operations
 bookScanner = path
 userScanner = path
 uuid = id
 [Resizer]
-height = 320
-path = /home/igor/Coding/Library/image.jpg
+name = curant

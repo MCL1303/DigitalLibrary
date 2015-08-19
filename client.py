@@ -30,39 +30,42 @@ def scanner_read(device_file):
 
 
 def send_scanner_data(user, book, uuid, dialog):
-    dialog.browser.RunScript("send_scanner_data({!r}, {!r}, {!r})".format(
+    dialog.browser.RunScript("send_scanner_data({!r}, {!r})".format(
         user,
-        book,
-        uuid
+        book
         ))
 
 
 def scan_user(device_file, uuid, dialog, curent_user, curent_book):
-    user = scanner_read(device_file)
-    if curent_user is not None and curent_book is None:
-        curent_user = user
-        return
-    if curent_user is None and curent_book is None:
-        curent_user = user
-    else:
-        curent_user = user
-        send_scanner_data(curent_user, curent_book, uuid, dialog)
-        curent_user = None
-        curent_book = None
+    curent_book = "curant"
+    while True:
+        user = scanner_read(device_file)
+        if curent_user is not None and curent_book is None:
+            curent_user = user
+            return
+        if curent_user is None and curent_book is None:
+            curent_user = user
+        else:
+            curent_user = user
+            print curent_user
+            send_scanner_data(curent_user, curent_book, uuid, dialog)
+            curent_user = None
+            curent_book = None
 
 
 def scan_book(device_file, uuid, dialog, curent_user, curent_book):
-    book = scanner_read(device_file)
-    if curent_book is not None and curent_user is None:
-        curent_book = book
-        return
-    if curent_user is None and curent_book is None:
-        curent_book = book
-    else:
-        curent_book = book
-        send_scanner_data(curent_user, curent_book, uuid, dialog)
-        curent_user = None
-        curent_book = None
+    while True:
+        book = scanner_read(device_file)
+        if curent_book is not None and curent_user is None:
+            curent_book = book
+            return
+        if curent_user is None and curent_book is None:
+            curent_book = book
+        else:
+            curent_book = book
+            send_scanner_data(curent_user, curent_book, uuid, dialog)
+            curent_user = None
+            curent_book = None
 
 
 def main():
@@ -74,15 +77,15 @@ def main():
         "http://localhost:5000/connect"
     ).json()["uuid"]
     thread_user = Thread(
-        target=scan_user("path", uuid, dialog, curent_user, curent_book),
+        target=scan_user("/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0", uuid, dialog, curent_user, curent_book),
         args=config.get("Demon", "userScanner")
     )
-    thread_book = Thread(
-        target=scan_book("path", uuid, dialog, curent_user, curent_book),
-        args=config.get("Demon", "bookScanner")
-    )
-    thread_book.start()
     thread_user.start()
+    # thread_book = Thread(
+    #     target=scan_book("path", uuid, dialog, curent_user, curent_book),
+    #     args=config.get("Demon", "bookScanner")
+    # )
+    # thread_book.start()
     dialog.browser.LoadURL(config.get("Demon", "url"))
     dialog.SetTitle("Библиотека Московского Химического Лицея")
     dialog.Show()
