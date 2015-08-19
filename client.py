@@ -14,6 +14,7 @@ def load_config():
     return config
 
 
+# pylint: disable=too-many-public-methods
 class MyBrowser(wx.Dialog):
     def __init__(self, *args, **kwds):
         wx.Dialog.__init__(self, *args, **kwds)
