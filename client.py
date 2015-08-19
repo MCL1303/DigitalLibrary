@@ -8,9 +8,6 @@ from threading import Thread
 import ConfigParser
 
 
-curent_user, curent_book = None, None
-
-
 def load_config():
     config = ConfigParser.ConfigParser()
     config.read("config")
@@ -32,16 +29,15 @@ def scanner_read(device_file):
         return device.readline().strip("\2\3\r\n")
 
 
-def send_scanner_data(user, book, terminal_uuid, dialog):
+def send_scanner_data(user, book, uuid, dialog):
     dialog.browser.RunScript("send_scanner_data({!r}, {!r}, {!r})".format(
         user,
         book,
-        terminal_uuid
+        uuid
         ))
 
 
-def scan_user(device_file, terminal_uuid, dialog, curent_user, curent_book):
-    global curent_user, curent_book
+def scan_user(device_file, uuid, dialog, curent_user, curent_book):
     user = scanner_read(device_file)
     if curent_user is not None and curent_book is None:
         curent_user = user
@@ -50,13 +46,12 @@ def scan_user(device_file, terminal_uuid, dialog, curent_user, curent_book):
         curent_user = user
     else:
         curent_user = user
-        send_scanner_data(curent_user, curent_book, terminal_uuid, dialog)
+        send_scanner_data(curent_user, curent_book, uuid, dialog)
         curent_user = None
         curent_book = None
 
 
-def scan_book(device_file, terminal_uuid, dialog, curent_user, curent_book):
-    global curent_user, curent_book
+def scan_book(device_file, uuid, dialog, curent_user, curent_book):
     book = scanner_read(device_file)
     if curent_book is not None and curent_user is None:
         curent_book = book
@@ -65,7 +60,7 @@ def scan_book(device_file, terminal_uuid, dialog, curent_user, curent_book):
         curent_book = book
     else:
         curent_book = book
-        send_scanner_data(curent_user, curent_book, terminal_uuid, dialog)
+        send_scanner_data(curent_user, curent_book, uuid, dialog)
         curent_user = None
         curent_book = None
 
@@ -75,15 +70,15 @@ def main():
     curent_user, curent_book = None, None
     app = wx.App()
     dialog = MyBrowser(None, -1)
-    terminal_uuid = requests.get(
+    uuid = requests.get(
         "http://localhost:5000/connect"
-    ).json()["terminal_uuid"]
+    ).json()["uuid"]
     thread_user = Thread(
-        target=scan_user("path", terminal_uuid, dialog, curent_user, curent_book),
+        target=scan_user("path", uuid, dialog, curent_user, curent_book),
         args=config.get("Demon", "userScanner")
     )
     thread_book = Thread(
-        target=scan_book("path", terminal_uuid, dialog, curent_user, curent_book),
+        target=scan_book("path", uuid, dialog, curent_user, curent_book),
         args=config.get("Demon", "bookScanner")
     )
     thread_book.start()
