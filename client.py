@@ -8,6 +8,9 @@ from threading import Thread
 import ConfigParser
 
 
+curent_user, curent_book = None, None
+
+
 def load_config():
     config = ConfigParser.ConfigParser()
     config.read("config")
