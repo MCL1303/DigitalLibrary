@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -eu
 set -o pipefail
 
 pep8_options=(
@@ -21,7 +21,7 @@ find . -name '*.py' | xargs pep8 ${pep8_options[*]}
 py2files=()
 py3files=()
 for pyfile in *.py; do
-    if head -n 1 "$pyfile" | grep python3; then
+    if head -n 1 "$pyfile" | grep -q python3; then
         py3files[${#py3files[@]}]="$pyfile"
     else
         py2files[${#py2files[@]}]="$pyfile"
