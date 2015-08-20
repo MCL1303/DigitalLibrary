@@ -17,11 +17,10 @@ main = do
     let pep8Options = ["--show-source"]
     pep8 $ pep8Options ++ pythonFiles
 
-    let pylintOptions = [ "--disable=missing-docstring"
-                        , "--disable=star-args"
-                        , "--disable=too-many-public-methods"
-                        , "--disable=too-few-public-methods"
+    let pylintOptions = [ "--disable=locally-disabled"
+                        , "--disable=missing-docstring"
                         , "--disable=no-init"
+                        , "--disable=star-args"
                         , "--good-names=app,db"
                         , "--include-naming-hint=yes"
                         , "--output-format=colorized"

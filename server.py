@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from database import DigitalLibraryDatabase
+from types import Action
+
 import configparser
 from flask import Flask, jsonify, request
 import flask
 import logging
 import uuid
-import database
 
 
 app = Flask('digital_library')
@@ -87,7 +89,7 @@ def operations():
 
 @app.route('/connect')
 def get_current_user():
-    db = database.Database()
+    db = DigitalLibraryDatabase()
     client_ip = request.remote_addr
     terminal = db.terminals.get(client_ip)
     if terminal is not None:
@@ -101,17 +103,16 @@ def get_current_user():
 @app.route('/api/book/action', methods=['POST'])
 def api_book_action():
     form = request.form
-    db = database.Database()
+    db = DigitalLibraryDatabase()
     user, book = form["user"], form["book"]
     if db.hands.exists(user, book):
         db.hands.delete(user, book)
-        db.handlog.add(user, book, "return")
-        action = "return"
+        action = Action.Return
     else:
         db.hands.add(user, book)
-        db.handlog.add(user, book, "take")
-        action = "take"
-    return jsonify(action=action, book=book)
+        action = Action.Take
+    db.handlog.log(action, user, book)
+    return jsonify(action=action.name, book=book)
 
 
 def main():

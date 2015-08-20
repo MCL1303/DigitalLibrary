@@ -3,7 +3,6 @@
 
 import wx
 import wx.html2
-# import requests
 from threading import Thread
 import ConfigParser
 
@@ -18,6 +17,7 @@ def load_config():
 
 
 class MyBrowser(wx.Dialog):
+    # pylint: disable=too-many-public-methods
     def __init__(self, *args, **kwds):
         wx.Dialog.__init__(self, *args, **kwds)
         sizer = wx.BoxSizer(wx.VERTICAL)
