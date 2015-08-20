@@ -80,8 +80,8 @@ def main():
         "http://localhost:5000/connect"
     ).json()["uuid"]
     thread_user = Thread(
-        target = scan_user(USER_SCANNER_DEVICE_FILE, uuid, dialog, curent_user, curent_book),
-        args = config.get("Demon", "userScanner")
+        target=scan_user(USER_SCANNER_DEVICE_FILE, uuid, dialog, curent_user, curent_book),
+        args=config.get("Demon", "userScanner")
     )
     thread_user.start()
     # thread_book = Thread(
