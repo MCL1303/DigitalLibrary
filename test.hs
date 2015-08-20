@@ -1,19 +1,19 @@
 #!/usr/bin/env runhaskell
 {-# OPTIONS -Wall -Werror #-}
 
-import Data.Functor
 import Data.List
 import System.Directory
 import System.Exit
 import System.IO
-import System.Process
+import System.Process   ( rawSystem )
 
 main :: IO ()
 main = do
+    files <- getDirectoryContents "."
     let pythonModules = ["digital_library"]
-    pythonFiles <- filter (".py" `isSuffixOf`) <$> getDirectoryContents "."
-    -- ^ TODO recurse into subdirectories
-    let python2Files = ["client.py"]
+        pythonFiles = filter (".py" `isSuffixOf`) files
+        -- ^ TODO recurse into subdirectories
+        python2Files = ["client.py"]
         python3Files = pythonFiles \\ python2Files
 
     let pep8Options = ["--show-source"]
