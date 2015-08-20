@@ -8,6 +8,7 @@ import flask
 import logging
 import pymongo
 import uuid
+import database
 
 
 app = Flask('digital_library')
@@ -17,69 +18,6 @@ def load_config():
     config = configparser.ConfigParser()
     config.read('config')
     return config['Server']
-
-
-class Collection():
-    pass
-
-
-class Terminals(Collection):
-    def __init__(self):
-        super().__init__()
-        self.db = pymongo.MongoClient().digital_library
-
-    def add(self, client_ip, terminal_uuid):
-        self.db.terminals.insert({"ip": client_ip, "uuid": str(terminal_uuid)})
-
-    def get(self, client_ip):
-        return self.db.terminals.find_one({'ip': client_ip})
-
-
-class Hands(Collection):
-    def __init__(self):
-        super().__init__()
-        self.db = pymongo.MongoClient().digital_library
-
-    def add(self, user, book):
-        now = datetime.utcnow()
-        self.db.hands.insert({
-            "user": user,
-            "book": book,
-            "datetime": now,
-        })
-
-    def get(self, user, book):
-        return self.db.hands.find_one({'user': user, 'book': book})
-
-    def exists(self, user, book):
-        return self.get(user, book) is not None
-
-    def delete(self, user, book):
-        self.db.hands.remove({"user": user, "book": book})
-
-
-class Handlog(Collection):
-    def __init__(self):
-        super().__init__()
-        self.db = pymongo.MongoClient().digital_library
-
-    def add(self, user, book, event):
-        assert event in {'take', 'return'}
-        now = datetime.utcnow()
-        self.db.handlog.insert({
-            "user": user,
-            "book": book,
-            "datetime": now,
-            "event": event,
-        })
-
-
-class Database:
-    def __init__(self):
-        super().__init__()
-        self.terminals = Terminals()
-        self.hands = Hands()
-        self.handlog = Handlog()
 
 
 def render_template(template_name, **context):
@@ -151,7 +89,7 @@ def operations():
 
 @app.route('/connect')
 def get_current_user():
-    db = Database()
+    db = database.Database()
     client_ip = request.remote_addr
     terminal = db.terminals.get(client_ip)
     if terminal is not None:
@@ -165,7 +103,7 @@ def get_current_user():
 @app.route('/api/book/action', methods=['POST'])
 def api_book_action():
     form = request.form
-    db = Database()
+    db = database.Database()
     user, book = form["user"], form["book"]
     if db.hands.exists(user, book):
         db.hands.delete(user, book)
