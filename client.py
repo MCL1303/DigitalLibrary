@@ -3,9 +3,12 @@
 
 import wx
 import wx.html2
+# import requests
 from threading import Thread
 import ConfigParser
-# import requests
+
+
+USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
 
 
 def load_config():
@@ -37,12 +40,11 @@ def send_scanner_data(user, book, dialog):
 
 
 def scan_user(device_file, dialog, curent_user, curent_book):
-    curent_book = "curant"
     while True:
         user = scanner_read(device_file)
         if curent_user is not None and curent_book is None:
             curent_user = user
-            continue
+            return
         if curent_user is None and curent_book is None:
             curent_user = user
         else:
@@ -58,7 +60,7 @@ def scan_book(device_file, dialog, curent_user, curent_book):
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
             curent_book = book
-            continue
+            return
         if curent_user is None and curent_book is None:
             curent_book = book
         else:
@@ -78,7 +80,7 @@ def main():
     # ).json()["uuid"]
     thread_user = Thread(
         target=scan_user(
-            "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0",
+            USER_SCANNER_DEVICE_FILE,
             dialog,
             curent_user,
             curent_book
@@ -87,7 +89,7 @@ def main():
     )
     thread_user.start()
     # thread_book = Thread(
-    #     target=scan_book("path", uuid, dialog, curent_user, curent_book),
+    #     target=scan_book("path", dialog, curent_user, curent_book),
     #     args=config.get("Demon", "bookScanner")
     # )
     # thread_book.start()
