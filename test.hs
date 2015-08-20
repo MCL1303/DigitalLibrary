@@ -17,8 +17,7 @@ main = do
     let pep8Options = ["--show-source"]
     pep8 $ pep8Options ++ pythonFiles
 
-    let pylintOptions = [ "--disable=line-too-long"  -- TODO don't ignore
-                        , "--disable=missing-docstring"
+    let pylintOptions = [ "--disable=missing-docstring"
                         , "--disable=star-args"
                         , "--disable=too-many-public-methods"
                         , "--disable=too-few-public-methods"
