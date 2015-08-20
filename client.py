@@ -8,6 +8,9 @@ from threading import Thread
 import ConfigParser
 
 
+USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+
+
 def load_config():
     config = ConfigParser.ConfigParser()
     config.read("config")
@@ -77,8 +80,8 @@ def main():
         "http://localhost:5000/connect"
     ).json()["uuid"]
     thread_user = Thread(
-        target=scan_user("/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0", uuid, dialog, curent_user, curent_book),
-        args=config.get("Demon", "userScanner")
+        target = scan_user(USER_SCANNER_DEVICE_FILE, uuid, dialog, curent_user, curent_book),
+        args = config.get("Demon", "userScanner")
     )
     thread_user.start()
     # thread_book = Thread(
