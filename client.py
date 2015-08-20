@@ -7,9 +7,6 @@ from threading import Thread
 import ConfigParser
 
 
-USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
-
-
 def load_config():
     config = ConfigParser.ConfigParser()
     config.read("config")
@@ -79,24 +76,30 @@ def main():
     #     "http://localhost:5000/connect"
     # ).json()["uuid"]
     thread_user = Thread(
-        target=scan_user(
-            USER_SCANNER_DEVICE_FILE,
+        target=scan_user,
+        args=(
+            config.get("Demon", "userScanner"),
             dialog,
             curent_user,
-            curent_book
-        ),
-        args=config.get("Demon", "userScanner")
+            curent_book,
+        )
     )
     thread_user.start()
     # thread_book = Thread(
-    #     target=scan_book("path", dialog, curent_user, curent_book),
-    #     args=config.get("Demon", "bookScanner")
+    #     target=scan_book,
+    #     args=(
+    #         config.get("Demon", "bookScanner"),
+    #         dialog,
+    #         curent_user,
+    #         curent_book,
+    #     ),
     # )
     # thread_book.start()
     dialog.browser.LoadURL(config.get("Demon", "url"))
     dialog.SetTitle("Библиотека Московского Химического Лицея")
     dialog.Show()
     app.MainLoop()
+
 
 if __name__ == '__main__':
     main()
