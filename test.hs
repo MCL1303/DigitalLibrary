@@ -17,13 +17,13 @@ main = do
     let pep8Options = ["--show-source"]
     pep8 $ pep8Options ++ pythonFiles
 
-    let pylintOptions = [ "--disable=invalid-name"  -- TODO don't ignore
-                        , "--disable=line-too-long"  -- TODO don't ignore
+    let pylintOptions = [ "--disable=line-too-long"  -- TODO don't ignore
                         , "--disable=missing-docstring"
                         , "--disable=star-args"
                         , "--disable=too-many-public-methods"
                         , "--disable=too-few-public-methods"
                         , "--disable=no-init"
+                        , "--good-names=app,db"
                         , "--include-naming-hint=yes"
                         , "--output-format=colorized"
                         , "--reports=no"
