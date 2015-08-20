@@ -12,28 +12,28 @@ def load_config():
 
 def main():
     config = load_config()
-
     img = PIL.Image.open(config["/home/igor/Coding/Library/image.jpg"])
     height = 320
     width = int(img.size[0] * (height / img.size[1]))
     img = img.resize((width, height), PIL.Image.ANTIALIAS)
     img.save(
         config[
-            "/home/igor/Coding/Library/static/book/small-covers{}.jpg"
-            .format(config["name"])
+            "/home/igor/Coding/Library/static/book/small-covers" + config[
+                "name"
+            ] + ".jpg"
         ]
     )
-
     img = PIL.Image.open(config["/home/igor/Coding/Library/image.jpg"])
     height = 480
     width = int(img.size[0] * (height / img.size[1]))
     img = img.resize((width, height), PIL.Image.ANTIALIAS)
     img.save(
         config[
-            "/home/igor/Coding/Library/static/book/large-covers{}.jpg"
-            .format(config["name"])
-        ]
-    )
+            "/home/igor/Coding/Library/static/book/large-covers" + config[
+                "name"
+            ] + ".jpg"
+            ]
+        )
 
 
 if __name__ == "__main__":

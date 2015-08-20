@@ -3,12 +3,9 @@
 
 import wx
 import wx.html2
-import requests
 from threading import Thread
 import ConfigParser
-
-
-USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+# import requests
 
 
 def load_config():
@@ -32,41 +29,41 @@ def scanner_read(device_file):
         return device.readline().strip("\2\3\r\n")
 
 
-def send_scanner_data(user, book, uuid, dialog):
+def send_scanner_data(user, book, dialog):
     dialog.browser.RunScript("send_scanner_data({!r}, {!r})".format(
         user,
         book
         ))
 
 
-def scan_user(device_file, uuid, dialog, curent_user, curent_book):
+def scan_user(device_file, dialog, curent_user, curent_book):
     curent_book = "curant"
     while True:
         user = scanner_read(device_file)
         if curent_user is not None and curent_book is None:
             curent_user = user
-            return
+            continue
         if curent_user is None and curent_book is None:
             curent_user = user
         else:
             curent_user = user
             print curent_user
-            send_scanner_data(curent_user, curent_book, uuid, dialog)
+            send_scanner_data(curent_user, curent_book, dialog)
             curent_user = None
             curent_book = None
 
 
-def scan_book(device_file, uuid, dialog, curent_user, curent_book):
+def scan_book(device_file, dialog, curent_user, curent_book):
     while True:
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
             curent_book = book
-            return
+            continue
         if curent_user is None and curent_book is None:
             curent_book = book
         else:
             curent_book = book
-            send_scanner_data(curent_user, curent_book, uuid, dialog)
+            send_scanner_data(curent_user, curent_book, dialog)
             curent_user = None
             curent_book = None
 
@@ -76,11 +73,16 @@ def main():
     curent_user, curent_book = None, None
     app = wx.App()
     dialog = MyBrowser(None, -1)
-    uuid = requests.get(
-        "http://localhost:5000/connect"
-    ).json()["uuid"]
+    # uuid = requests.get(
+    #     "http://localhost:5000/connect"
+    # ).json()["uuid"]
     thread_user = Thread(
-        target=scan_user(USER_SCANNER_DEVICE_FILE, uuid, dialog, curent_user, curent_book),
+        target=scan_user(
+            "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0",
+            dialog,
+            curent_user,
+            curent_book
+        ),
         args=config.get("Demon", "userScanner")
     )
     thread_user.start()

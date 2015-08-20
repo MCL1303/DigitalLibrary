@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import configparser
-from datetime import datetime
 from flask import Flask, jsonify, request
 import flask
 import logging
-import pymongo
 import uuid
 import database
 
