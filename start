@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euxE
 
-./server.py & termclient_pid=$$
-trap "kill $termclient_pid" EXIT
+./server.py & server_pid=$$
+trap "kill $server_pid" EXIT
 
 ./start_termclient.py
 
