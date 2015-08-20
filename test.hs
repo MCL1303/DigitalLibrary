@@ -1,7 +1,6 @@
 #!/usr/bin/env runhaskell
 {-# OPTIONS -Wall -Werror #-}
 
-import Data.Foldable
 import Data.Functor
 import Data.List
 import System.Directory
@@ -13,7 +12,9 @@ main :: IO ()
 main = do
     let pythonModules = ["digital_library"]
     pythonFiles <- filter (".py" `isSuffixOf`) <$> getDirectoryContents "."
-    (python2Files, python3Files) <- partitionM isPython2File pythonFiles
+    -- ^ TODO recurse into subdirectories
+    let python2Files = ["client.py"]
+        python3Files = pythonFiles \\ python2Files
 
     let pep8Options = ["--show-source"]
     pep8 $ pep8Options ++ pythonFiles
@@ -44,10 +45,6 @@ main = do
     pylint3   = callProcess "pylint3"
     pytest3   = callProcess "py.test-3"
 
-    isPython2File file =
-        withFile file ReadMode $ \h ->
-            ("python2" `isInfixOf`) <$> hGetLine h
-
     callProcess cmd args = do
         exitCode <- rawSystem cmd args
         case exitCode of
@@ -56,11 +53,3 @@ main = do
             ExitFailure code -> do
                 hPutStrLn stderr $ cmd ++ " failed with code " ++ show code
                 exitWith exitCode
-
-    partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
-    partitionM p = foldrM select ([], [])
-      where
-        select x ~(ts, fs) = do
-            px <- p x
-            return $ if px  then (x:ts, fs)
-                            else (ts, x:fs)
