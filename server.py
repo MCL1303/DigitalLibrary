@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from database import DigitalLibraryDatabase
-from types import Action
+from digital_library.database import DigitalLibraryDatabase
+from digital_library.types import Action
 
 import configparser
 from flask import Flask, jsonify, request

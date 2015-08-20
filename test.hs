@@ -11,11 +11,15 @@ import System.Process
 
 main :: IO ()
 main = do
+    let pythonModules = ["digital_library"]
     pythonFiles <- filter (".py" `isSuffixOf`) <$> getDirectoryContents "."
     (python2Files, python3Files) <- partitionM isPython2File pythonFiles
 
     let pep8Options = ["--show-source"]
     pep8 $ pep8Options ++ pythonFiles
+
+    pyflakes2 python2Files
+    pyflakes3 $ python3Files ++ pythonModules
 
     let pylintOptions = [ "--disable=locally-disabled"
                         , "--disable=missing-docstring"
@@ -27,10 +31,7 @@ main = do
                         , "--reports=no"
                         ]
     pylint2 $ pylintOptions ++ python2Files
-    pylint3 $ pylintOptions ++ python3Files
-
-    pyflakes2 python2Files
-    pyflakes3 python3Files
+    pylint3 $ pylintOptions ++ python3Files ++ pythonModules
 
     pytest3 []
 

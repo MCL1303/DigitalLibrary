@@ -1,4 +1,4 @@
-from types import Action
+from digital_library.types import Action
 
 from datetime import datetime
 from pymongo import MongoClient
