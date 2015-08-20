@@ -28,14 +28,19 @@ main = do
     pylint2 $ pylintOptions ++ python2Files
     pylint3 $ pylintOptions ++ python3Files
 
+    pyflakes2 python2Files
+    pyflakes3 python3Files
+
     pytest3 []
 
     putStrLn "OK"
   where
-    pep8    = callProcess "pep8"
-    pylint2 = callProcess "pylint"
-    pylint3 = callProcess "pylint3"
-    pytest3 = callProcess "py.test-3"
+    pep8      = callProcess "pep8"
+    pyflakes2 = callProcess "pyflakes"
+    pyflakes3 = callProcess "pyflakes3"
+    pylint2   = callProcess "pylint"
+    pylint3   = callProcess "pylint3"
+    pytest3   = callProcess "py.test-3"
 
     isPython2File file =
         withFile file ReadMode $ \h ->
