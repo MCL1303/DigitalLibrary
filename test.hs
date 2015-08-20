@@ -14,28 +14,28 @@ main = do
     pythonFiles <- filter (".py" `isSuffixOf`) <$> getDirectoryContents "."
     (python2Files, python3Files) <- partitionM isPython2File pythonFiles
 
-    pep8 pythonFiles
-    pylint2 python2Files
-    pylint3 python3Files
-    pytest3
+    let pep8Options = ["--show-source"]
+    pep8 $ pep8Options ++ pythonFiles
+
+    let pylintOptions = [ "--disable=invalid-name"  -- TODO don't ignore
+                        , "--disable=line-too-long"  -- TODO don't ignore
+                        , "--disable=missing-docstring"
+                        , "--disable=star-args"
+                        , "--include-naming-hint=yes"
+                        , "--output-format=colorized"
+                        , "--reports=no"
+                        ]
+    pylint2 $ pylintOptions ++ python2Files
+    pylint3 $ pylintOptions ++ python3Files
+
+    pytest3 []
 
     putStrLn "OK"
   where
-    pep8 files = callProcess "pep8" $ options ++ files
-      where options = ["--show-source"]
-
-    pylint2 files = callProcess "pylint" $ pylintOptions ++ files
-    pylint3 files = callProcess "pylint3" $ pylintOptions ++ files
-    pylintOptions = [ "--disable=invalid-name"  -- TODO don't ignore
-                    , "--disable=line-too-long"  -- TODO don't ignore
-                    , "--disable=missing-docstring"
-                    , "--disable=star-args"
-                    , "--include-naming-hint=yes"
-                    , "--output-format=colorized"
-                    , "--reports=no"
-                    ]
-
-    pytest3 = callProcess "py.test-3" []
+    pep8    = callProcess "pep8"
+    pylint2 = callProcess "pylint"
+    pylint3 = callProcess "pylint3"
+    pytest3 = callProcess "py.test-3"
 
     isPython2File file =
         withFile file ReadMode $ \h ->
