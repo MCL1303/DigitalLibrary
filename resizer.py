@@ -18,7 +18,7 @@ def main():
     img = img.resize((width, height), PIL.Image.ANTIALIAS)
     img.save(
         "/home/igor/Coding/Library/static/book/small-covers/{name}.jpg"
-            .format(name=config["name"])
+        .format(name=config["name"])
     )
     img = PIL.Image.open(config["/home/igor/Coding/Library/image.jpg"])
     height = 480
@@ -28,7 +28,8 @@ def main():
         config[
             "/home/igor/Coding/Library/static/book/large-covers/{name}.jpg"
             .format(name=config["name"])
-        )
+        ]
+    )
 
 
 if __name__ == "__main__":
