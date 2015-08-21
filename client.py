@@ -6,6 +6,7 @@ from PyQt5.Qt import QApplication, QUrl
 from PyQt5.QtWebKitWidgets import QWebView
 from sys import argv
 from threading import Thread
+import requests
 
 
 USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
