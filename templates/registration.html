@@ -3,14 +3,16 @@
 {% block title %}Регистрация{% endblock %}
 
 {% block content %}
-    <link href="/static/css/signin.css" rel="stylesheet">
+	<div class="row">
+	    <link href="/static/css/signin.css" rel="stylesheet">
 
-    <form class="form-signin text-center" method="post" action="login">
-        <h2 class="form-signin-heading">Регистрация</h2>
-        <input type="text" name="inviteCode" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
-        <input type="email" name="email" class="form-control text-center" placeholder="Почта" required="">
-        <input type="password" name="password" class="form-control text-center" placeholder="Пароль" required="">
-        <a class="btn btn-lg btn-primary btn-block" href="/reg">Регистрация</a>
-    </form>
-    <script src="/static/js/jquery.js"></script>
+	    <form class="form-signin text-center" method="post" action="login">
+	        <h2 class="form-signin-heading">Регистрация</h2>
+	        <input type="text" name="inviteCode" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
+	        <input type="email" name="email" class="form-control text-center" placeholder="Почта" required="">
+	        <input type="password" name="password" class="form-control text-center" placeholder="Пароль" required="">
+	        <a class="btn btn-lg btn-primary btn-block" href="/reg">Регистрация</a>
+	    </form>
+	    <script src="/static/js/jquery.js"></script>
+	</div>
 {% endblock %}

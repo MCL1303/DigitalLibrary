@@ -3,30 +3,32 @@
 {% block title %}Взять/Вернуть книги{% endblock %}
 
 {% block content %}
-    <div class="content" style="text-align: center;">
-        <h2>Отсканируйте штрих код книги, прежде чем взять/вернуть её</h2>
-        <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
-        <h2 id="status">Статус операции</h2>
+    <div class="row">
+        <div class="content" style="text-align: center;">
+            <h2>Отсканируйте штрих код книги, прежде чем взять/вернуть её</h2>
+            <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
+            <h2 id="status">Статус операции</h2>
+        </div>
+        <script>
+            function send_scaner_data(user, book, uuid) {
+                $.post(
+                    "http://localhost:5000/api/book/action",
+                    {user: user, book: book, uuid: uuid},
+                    function(data) {
+                        $("#cover").attr(
+                            'src',
+                            "http://localhost:5000/static/book/large-covers/" +
+                                data.book + ".jpg"
+                        );
+                        if (data.action == "take") {
+                            $("#status").text("Вы взяли книгу");
+                        } else {
+                            $("#status").text("Вы вернули книгу");
+                        }
+                    },
+                    "json"
+                )
+            }
+        </script>
     </div>
-    <script>
-        function send_scaner_data(user, book, uuid) {
-            $.post(
-                "http://localhost:5000/api/book/action",
-                {user: user, book: book, uuid: uuid},
-                function(data) {
-                    $("#cover").attr(
-                        'src',
-                        "http://localhost:5000/static/book/large-covers/" +
-                            data.book + ".jpg"
-                    );
-                    if (data.action == "take") {
-                        $("#status").text("Вы взяли книгу");
-                    } else {
-                        $("#status").text("Вы вернули книгу");
-                    }
-                },
-                "json"
-            )
-        }
-    </script>
 {% endblock %}
