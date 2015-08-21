@@ -1,9 +1,0 @@
-#!/bin/bash
-set -euxE
-
-./server.py & server_pid=$!
-trap "kill $server_pid" EXIT
-
-./client.py
-
-wait

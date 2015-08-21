@@ -24,7 +24,7 @@ def scanner_read(device_file):
 
 
 def send_scanner_data(user, book, uuid, webview):
-    dialog.webview.RunScript("send_scanner_data({!r}, {!r}, {!r})".format(
+    webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
         user,
         book,
         uuid,
@@ -42,7 +42,7 @@ def scan_user(device_file, curent_user, curent_book, uuid, webview):
             curent_user = user
         else:
             curent_user = user
-            send_scanner_data(curent_user, curent_book, webview, uuid)
+            send_scanner_data(curent_user, curent_book, uuid, webview)
             curent_user = None
             curent_book = None
 
@@ -57,7 +57,7 @@ def scan_book(device_file, curent_user, curent_book, uuid, webview):
             curent_book = book
         else:
             curent_book = book
-            send_scanner_data(curent_user, curent_book, webview, uuid)
+            send_scanner_data(curent_user, curent_book, uuid, webview)
             curent_user = None
             curent_book = None
 
