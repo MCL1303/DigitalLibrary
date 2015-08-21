@@ -106,12 +106,12 @@ def api_book_action():
     db = DigitalLibraryDatabase()
     user, book = form["user"], form["book"]
     if db.hands.exists(user, book):
-        db.hands.delete(user, book)
+        db.hands.delete(user, book, uuid)
         action = Action.Return
     else:
-        db.hands.add(user, book)
+        db.hands.add(user, book, uuid)
         action = Action.Take
-    db.handlog.log(action, user, book)
+    db.handlog.log(action, user, book, uuid)
     return jsonify(action=action.name, book=book)
 
 
