@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euxE
 
-./server.py & server_pid=$$
+./server.py & server_pid=$!
 trap "kill $server_pid" EXIT
 
-./start_termclient.py
+./client.py
 
 wait

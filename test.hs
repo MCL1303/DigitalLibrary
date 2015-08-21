@@ -1,53 +1,45 @@
 #!/usr/bin/env runhaskell
 {-# OPTIONS -Wall -Werror #-}
 
-import Data.Foldable
-import Data.Functor
 import Data.List
 import System.Directory
 import System.Exit
 import System.IO
-import System.Process
+import System.Process   ( rawSystem )
 
 main :: IO ()
 main = do
-    let pythonModules = ["digital_library"]
-    pythonFiles <- filter (".py" `isSuffixOf`) <$> getDirectoryContents "."
-    (python2Files, python3Files) <- partitionM isPython2File pythonFiles
+    pythonFiles <- filter (".py" `isSuffixOf`) `fmap` getDirectoryContents "."
+    let pythonPackages = ["digital_library"]
 
     let pep8Options = ["--show-source"]
-    pep8 $ pep8Options ++ pythonFiles
+    pep8 $ pep8Options ++ ["."]
 
-    pyflakes2 python2Files
-    pyflakes3 $ python3Files ++ pythonModules
+    pyflakes $ pythonFiles ++ pythonPackages
 
     let pylintOptions = [ "--disable=locally-disabled"
                         , "--disable=missing-docstring"
-                        , "--disable=no-init"
                         , "--disable=star-args"
+                        , "--extension-pkg-whitelist=PyQt5"
                         , "--good-names=app,db"
                         , "--include-naming-hint=yes"
                         , "--output-format=colorized"
                         , "--reports=no"
                         ]
-    pylint2 $ pylintOptions ++ python2Files
-    pylint3 $ pylintOptions ++ python3Files ++ pythonModules
+    pylint $ pylintOptions ++ pythonFiles ++ pythonPackages
 
-    pytest3 []
+    pytest []
 
     putStrLn "OK"
+
   where
     pep8      = callProcess "pep8"
-    pyflakes2 = callProcess "pyflakes"
-    pyflakes3 = callProcess "pyflakes3"
-    pylint2   = callProcess "pylint"
-    pylint3   = callProcess "pylint3"
-    pytest3   = callProcess "py.test-3"
+    pyflakes  = callProcess "pyflakes3"
+    pylint    = callProcess "pylint3"
+    pytest    = callProcess "py.test-3"
 
-    isPython2File file =
-        withFile file ReadMode $ \h ->
-            ("python2" `isInfixOf`) <$> hGetLine h
-
+    -- |  backport of callProcess from process-1.2
+    --    for compatibility with Ubuntu 15.04/process-1.1.0.2
     callProcess cmd args = do
         exitCode <- rawSystem cmd args
         case exitCode of
@@ -56,11 +48,3 @@ main = do
             ExitFailure code -> do
                 hPutStrLn stderr $ cmd ++ " failed with code " ++ show code
                 exitWith exitCode
-
-    partitionM :: Monad m => (a -> m Bool) -> [a] -> m ([a], [a])
-    partitionM p = foldrM select ([], [])
-      where
-        select x ~(ts, fs) = do
-            px <- p x
-            return $ if px  then (x:ts, fs)
-                            else (ts, x:fs)

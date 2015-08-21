@@ -1,30 +1,20 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import wx
-import wx.html2
+from configparser import ConfigParser
+from PyQt5.Qt import QApplication, QUrl
+from PyQt5.QtWebKitWidgets import QWebView
+from sys import argv
 from threading import Thread
-import ConfigParser
 
 
 USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
 
 
 def load_config():
-    config = ConfigParser.ConfigParser()
+    config = ConfigParser()
     config.read("config")
-    return config
-
-
-class MyBrowser(wx.Dialog):
-    # pylint: disable=too-many-public-methods
-    def __init__(self, *args, **kwds):
-        wx.Dialog.__init__(self, *args, **kwds)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.browser = wx.html2.WebView.New(self)
-        sizer.Add(self.browser, 1, wx.EXPAND, 10)
-        self.SetSizer(sizer)
-        self.SetSize(wx.GetDisplaySize())
+    return config["Demon"]
 
 
 def scanner_read(device_file):
@@ -39,7 +29,8 @@ def send_scanner_data(user, book, dialog):
         ))
 
 
-def scan_user(device_file, dialog, curent_user, curent_book):
+def scan_user(device_file, curent_user, curent_book):
+    curent_book = "curant"
     while True:
         user = scanner_read(device_file)
         if curent_user is not None and curent_book is None:
@@ -49,13 +40,12 @@ def scan_user(device_file, dialog, curent_user, curent_book):
             curent_user = user
         else:
             curent_user = user
-            print curent_user
             send_scanner_data(curent_user, curent_book, dialog)
             curent_user = None
             curent_book = None
 
 
-def scan_book(device_file, dialog, curent_user, curent_book):
+def scan_book(device_file, curent_user, curent_book):
     while True:
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
@@ -72,31 +62,38 @@ def scan_book(device_file, dialog, curent_user, curent_book):
 
 def main():
     config = load_config()
+
+    app = QApplication(argv)
+    webview = QWebView()
+    webview.load(QUrl(config["url"]))
+    webview.setWindowTitle("Библиотека Московского Химического Лицея")
+    webview.show()
+
     curent_user, curent_book = None, None
-    app = wx.App()
-    dialog = MyBrowser(None, -1)
     # uuid = requests.get(
     #     "http://localhost:5000/connect"
     # ).json()["uuid"]
     thread_user = Thread(
-        target=scan_user(
+        target=scan_user,
+        args=(
             USER_SCANNER_DEVICE_FILE,
-            dialog,
             curent_user,
-            curent_book
-        ),
-        args=config.get("Demon", "userScanner")
+            curent_book,
+        )
     )
     thread_user.start()
     # thread_book = Thread(
-    #     target=scan_book("path", dialog, curent_user, curent_book),
-    #     args=config.get("Demon", "bookScanner")
+    #     target=scan_book,
+    #     args=(
+    #         config.get("Demon", "bookScanner"),
+    #         curent_user,
+    #         curent_book,
+    #     ),
     # )
     # thread_book.start()
-    dialog.browser.LoadURL(config.get("Demon", "url"))
-    dialog.SetTitle("Библиотека Московского Химического Лицея")
-    dialog.Show()
-    app.MainLoop()
+
+    app.exec_()
+
 
 if __name__ == '__main__':
     main()
