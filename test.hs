@@ -22,7 +22,6 @@ main = do
 
     let pylintOptions = [ "--disable=locally-disabled"
                         , "--disable=missing-docstring"
-                        , "--disable=no-init"
                         , "--disable=star-args"
                         , "--good-names=app,db"
                         , "--include-naming-hint=yes"
