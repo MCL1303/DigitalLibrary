@@ -9,18 +9,16 @@ import System.Process   ( rawSystem )
 
 main :: IO ()
 main = do
-    files <- getDirectoryContents "."
-    let pythonModules = ["digital_library"]
-        pythonFiles = filter (".py" `isSuffixOf`) files
-        -- ^ TODO recurse into subdirectories
+    pythonFiles <- filter (".py" `isSuffixOf`) `fmap` getDirectoryContents "."
+    let pythonPackages = ["digital_library"]
         python2Files = ["client.py"]
         python3Files = pythonFiles \\ python2Files
 
     let pep8Options = ["--show-source"]
-    pep8 $ pep8Options ++ pythonFiles
+    pep8 $ pep8Options ++ ["."]
 
     pyflakes2 python2Files
-    pyflakes3 $ python3Files ++ pythonModules
+    pyflakes3 $ python3Files ++ pythonPackages
 
     let pylintOptions = [ "--disable=locally-disabled"
                         , "--disable=missing-docstring"
@@ -32,11 +30,12 @@ main = do
                         , "--reports=no"
                         ]
     pylint2 $ pylintOptions ++ python2Files
-    pylint3 $ pylintOptions ++ python3Files ++ pythonModules
+    pylint3 $ pylintOptions ++ python3Files ++ pythonPackages
 
     pytest3 []
 
     putStrLn "OK"
+
   where
     pep8      = callProcess "pep8"
     pyflakes2 = callProcess "pyflakes"
