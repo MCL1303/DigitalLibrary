@@ -45,6 +45,8 @@ main = do
     pylint3   = callProcess "pylint3"
     pytest3   = callProcess "py.test-3"
 
+    -- |  backport of callProcess from process-1.2
+    --    for compatibility with Ubuntu 15.04/process-1.1.0.2
     callProcess cmd args = do
         exitCode <- rawSystem cmd args
         case exitCode of
