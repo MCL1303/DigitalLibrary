@@ -11,7 +11,7 @@ import logging
 import uuid
 
 
-app = Flask('digital_library')
+app = Flask('DigitalLibraryApplication')
 
 
 def load_config():
