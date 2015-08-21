@@ -9,10 +9,10 @@
         <h2 id="status">Статус операции</h2>
     </div>
     <script>
-        function send_scaner_data(user, book) {
+        function send_scaner_data(user, book, uuid) {
             $.post(
                 "http://localhost:5000/api/book/action",
-                {user: user, book: book},
+                {user: user, book: book, uuid: uuid},
                 function(data) {
                     $("#cover").attr(
                         'src',

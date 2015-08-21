@@ -45,7 +45,7 @@ class Hands(Collection):
     def __init__(self, db):
         super().__init__(db, 'hands')
 
-    def add(self, user, book):
+    def add(self, user, book, uuid):
         now = datetime.utcnow()
         self._insert({
             "user": user,
@@ -54,13 +54,13 @@ class Hands(Collection):
         })
 
     def get(self, user, book):
-        return self._find_one({'user': user, 'book': book})
+        return self._find_one({'user': user, 'book': book, "uuid": uuid})
 
     def exists(self, user, book):
         return self.get(user, book) is not None
 
-    def delete(self, user, book):
-        self._remove({"user": user, "book": book})
+    def delete(self, user, book, uuid):
+        self._remove({"user": user, "book": book, "uuid": uuid})
 
 
 class HandLog(Collection):
@@ -69,13 +69,14 @@ class HandLog(Collection):
     def __init__(self, db):
         super().__init__(db, 'handlog')
 
-    def log(self, action: Action, user, book):
+    def log(self, action: Action, user, book, uuid):
         now = datetime.utcnow()
         self._insert({
             "action": action.name,
             "user": user,
             "book": book,
             "datetime": now,
+            "uuid": uuid,
         })
 
 

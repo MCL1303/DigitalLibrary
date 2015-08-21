@@ -22,14 +22,15 @@ def scanner_read(device_file):
         return device.readline().strip("\2\3\r\n")
 
 
-def send_scanner_data(user, book, dialog):
-    dialog.browser.RunScript("send_scanner_data({!r}, {!r})".format(
+def send_scanner_data(user, book, uuid, webview):
+    dialog.webview.RunScript("send_scanner_data({!r}, {!r}, {!r})".format(
         user,
-        book
+        book,
+        uuid,
         ))
 
 
-def scan_user(device_file, curent_user, curent_book):
+def scan_user(device_file, curent_user, curent_book, uuid, webview):
     curent_book = "curant"
     while True:
         user = scanner_read(device_file)
@@ -40,12 +41,12 @@ def scan_user(device_file, curent_user, curent_book):
             curent_user = user
         else:
             curent_user = user
-            send_scanner_data(curent_user, curent_book, dialog)
+            send_scanner_data(curent_user, curent_book, webview, uuid)
             curent_user = None
             curent_book = None
 
 
-def scan_book(device_file, curent_user, curent_book):
+def scan_book(device_file, curent_user, curent_book, uuid, webview):
     while True:
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
@@ -55,7 +56,7 @@ def scan_book(device_file, curent_user, curent_book):
             curent_book = book
         else:
             curent_book = book
-            send_scanner_data(curent_user, curent_book, dialog)
+            send_scanner_data(curent_user, curent_book, webview, uuid)
             curent_user = None
             curent_book = None
 
@@ -70,15 +71,17 @@ def main():
     webview.show()
 
     curent_user, curent_book = None, None
-    # uuid = requests.get(
-    #     "http://localhost:5000/connect"
-    # ).json()["uuid"]
+    uuid = requests.get(
+        "http://localhost:5000/connect"
+    ).json()["uuid"]
     thread_user = Thread(
         target=scan_user,
         args=(
             USER_SCANNER_DEVICE_FILE,
             curent_user,
             curent_book,
+            uuid,
+            webview,
         )
     )
     thread_user.start()
@@ -88,6 +91,8 @@ def main():
     #         config.get("Demon", "bookScanner"),
     #         curent_user,
     #         curent_book,
+    #         uuid,
+    #         webview,
     #     ),
     # )
     # thread_book.start()
