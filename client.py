@@ -69,7 +69,7 @@ def main():
     webview = QWebView()
     webview.load(QUrl(config["url"]))
     webview.setWindowTitle("Библиотека Московского Химического Лицея")
-    webview.show()
+    webview.showFullScreen()
 
     curent_user, curent_book = None, None
     uuid = requests.get(
