@@ -11,37 +11,32 @@ main :: IO ()
 main = do
     pythonFiles <- filter (".py" `isSuffixOf`) `fmap` getDirectoryContents "."
     let pythonPackages = ["digital_library"]
-        python2Files = ["client.py"]
-        python3Files = pythonFiles \\ python2Files
 
     let pep8Options = ["--show-source"]
     pep8 $ pep8Options ++ ["."]
 
-    pyflakes2 python2Files
-    pyflakes3 $ python3Files ++ pythonPackages
+    pyflakes $ pythonFiles ++ pythonPackages
 
     let pylintOptions = [ "--disable=locally-disabled"
                         , "--disable=missing-docstring"
                         , "--disable=star-args"
+                        , "--extension-pkg-whitelist=PyQt5"
                         , "--good-names=app,db"
                         , "--include-naming-hint=yes"
                         , "--output-format=colorized"
                         , "--reports=no"
                         ]
-    pylint2 $ pylintOptions ++ python2Files
-    pylint3 $ pylintOptions ++ python3Files ++ pythonPackages
+    pylint $ pylintOptions ++ pythonFiles ++ pythonPackages
 
-    pytest3 []
+    pytest []
 
     putStrLn "OK"
 
   where
     pep8      = callProcess "pep8"
-    pyflakes2 = callProcess "pyflakes"
-    pyflakes3 = callProcess "pyflakes3"
-    pylint2   = callProcess "pylint"
-    pylint3   = callProcess "pylint3"
-    pytest3   = callProcess "py.test-3"
+    pyflakes  = callProcess "pyflakes3"
+    pylint    = callProcess "pylint3"
+    pytest    = callProcess "py.test-3"
 
     -- |  backport of callProcess from process-1.2
     --    for compatibility with Ubuntu 15.04/process-1.1.0.2
