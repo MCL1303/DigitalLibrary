@@ -14,7 +14,7 @@ USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
 def load_config():
     config = ConfigParser()
     config.read("config")
-    return config
+    return config["Demon"]
 
 
 def scanner_read(device_file):
@@ -65,7 +65,7 @@ def main():
 
     app = QApplication(argv)
     webview = QWebView()
-    webview.load(QUrl(config.get("Demon", "url")))
+    webview.load(QUrl(config["url"]))
     webview.setWindowTitle("Библиотека Московского Химического Лицея")
     webview.show()
 
