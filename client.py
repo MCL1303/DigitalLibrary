@@ -8,6 +8,9 @@ from sys import argv
 from threading import Thread
 
 
+USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+
+
 def load_config():
     config = ConfigParser()
     config.read("config")
@@ -26,7 +29,8 @@ def send_scanner_data(user, book, dialog):
         ))
 
 
-def scan_user(device_file, dialog, curent_user, curent_book):
+def scan_user(device_file, curent_user, curent_book):
+    curent_book = "curant"
     while True:
         user = scanner_read(device_file)
         if curent_user is not None and curent_book is None:
@@ -41,7 +45,7 @@ def scan_user(device_file, dialog, curent_user, curent_book):
             curent_book = None
 
 
-def scan_book(device_file, dialog, curent_user, curent_book):
+def scan_book(device_file, curent_user, curent_book):
     while True:
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
@@ -72,8 +76,7 @@ def main():
     thread_user = Thread(
         target=scan_user,
         args=(
-            config.get("Demon", "userScanner"),
-            webview,
+            USER_SCANNER_DEVICE_FILE,
             curent_user,
             curent_book,
         )
@@ -83,7 +86,6 @@ def main():
     #     target=scan_book,
     #     args=(
     #         config.get("Demon", "bookScanner"),
-    #         webview,
     #         curent_user,
     #         curent_book,
     #     ),
