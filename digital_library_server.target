@@ -4,13 +4,14 @@ Description=Digital_library_server
 [Servise]
 Type=simple
 WorkingDirectory=/digital_library
-User=myunit
-Group=myunit
+User=digital_library
+Group=digital_library
 Environment=RACK_ENV=production
 OOMScoreAdjust=-100
 ExecStart=/usr/bin/python3.4 server.py
 ExecReload=/usr/bin/python3.4 server.py
 TimeoutSec=300
+PID=23562
 Restart=always
 
 [Install]
