@@ -91,31 +91,6 @@ class Thread(QThread):
         threads.remove(self)
 
 def SimpleThread(func):
-    """Simple thread decorator
-Exmaple:
-class Foo(QLabel):
-    def __init__(self, parent = None):
-        QLabel.__init__(self, parent)
-        self.setFixedSize(320, 240)
-        self.digits = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
-    @SimpleThread
-    def bar(self, primaryText):
-        rows = []
-        digits = self.digits
-        for item in digits:
-            rows.append('%s: %s' % (primaryText, item))
-            self.setText('\n'.join(rows), thr_method = 'b')
-            sleep(0.5)
-            
-    def setText(self, text):
-        QLabel.setText(self, text)
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    foo = Foo()
-    foo.show()
-    foo.bar('From thread', thr_start = True)
-    app.exec_()"""
-
     def wrapper(*args, **kwargs):
         global threads
         thread = Thread(func)
@@ -125,7 +100,6 @@ if __name__ == "__main__":
     return wrapper
 
 def closeThreads():
-    """Close all threads"""
     for thread in threads:
         thread.thr_stop()
     for thread in threads:
