@@ -50,6 +50,7 @@ def render_template(template_name, **context):
         'booksLen': len(test_books),
         'recomendedBooks': test_books,
         'recomendedBooksLen': len(test_books),
+        'page': template_name,
     }
     return flask.render_template(
         template_name + '.html',
@@ -62,7 +63,7 @@ def login():
     return render_template("login")
 
 
-@app.route("/reg")
+@app.route("/registration")
 def reg():
     return render_template("registration")
 

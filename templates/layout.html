@@ -23,7 +23,7 @@
     </head>
 
     <body cz-shortcut-listen="true">
-        {% if device == "terminal" %}
+        {% if device == "terminal" or template_name == "login" or template_name == "registration"%}
         {% else %}
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
@@ -49,7 +49,7 @@
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                     <li><a href="/handed">На руках {{booksLen}} {{inflect(booksLen, 'книга', 'книги', 'книг')}}</a></li>
                                     <li role="separator" class="divider"></li>
-                                    <li><a href="">Выход</a></li>
+                                    <li><a href="/login">Выход</a></li>
                                 </ul>
                             </div>
                         </li>
