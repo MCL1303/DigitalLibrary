@@ -20,71 +20,69 @@
             <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
                 <span class=" input-group-addon" id="title">Название</span>
                 <input type="text" class="form-control" id="inputTitle">
-                <script>
-                    $('#inputTitle').on('input', function() {
-                        if($("#inputTitle")[0].value != "") {
-                            $("#title").removeClass("default")
-                            $("#title").addClass("green")
-                        } else {
-                            $("#title").removeClass("green")
-                            $("#title").addClass("default")
-                        }
-                    });
-                </script>
             </div>
 
             <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
                 <span class="default input-group-addon" id="author">Автор</span>
                 <input type="text" class="form-control" id="inputAuthor">
-                <script>
-                    $('#inputAuthor').on('input', function() {
-                        if($("#inputAuthor")[0].value != "") {
-                            $("#author").removeClass("default")
-                            $("#author").addClass("green")
-                        } else {
-                            $("#author").removeClass("green")
-                            $("#author").addClass("default")
-                        }
-                    });
-                </script>
             </div>
 
             <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
                 <span class="default input-group-addon" id="count">Всего книг</span>
                 <input type="text" class="form-control"id="inputCount">
-                <script>
-                    $('#inputCount').on('input', function() {
-                        if($("#inputCount")[0].value != "") {
-                            $("#count").removeClass("default")
-                            $("#count").addClass("green")
-                        } else {
-                            $("#count").removeClass("green")
-                            $("#count").addClass("default")
-                        }
-                    });
-                </script>
             </div>
 
-        <h2>Шаг 2: Штрих код</h2>
             <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
                 <span class="default input-group-addon" id="code">Введите или отсканируйте штрих код</span>
                 <input type="text" class="form-control" id="inputCode">
-                <script>
-                    $('#inputCode').on('input', function() {
-                        if($("#inputCode")[0].value != "") {
-                            $("#code").removeClass("default")
-                            $("#code").addClass("green")
-                        } else {
-                            $("#code").removeClass("green")
-                            $("#code").addClass("default")
-                        }
-                    });
-                </script>
             </div>
 
-        <h2>Шаг 3: Изображение</h2>
+        <h2>Шаг 2: Изображение</h2>
 
         </div>
+        <script>
+        $('#inputTitle').on('input', function() {
+            if($("#inputTitle")[0].value != "") {
+                $("#title").removeClass("default")
+                $("#title").addClass("green")
+            } else {
+                $("#title").removeClass("green")
+                $("#title").addClass("default")
+            }
+        });
+        $('#inputAuthor').on('input', function() {
+            if($("#inputAuthor")[0].value != "") {
+                $("#author").removeClass("default")
+                $("#author").addClass("green")
+            } else {
+                $("#author").removeClass("green")
+                $("#author").addClass("default")
+            }
+        });
+        $('#inputCount').on('input', function() {
+            if($("#inputCount")[0].value != "" &&
+                ~~Number($("#inputCount")[0].value) > 0
+                ) {
+                $("#count").removeClass("default")
+                $("#count").addClass("green")
+            } else {
+                $("#count").removeClass("green")
+                $("#count").addClass("default")
+            }
+        });
+        $('#inputCode').on('input', function() {
+            if($("#inputCode")[0].value != "" &&
+                $("#inputCode")[0].value.length == 13 &&
+                ~~Number($("#inputCode")[0].value) > 0
+                ) {
+                $("#code").removeClass("default")
+                $("#code").addClass("green")
+            } else {
+                $("#code").removeClass("green")
+                $("#code").addClass("default")
+            }
+        });
+        </script>
     {% else %}
         <script>
             window.location.href = "http://localhost:5000/"
