@@ -19,15 +19,18 @@
         <title>{% block title %}{% endblock %}</title>
         <link href="/static/css/bootstrap.css" rel="stylesheet">
         <link href="/static/css/navbar.css" rel="stylesheet">
-        <script src="/static/js/jquery.js"></script>
         <link rel="icon" href="/static/images/icon.png">
+        <script src="/static/js/jquery.js"></script>
+        <script src="/static/js/bootstrap.js"></script>
     </head>
 
     <body cz-shortcut-listen="true">
+        {% if device == "terminal" %}
+        {% else %}
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="/">Библиотека МХЛ</a>
+                        <a class="navbar-brand" href="/">Библиотека МХЛ</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
@@ -37,24 +40,26 @@
 
                         <li class="{{active_if('handed')}}"><a href="/handed">Мои книги</a></li>
                         <li class="{{active_if('books')}}"><a href="/books">Каталог</a></li>
-                        {% if device == "terminal" %}
-                            <li class="{{active_if('operations')}}">
-                                <a href="/operations">Взять/Вернуть книги</a>
-                            </li>
-                        {% endif %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <p class="navbar-text">
-                                {{user.name}}.
-                                На руках {{booksLen}} {{inflect(booksLen, 'книга', 'книги', 'книг')}}
-                            </p>
+                            <div class="dropdown" style="margin: 6%;">
+                                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                {{user.name}}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li><a href="/handed">На руках {{booksLen}} {{inflect(booksLen, 'книга', 'книги', 'книг')}}</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="">Выход</a></li>
+                                </ul>
+                            </div>
                         </li>
-                        <li><a href="/login" class="btn btn-default">Выход</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
+        {% endif %}
 
         <div class="container">
             {% block content %}

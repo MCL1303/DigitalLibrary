@@ -3,11 +3,11 @@
 {% block title %}Главная{% endblock %}
 
 {% block content %}
-    <h3>Должно понравиться</h3>
     <div class="row">
+        <h3>Должно понравиться</h3>
         {% for book in recomendedBooks %}
             <div class="col-sm-6 col-md-4">
-                <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
+                <div class="thumbnail" style="height: 470px;">
                     <img src="{{ 'http://localhost:5000/static/book/small-covers/' + book.id + '.jpg'}}" alt="">
                     <div class="caption" style="padding: 1em 0; text-align: center;">
                         <h3>{{book.title}}</h3>
