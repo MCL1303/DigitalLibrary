@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block title %}Изменение информации о книге{% endblock %}
+
+{% block content %}
+    {% if user.pryority != "librarian" %}
+        <div class="row">
+            <div class="content" style="text-align: center;">
+                <img id="cover" src="{{ 'http://localhost:5000/static/images/book/large-covers/' + editBook.id + '.jpg'}}" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
+            </div>
+
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class="input-group-addon">Название: {{editBook.title}}</span>
+                <input type="text" class="form-control" placeholder="">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Сохранить</button>
+                </span>
+            </div>
+
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class="input-group-addon">Автор: {{editBook.author}}</span>
+                <input type="text" class="form-control" placeholder="">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Сохранить</button>
+                </span>
+            </div>
+
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class="input-group-addon">Всего книг: {{editBook.count}}</span>
+                <input type="text" class="form-control" placeholder="">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Сохранить</button>
+                </span>
+            </div>
+        </div>
+    {% else %}
+        <script>
+            window.location.href = "http://localhost:5000/"
+        </script>
+    {% endif %}
+    {% if device == "terminal" %}
+        <script>
+            window.location.href = "http://localhost:5000/operations"
+        </script>
+    {% endif %}
+{% endblock %}

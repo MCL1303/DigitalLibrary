@@ -25,46 +25,46 @@ def render_template(template_name, **context):
         {
             "title": "Что такое математика?",
             "author": "Р. Курант, Г. Роббинс",
-            "id": "curant",
+            "id": "courant",
+            "handed": 14,
+            "count": 20,
             "old": 30,
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
-            "handed": 14,
-            "count": 20,
         },
         {
             "title": "Сборник задач по алгебре",
             "author": "М.Л. Галицкий, А.М. Гольдман, Л.И. Звавич",
             "id": "gal",
+            "handed": 14,
+            "count": 20,
             "old": 30,
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
-            "handed": 14,
-            "count": 20,
         },
         {
             "title": "Алгоритмы: построение и анализ",
             "author": "К. Штайн, Р. Линн Ривест, Т. Кормен, Ч. Эрик Лейзерсон",
             "id": "cormen",
+            "handed": 14,
+            "count": 20,
             "old": 30,
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
-            "handed": 14,
-            "count": 20,
         },
         {
             "title": "Совершенный код",
             "author": "С. Макконнелл",
             "id": "codecompl",
+            "handed": 14,
+            "count": 20,
             "old": 30,
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
-            "handed": 14,
-            "count": 20,
         },
     ]
     test_context = {
@@ -79,6 +79,17 @@ def render_template(template_name, **context):
         'recomendedBooksLen': len(test_books),
         'page': template_name,
         "handedBooks": test_books,
+        "editBook": {
+            "title": "Что такое математика?",
+            "author": "Р. Курант, Г. Роббинс",
+            "id": "courant",
+            "handed": 14,
+            "count": 20,
+            "old": 30,
+            "oldOwnerName": "Иван Иванов",
+            "oldOwnerNameInRP": "Ивана Иванова",
+            "oldOwner": "IvanIvanovId",
+        },
     }
     return flask.render_template(
         template_name + '.html',
@@ -114,6 +125,11 @@ def books():
 @app.route("/operations")
 def operations():
     return render_template("operations")
+
+
+@app.route("/change")
+def change():
+    return render_template("change")
 
 
 @app.route('/connect')
