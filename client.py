@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import requests
 from time import sleep
 from configparser import ConfigParser
 from PyQt4.QtCore import *
@@ -9,24 +10,10 @@ from PyQt4.QtGui import *
 from PyQt4.QtWebKit import QWebView
 from sys import argv
 from threading import Thread
-import requests
-from simple_thread import SimpleThread
+from digital_library.simple_thread import SimpleThread
 
 
 USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
-
-
-class Sender():
-    def __init__(self, parent = None):
-        pass
-
-    @SimpleThread
-    def send_scanner_data(self, user, book, uuid, webview):
-        webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
-        user,
-        book,
-        uuid,
-        ))
 
 
 def load_config():
@@ -40,9 +27,13 @@ def scanner_read(device_file):
         return device.readline().strip("\2\3\r\n")
 
 
+@SimpleThread
 def send_scanner_data(user, book, uuid, webview):
-    sender = Sender()
-    sender.send_scanner_data(user, book, uuid, webview)
+    webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
+        user,
+        book,
+        uuid,
+        ))
 
 
 def scan_user(device_file, curent_user, curent_book, uuid, webview):
