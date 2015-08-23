@@ -5,8 +5,9 @@ import requests
 import sys
 from time import sleep
 from configparser import ConfigParser
-from PyQt5.Qt import QApplication, QUrl
-from PyQt5.QtWebKitWidgets import QWebView
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtWebKit import QWebView
 from sys import argv
 from threading import Thread
 from digital_library.simple_thread import SimpleThread
@@ -26,36 +27,47 @@ def scanner_read(device_file):
         return device.readline().strip("\2\3\r\n")
 
 
-@SimpleThread
-def send_scanner_data(user, book, uuid, webview):
-    webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
-        user,
-        book,
-        uuid,
+class Sender():
+    def __init__(self):
+        pass
+
+    @SimpleThread
+    def send(self, user, book, uuid, webview):
+        print(user)
+        webview.page().mainFrame().evaluateJavaScript('window.alert("ok")')
+        webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
+            user,
+            book,
+            uuid,
         ))
 
 
+def send_scanner_data(user, book, uuid, webview):
+    print(user)
+    sender = Sender()
+    sender.send(user, book, uuid, webview)
+    print("sended")
+    # webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
+    #     user,
+    #     book,
+    #     uuid,
+    #     ))
+
+
 def scan_user(device_file, curent_user, curent_book, uuid, webview):
-    curent_book = "curant"
     while True:
+        curent_book = "curant"
         user = scanner_read(device_file)
+        print("scanned " + user)
         if curent_user is not None and curent_book is None:
             curent_user = user
-            return
+            continue
         if curent_user is None and curent_book is None:
             curent_user = user
         else:
+            print("sending")
             curent_user = user
-            thread = Thread(
-                target=send_scanner_data,
-                args=(
-                    curent_book,
-                    curent_user,
-                    uuid,
-                    webview,
-                )
-            )
-            thread.start()
+            send_scanner_data(curent_user, curent_book, uuid, webview)
             curent_user = None
             curent_book = None
 
@@ -65,21 +77,12 @@ def scan_book(device_file, curent_user, curent_book, uuid, webview):
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
             curent_book = book
-            return
+            continue
         if curent_user is None and curent_book is None:
             curent_book = book
         else:
             curent_book = book
-            thread = Thread(
-                target=send_scanner_data,
-                args=(
-                    curent_book,
-                    curent_user,
-                    uuid,
-                    webview,
-                )
-            )
-            thread.start()
+            send_scanner_data(curent_user, curent_book, uuid, webview)
             curent_user = None
             curent_book = None
 

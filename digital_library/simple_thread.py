@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from PyQt5.QtCore import *
+from PyQt4.QtCore import *
 import collections
 
 threads = []
