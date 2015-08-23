@@ -44,7 +44,7 @@ def render_template(template_name, **context):
         },
     ]
     test_context = {
-        'user': {"name": "Иван Иванов", },
+        'user': {"name": "Иван Иванов", "priority": "student"},
         'device': "terminall",
         'books': test_books,
         'booksLen': len(test_books),
