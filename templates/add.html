@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}Добавление книги{% endblock %}
+
+{% block content %}
+    {% if user.pryority != "librarian" %}
+        <script src="/static/js/jquery.js"></script>
+        <div class="row">
+        <style>
+            .green {
+                background-color: #5cb85c;
+                color: white;
+            }
+            .default {
+                background-color: #eeeeee;
+                color: #555555;
+            }
+        </style>
+        <h2>Шаг 1: Информация о книге</h2>
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class=" input-group-addon" id="title">Название</span>
+                <input type="text" class="form-control" id="inputTitle">
+                <script>
+                    $('#inputTitle').on('input', function() {
+                        if($("#inputTitle")[0].value != "") {
+                            $("#title").removeClass("default")
+                            $("#title").addClass("green")
+                        } else {
+                            $("#title").removeClass("green")
+                            $("#title").addClass("default")
+                        }
+                    });
+                </script>
+            </div>
+
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class="default input-group-addon" id="author">Автор</span>
+                <input type="text" class="form-control" id="inputAuthor">
+                <script>
+                    $('#inputAuthor').on('input', function() {
+                        if($("#inputAuthor")[0].value != "") {
+                            $("#author").removeClass("default")
+                            $("#author").addClass("green")
+                        } else {
+                            $("#author").removeClass("green")
+                            $("#author").addClass("default")
+                        }
+                    });
+                </script>
+            </div>
+
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class="default input-group-addon" id="count">Всего книг</span>
+                <input type="text" class="form-control"id="inputCount">
+                <script>
+                    $('#inputCount').on('input', function() {
+                        if($("#inputCount")[0].value != "") {
+                            $("#count").removeClass("default")
+                            $("#count").addClass("green")
+                        } else {
+                            $("#count").removeClass("green")
+                            $("#count").addClass("default")
+                        }
+                    });
+                </script>
+            </div>
+
+        <h2>Шаг 2: Штрих код</h2>
+            <div class="input-group" style="margin: 15px 15%; widtg: 70%;">
+                <span class="default input-group-addon" id="code">Введите или отсканируйте штрих код</span>
+                <input type="text" class="form-control" id="inputCode">
+                <script>
+                    $('#inputCode').on('input', function() {
+                        if($("#inputCode")[0].value != "") {
+                            $("#code").removeClass("default")
+                            $("#code").addClass("green")
+                        } else {
+                            $("#code").removeClass("green")
+                            $("#code").addClass("default")
+                        }
+                    });
+                </script>
+            </div>
+
+        <h2>Шаг 3: Изображение</h2>
+
+        </div>
+    {% else %}
+        <script>
+            window.location.href = "http://localhost:5000/"
+        </script>
+    {% endif %}
+    {% if device == "terminal" %}
+        <script>
+            window.location.href = "http://localhost:5000/operations"
+        </script>
+    {% endif %}
+{% endblock %}

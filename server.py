@@ -70,7 +70,7 @@ def render_template(template_name, **context):
     test_context = {
         'user': {
             "name": "Иван Иванов",
-            "priority": "librarian"
+            "priority": "librarian" # student, specially_trained, librarian
         },
         'device': "terminall",
         'books': test_books,
@@ -130,6 +130,11 @@ def operations():
 @app.route("/change")
 def change():
     return render_template("change")
+
+
+@app.route("/add")
+def add():
+    return render_template("add")
 
 
 @app.route('/connect')
