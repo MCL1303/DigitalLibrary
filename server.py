@@ -46,7 +46,7 @@ def render_template(template_name, **context):
     test_context = {
         'user': {
             "name": "Иван Иванов",
-            "priority": "stu/dent"
+            "priority": "student"
         },
         'device': "terminall",
         'books': test_books,
