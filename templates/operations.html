@@ -31,4 +31,9 @@
             }
         </script>
     </div>
+    {% if device != "terminal" %}
+        <script>
+            window.location.href = "http://localhost:5000/"
+        </script>
+    {% endif %}
 {% endblock %}

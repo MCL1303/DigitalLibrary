@@ -20,6 +20,10 @@
                 <a class="btn btn-lg btn-info btn-block">Или приложите карту к сканеру</a>
             {% endif %}
         </form>
-        <script src="/static/js/jquery.js"></script>
+        {% if device == "terminal" %}
+        <script>
+            window.location.href = "http://localhost:5000/operations"
+        </script>
+    {% endif %}
     </div>
 {% endblock %}

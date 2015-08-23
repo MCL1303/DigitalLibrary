@@ -17,5 +17,9 @@
             </div>
         {% endfor %}
     </div>
-    <script src="/static/js/jquery.js"></script>
+    {% if device == "terminal" %}
+        <script>
+            window.location.href = "http://localhost:5000/operations"
+        </script>
+    {% endif %}
 {% endblock %}
