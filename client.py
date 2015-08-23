@@ -1,15 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+from time import sleep
 from configparser import ConfigParser
-from PyQt5.Qt import QApplication, QUrl
-from PyQt5.QtWebKitWidgets import QWebView
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4.QtWebKit import QWebView
 from sys import argv
 from threading import Thread
 import requests
+from simple_thread import SimpleThread
 
 
 USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+
+
+class Sender():
+    def __init__(self, parent = None):
+        pass
+
+    @SimpleThread
+    def send_scanner_data(self, user, book, uuid, webview):
+        webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
+        user,
+        book,
+        uuid,
+        ))
 
 
 def load_config():
@@ -24,11 +41,8 @@ def scanner_read(device_file):
 
 
 def send_scanner_data(user, book, uuid, webview):
-    webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
-        user,
-        book,
-        uuid,
-        ))
+    sender = Sender()
+    sender.send_scanner_data(user, book, uuid, webview)
 
 
 def scan_user(device_file, curent_user, curent_book, uuid, webview):
@@ -42,7 +56,16 @@ def scan_user(device_file, curent_user, curent_book, uuid, webview):
             curent_user = user
         else:
             curent_user = user
-            send_scanner_data(curent_user, curent_book, uuid, webview)
+            thread = Thread(
+                target=send_scanner_data,
+                args=(
+                    curent_book,
+                    curent_user,
+                    uuid,
+                    webview,
+                )
+            )
+            thread.start()
             curent_user = None
             curent_book = None
 
@@ -57,7 +80,16 @@ def scan_book(device_file, curent_user, curent_book, uuid, webview):
             curent_book = book
         else:
             curent_book = book
-            send_scanner_data(curent_user, curent_book, uuid, webview)
+            thread = Thread(
+                target=send_scanner_data,
+                args=(
+                    curent_book,
+                    curent_user,
+                    uuid,
+                    webview,
+                )
+            )
+            thread.start()
             curent_user = None
             curent_book = None
 
