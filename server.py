@@ -26,27 +26,51 @@ def render_template(template_name, **context):
             "title": "Что такое математика?",
             "author": "Р. Курант, Г. Роббинс",
             "id": "curant",
+            "old": 30,
+            "oldOwnerName": "Иван Иванов",
+            "oldOwnerNameInRP": "Ивана Иванова",
+            "oldOwner": "IvanIvanovId",
+            "handed": 14,
+            "count": 20,
         },
         {
             "title": "Сборник задач по алгебре",
             "author": "М.Л. Галицкий, А.М. Гольдман, Л.И. Звавич",
             "id": "gal",
+            "old": 30,
+            "oldOwnerName": "Иван Иванов",
+            "oldOwnerNameInRP": "Ивана Иванова",
+            "oldOwner": "IvanIvanovId",
+            "handed": 14,
+            "count": 20,
         },
         {
             "title": "Алгоритмы: построение и анализ",
             "author": "К. Штайн, Р. Линн Ривест, Т. Кормен, Ч. Эрик Лейзерсон",
             "id": "cormen",
+            "old": 30,
+            "oldOwnerName": "Иван Иванов",
+            "oldOwnerNameInRP": "Ивана Иванова",
+            "oldOwner": "IvanIvanovId",
+            "handed": 14,
+            "count": 20,
         },
         {
             "title": "Совершенный код",
             "author": "С. Макконнелл",
             "id": "codecompl",
+            "old": 30,
+            "oldOwnerName": "Иван Иванов",
+            "oldOwnerNameInRP": "Ивана Иванова",
+            "oldOwner": "IvanIvanovId",
+            "handed": 14,
+            "count": 20,
         },
     ]
     test_context = {
         'user': {
             "name": "Иван Иванов",
-            "priority": "student"
+            "priority": "librarian"
         },
         'device': "terminall",
         'books': test_books,
@@ -54,6 +78,7 @@ def render_template(template_name, **context):
         'recomendedBooks': test_books,
         'recomendedBooksLen': len(test_books),
         'page': template_name,
+        "handedBooks": test_books,
     }
     return flask.render_template(
         template_name + '.html',

@@ -3,14 +3,51 @@
 {% block title %}Каталог{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Введите запрос">
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="button">Поиск</button>
-            </span>
+    {% if user.ptiority == "student" %}
+        <div class="row">
+            <h3>На руках</h3>
+            {% for book in books %}
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
+                        <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                        <div class="caption" style="padding: 1em 0; text-align: center;">
+                            <h3>{{book.title}}</h3>
+                            <p>{{book.author}}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    </div>
+    {% endif %}
+    {% if user.priority == "librarian" %}
+        <div class="row">
+            <div class="input-group" style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px;">
+                <input type="text" class="form-control" placeholder="Введите запрос">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Поиск</button>
+                </span>
+            </div>
+            <div id="old">
+                {% for book in handedBooks %}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="thumbnail" style="height: 650;">
+                            <img src="{{'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                            <div class="caption" style="padding: 1em 0; text-align: center;">
+                                <h4>{{book.title}}</h4>
+                                <p>{{book.author}}</p>
+                                <p>Дольше всех ( {{book.old}} {{inflect(book.old, "день", "дня", "дней")}}) книга на руках у </p>
+                                <a href="/users/{{book.oldOwner}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.oldOwnerNameInRP}}</a>
+                                <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} выдано</p>
+                                <p>Осталось {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
+                                <a href="/change" class="btn btn-primary" style="margin-bottom: 10px;">Изменить информацию о книге</a>
+                                <button class="btn btn-danger">Удалить книгу</button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
     {% if device == "terminal" %}
     	<script>
     		window.location.href = "http://localhost:5000/operations"

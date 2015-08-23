@@ -36,4 +36,9 @@
             window.location.href = "http://localhost:5000/"
         </script>
     {% endif %}
+    {% if user == "librarian" %}
+        <script>
+            window.location.href = "http://localhost:5000/home"
+        </script>
+    {% endif %}
 {% endblock %}

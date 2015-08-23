@@ -47,11 +47,6 @@ def send_scanner_data(user, book, uuid, webview):
     sender = Sender()
     sender.send(user, book, uuid, webview)
     print("sended")
-    # webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
-    #     user,
-    #     book,
-    #     uuid,
-    #     ))
 
 
 def scan_user(device_file, curent_user, curent_book, uuid, webview):

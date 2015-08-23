@@ -7,6 +7,20 @@
         {{form5}}
     {% endif %}
 {%- endmacro %}
+{% macro inflectPro(n, form1, form2, form5) -%}
+    {% if n % 100 in [11, 12, 13, 14] %}
+        {{form5}}
+    {% elif n % 10 == 1 %}
+        {{form1}}
+    {% elif n % 10 in [2, 3, 4] %}
+        {{form2}}
+    {% else %}
+        {{form5}}
+    {% endif %}
+{%- endmacro %}
+{% macro active_if(tname) -%}
+    {{ 'active' if template_name == tname else '' }}
+{%- endmacro %}
 
 <html lang="en">
     <head>
@@ -45,17 +59,41 @@
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
                                 <li>
-                                    <div class="dropdown" style="margin: 6%;">
-                                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        {{user.name}}
-                                            <span class="caret"></span>
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                            <li><a href="/handed">На руках {{booksLen}} {{inflect(booksLen, 'книга', 'книги', 'книг')}}</a></li>
-                                            <li role="separator" class="divider"></li>
-                                            <li><a href="/login">Выход</a></li>
-                                        </ul>
-                                    </div>
+                                    <a href="#" id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.name}}</a>
+                                    <ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
+                                        <li><a href="/handed">На руках {{booksLen}} {{inflect(booksLen, 'книга', 'книги', 'книг')}}</a></li>
+                                        <li role="separator" class="divider"></li>
+                                        <li><a href="/login">Выход</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if user.priority == "librarian" %}
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <ul class="nav navbar-nav">
+                                <li>
+                                    <a href="#" id="DropdownLibBooks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Книги</a>
+                                    <ul class="dropdown-menu" aria-labelledby="DropdownLibBooks">
+                                        <li><a href="/books">Каталог</a></li>
+                                        <li><a href="/add">Добавить книгу</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#" id="DropdownLibUsers" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Пользователи</a>
+                                    <ul class="dropdown-menu" aria-labelledby="DropdownLibUsers">
+                                        <li><a href="">Что-то придумаем</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <li>
+                                    <a href="#" id="DropdownLibMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.name}}</a>
+                                    <ul class="dropdown-menu" aria-labelledby="DropdownLibMenu">
+                                        <li><a href="/">Что-то придумаем</a></li>
+                                        <li role="separator" class="divider"></li>
+                                        <li><a href="/login">Выход</a></li>
+                                    </ul>
                                 </li>
                             </ul>
                         </div>
