@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
 import requests
+import sys
 from time import sleep
 from configparser import ConfigParser
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtWebKit import QWebView
+from PyQt5.Qt import QApplication, QUrl
+from PyQt5.QtWebKitWidgets import QWebView
 from sys import argv
 from threading import Thread
 from digital_library.simple_thread import SimpleThread
