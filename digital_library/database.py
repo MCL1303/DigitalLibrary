@@ -26,6 +26,9 @@ class Collection:
     def _find_one(self, query):
         return self._collection.find_one(query)
 
+    def _find(self):
+        return self._collection.find()
+
     def _remove(self, query):
         return self._collection.remove(query)
 
@@ -54,13 +57,25 @@ class Hands(Collection):
         })
 
     def get(self, user, book):
-        return self._find_one({'user': user, 'book': book, "uuid": uuid})
+        print(self._find_one({'user': user, 'book': book}))
+        return self._find_one({'user': user, 'book': book})
 
     def exists(self, user, book):
         return self.get(user, book) is not None
 
-    def delete(self, user, book, uuid):
-        self._remove({"user": user, "book": book, "uuid": uuid})
+    def delete(self, user, book):
+        self._remove({"user": user, "book": book})
+
+
+
+class Users(Collection):
+    def __init__(self, db):
+        super().__init__(db, 'users')
+
+
+class Books(Collection):
+    def __init__(self, db):
+        super().__init__(db, 'books')
 
 
 class HandLog(Collection):
@@ -71,13 +86,25 @@ class HandLog(Collection):
 
     def log(self, action: Action, user, book, uuid):
         now = datetime.utcnow()
+        user_name = DigitalLibraryDatabase().users._find_one({"_id": user})["RuName"]
+        book_title = DigitalLibraryDatabase().books._find_one({"_id": book})["RuTitle"]
+        if(action.name == "Take"):
+            ru_action = "Взял"
+        else:
+            ru_action = "Вернул"
         self._insert({
             "action": action.name,
             "user": user,
             "book": book,
-            "datetime": now,
+            "datetime": str(now)[0:-7],
             "uuid": uuid,
+            "RuName": user_name,
+            "RuAction": ru_action,
+            "RuBook": book_title,
         })
+
+    def get(self):
+        return list(self._find())
 
 
 class DigitalLibraryDatabase(Database):
@@ -88,3 +115,5 @@ class DigitalLibraryDatabase(Database):
         self.terminals = Terminals(self)
         self.hands = Hands(self)
         self.handlog = HandLog(self)
+        self.users = Users(self)
+        self.books = Books(self)

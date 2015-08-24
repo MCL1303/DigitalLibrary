@@ -21,6 +21,7 @@ def load_config():
 
 
 def render_template(template_name, **context):
+    db = DigitalLibraryDatabase()
     test_books = [
         {
             "title": "Что такое математика?",
@@ -120,6 +121,8 @@ def render_template(template_name, **context):
             "code": 1234567890123,
         },
         "users": test_users,
+        "handlog": db.handlog.get(),
+        "handlogLen": len(db.handlog.get()),
     }
     return flask.render_template(
         template_name + '.html',
@@ -167,6 +170,11 @@ def users():
     return render_template("users")
 
 
+@app.route("/journal")
+def journal():
+    return render_template("journal")
+
+
 @app.route('/connect')
 def get_current_user():
     db = DigitalLibraryDatabase()
@@ -184,9 +192,10 @@ def get_current_user():
 def api_book_action():
     form = request.form
     db = DigitalLibraryDatabase()
-    user, book = form["user"], form["book"]
+    user, book, uuid = form["user"], form["book"], form["uuid"]
+    print(db.hands.exists(user, book))
     if db.hands.exists(user, book):
-        db.hands.delete(user, book, uuid)
+        db.hands.delete(user, book)
         action = Action.Return
     else:
         db.hands.add(user, book, uuid)
