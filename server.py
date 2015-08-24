@@ -20,7 +20,7 @@ def load_config():
     return config['Server']
 
 
-def render_template(template_name, **context):
+def render_template(template_name, device, **context):
     db = DigitalLibraryDatabase()
     test_books = [
         {
@@ -101,7 +101,7 @@ def render_template(template_name, **context):
             "name": "Иван Иванов",
             "priority": "librarian" # student, specially_trained, librarian
         },
-        'device': "terminall",
+        'device': device,
         'books': test_books,
         'booksLen': len(test_books),
         'recomendedBooks': test_books,
@@ -132,47 +132,115 @@ def render_template(template_name, **context):
 
 @app.route("/login")
 def login():
-    return render_template("login")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("login", "terminall")
 
 
 @app.route("/registration")
 def reg():
-    return render_template("registration")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("registration", "terminall")
 
 
 @app.route("/")
 def home():
-    return render_template("home")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("home", "terminall")
 
 
 @app.route("/handed")
 def handed():
-    return render_template("handed")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("handed", "terminall")
 
 
 @app.route("/books")
 def books():
-    return render_template("books")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("books", "terminall")
 
 
 @app.route("/operations")
 def operations():
-    return render_template("operations")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("operations", "terminall")
 
 
 @app.route("/add")
 def add():
-    return render_template("add")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("add", "terminall")
 
 
 @app.route("/users")
 def users():
-    return render_template("users")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("users", "terminall")
 
 
 @app.route("/journal")
 def journal():
-    return render_template("journal")
+    db = DigitalLibraryDatabase()
+    client_ip = request.remote_addr
+    if not db.logs._exists({"ip": client_ip}):
+        return render_template("auth", "terminall")
+    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
+        return render_template("operations", "terminal")
+    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
+        return render_template("journal", "terminall")
+
+
+@app.route("/auth")
+def auth():
+    return render_template("auth", "terminall")
 
 
 @app.route('/connect')
@@ -202,6 +270,25 @@ def api_book_action():
         action = Action.Take
     db.handlog.log(action, user, book, uuid)
     return jsonify(action=action.name, book=book)
+
+
+@app.route('/api/device/auth', methods=['POST'])
+def api_device_auth():
+    client_ip = request.remote_addr
+    db = DigitalLibraryDatabase()
+    form = request.form
+    if not db.logs._exists({"ip": client_ip}):
+        db.logs._insert({"ip": client_ip, "try": 0, "status": "none"})
+    if db.logs._exists({"ip": client_ip}) and int(db.logs._find_one({"ip": client_ip})["try"]) > 10:
+        return ""
+    if form["password"] == "1303303113033031":
+        db.logs._remove({"ip": client_ip})
+        db.logs._insert({"ip": client_ip, "status": "computer", "try": "0"})
+    else:
+        tr = db.logs._find_one({"ip": client_ip})["try"]
+        db.logs._remove({"ip": client_ip})
+        db.logs._insert({"ip": client_ip, "try": int(tr) + 1, "status": "none"})
+    return jsonify(answer="good")
 
 
 def main():

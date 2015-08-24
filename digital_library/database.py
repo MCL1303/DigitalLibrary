@@ -29,6 +29,9 @@ class Collection:
     def _find(self):
         return self._collection.find()
 
+    def _exists(self, query):
+        return self._collection.find_one(query) is not None
+
     def _remove(self, query):
         return self._collection.remove(query)
 
@@ -71,6 +74,11 @@ class Hands(Collection):
 class Users(Collection):
     def __init__(self, db):
         super().__init__(db, 'users')
+
+
+class Logs(Collection):
+    def __init__(self, db):
+        super().__init__(db, 'logs')
 
 
 class Books(Collection):
@@ -117,3 +125,4 @@ class DigitalLibraryDatabase(Database):
         self.handlog = HandLog(self)
         self.users = Users(self)
         self.books = Books(self)
+        self.logs= Logs(self)
