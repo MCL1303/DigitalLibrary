@@ -32,6 +32,7 @@ def render_template(template_name, **context):
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
+            "code": 1234567890123,
         },
         {
             "title": "Сборник задач по алгебре",
@@ -43,6 +44,7 @@ def render_template(template_name, **context):
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
+            "code": 1234567890123,
         },
         {
             "title": "Алгоритмы: построение и анализ",
@@ -54,6 +56,7 @@ def render_template(template_name, **context):
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
+            "code": 1234567890123,
         },
         {
             "title": "Совершенный код",
@@ -65,6 +68,7 @@ def render_template(template_name, **context):
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
+            "code": 1234567890123,
         },
     ]
     test_users = [

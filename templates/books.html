@@ -3,6 +3,16 @@
 {% block title %}Каталог{% endblock %}
 
 {% block content %}
+    <script src="/static/js/jquery.js"></script>
+    <script>
+        function change_book(id, title, author, count, code) {
+            $("#cover")[0].src = 'http://localhost:5000/static/images/book/large-covers/' + id + '.jpg'
+            $("#inputTitle")[0].value = title
+            $("#inputAuthor")[0].value = author
+            $("#inputCount")[0].value = count
+            $("#inputCode")[0].value = code
+        }
+    </script> 
     {% if user.ptiority == "student" %}
         <div class="row">
             <h3>На руках</h3>
@@ -40,7 +50,7 @@
                                     <a href="/users/{{book.oldOwner}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.oldOwnerNameInRP}}</a>
                                     <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} выдано</p>
                                     <p>Осталось {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin: 0px 20px 10px 20px"clicked="change_book(book.id, book.title, book.author, book.count, book.code)">
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin: 0px 20px 10px 20px" onclick="change_book('{{book.id}}', '{{book.title}}', '{{book.author}}', '{{book.count}}', '{{book.code}}')">
                                           Изменить информацию о книге
                                     </button>
                                     <button type="button" class="btn btn-danger">Удалить книгу</button>
@@ -92,15 +102,7 @@
                 </div>
             </div>
         </div>
-        <script src="/static/js/jquery.js"></script>
         <script>
-        function change_book(id, title, author, count, code) {
-            $("#image").src = 'http://localhost:5000/static/images/book/large-covers/' + id + '.jpg'
-            $("#inputTitle").val = title
-            $("#inputAuthor").val = author
-            $("#inputCount").val = count
-            $("#inputCode").val = code
-        }
         $('#inputTitle').on('input', function() {
             if($("#inputTitle")[0].value != "") {
                 $("#title").removeClass("default")
