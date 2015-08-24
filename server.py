@@ -67,6 +67,28 @@ def render_template(template_name, **context):
             "oldOwner": "IvanIvanovId",
         },
     ]
+    test_users = [
+        {
+            "name": "Игорь Тараканов",
+            "booksCount": 8,
+            "oldBookId": "courant",
+            "oldBookDate": 12,
+            "books": [
+                {"id": "courant", "title": "Что такое математика?"},
+                {"id": "gal", "title": "Сборник задач по алгебре"},
+            ],
+        },
+        {
+            "name": "Игорь Тараканов",
+            "booksCount": 8,
+            "oldBookId": "courant",
+            "oldBookDate": 12,
+            "books": [
+                {"id": "courant", "title": "Что такое математика?"},
+                {"id": "gal", "title": "Сборник задач по алгебре"},
+            ],
+        }
+    ]
     test_context = {
         'user': {
             "name": "Иван Иванов",
