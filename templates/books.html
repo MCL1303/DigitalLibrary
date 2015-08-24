@@ -11,7 +11,7 @@
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
                         <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
                         <div class="caption" style="padding: 1em 0; text-align: center;">
-                            <h3>{{book.title}}</h3>
+                            <h3 style="">{{book.title}}</h3>
                             <p>{{book.author}}</p>
                         </div>
                     </div>
@@ -32,10 +32,10 @@
                     <div class="col-sm-6 col-md-4">
                         <div class="thumbnail" style="height: 650;">
                             <img src="{{'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
-                            <div class="caption" style="padding: 1em 0; text-align: center;">
+                            <div class="caption" style="text-align: center;">
                                 <h4>{{book.title}}</h4>
                                 <p>{{book.author}}</p>
-                                <div style="position: absolute; bottom: 30px;">
+                                <div style="position: absolute; bottom: 30px; left: 50px; right: 50px;">
                                     <p>Дольше всех ( {{book.old}} {{inflect(book.old, "день", "дня", "дней")}}) книга на руках у </p>
                                     <a href="/users/{{book.oldOwner}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.oldOwnerNameInRP}}</a>
                                     <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} выдано</p>
@@ -43,7 +43,7 @@
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin: 0px 20px 10px 20px"clicked="change_book(book.id, book.title, book.author, book.count, book.code)">
                                           Изменить информацию о книге
                                     </button>
-                                    <button class="btn btn-danger">Удалить книгу</button>
+                                    <button type="button" class="btn btn-danger">Удалить книгу</button>
                                 </div>
                             </div>
                         </div>

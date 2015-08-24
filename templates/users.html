@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}Мои книги{% endblock %}
+
+{% block content %}
+    {% if user.ptiority != "librarian" %}
+        <div class="row">
+            <div class="input-group" style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px;">
+                <input type="text" class="form-control" placeholder="Введите запрос">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Поиск</button>
+                </span>
+            </div>
+            {% for user in users %}
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail" style="height: 470px;">
+                    <img src="{{ 'http://localhost:5000/static/images/student/small-covers/' + user['id'] + '.jpg'}}" alt="">
+                    <div class="caption" style="padding: 1em 0; text-align: center;">
+                        <h3 style="">{{user["name"]}}</h3>
+                        <p>На руках {{user.booksCount}}{{inflect(user.booksCount, "книга", "книги", "книг")}}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <script>
+            window.location.href = "http://localhost:5000/"
+        </script>
+    {% endif %}
+    {% if device == "terminal" %}
+        <script>
+            window.location.href = "http://localhost:5000/operations"
+        </script>
+    {% endif %}
+{% endblock %}

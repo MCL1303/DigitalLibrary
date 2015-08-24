@@ -3,7 +3,7 @@
 {% block title %}Мои книги{% endblock %}
 
 {% block content %}
-    {% if user.ptiority == "student" %}
+    {% if user.ptiority != "student" %}
         <div class="row">
             <h3>На руках</h3>
             {% for book in books %}

@@ -70,6 +70,7 @@ def render_template(template_name, **context):
     test_users = [
         {
             "name": "Игорь Тараканов",
+            "id": "Igor_Tarakanov",
             "booksCount": 8,
             "oldBookId": "courant",
             "oldBookDate": 12,
@@ -79,7 +80,8 @@ def render_template(template_name, **context):
             ],
         },
         {
-            "name": "Игорь Тараканов",
+            "name": "Юрий Сыровецкий",
+            "id": "Yuriy_Syrovetskiy",
             "booksCount": 8,
             "oldBookId": "courant",
             "oldBookDate": 12,
@@ -113,6 +115,7 @@ def render_template(template_name, **context):
             "oldOwner": "IvanIvanovId",
             "code": 1234567890123,
         },
+        "users": test_users,
     }
     return flask.render_template(
         template_name + '.html',
@@ -153,6 +156,11 @@ def operations():
 @app.route("/add")
 def add():
     return render_template("add")
+
+
+@app.route("/users")
+def users():
+    return render_template("users")
 
 
 @app.route('/connect')
