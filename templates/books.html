@@ -39,7 +39,9 @@
                                 <a href="/users/{{book.oldOwner}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.oldOwnerNameInRP}}</a>
                                 <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} выдано</p>
                                 <p>Осталось {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
-                                <a href="/change" class="btn btn-primary" style="margin-bottom: 10px;">Изменить информацию о книге</a>
+                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin-bottom: 10px;"clicked="change_book(book.id, book.title, book.author, book.count, book.code)">
+                                      Изменить информацию о книге
+                                </button>
                                 <button class="btn btn-danger">Удалить книгу</button>
                             </div>
                         </div>
@@ -47,6 +49,98 @@
                 {% endfor %}
             </div>
         </div>
+                <div class="modal fade" id="change" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Изменение информации о книге</h4>
+                            </div>
+                        <div class="modal-body">
+                        <div class="row">
+                            <div class="content" style="text-align: center;">
+                                <img id="cover" src="{{ 'http://localhost:5000/static/images/book/large-covers/' + editBook.id + '.jpg'}}" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;" id="image">
+                            </div>
+
+                            <div class="input-group" style="width: 70%; margin: 20px 15%">
+                                <span class=" input-group-addon" id="title" value="{{editBook.title}}">Название</span>
+                                <input type="text" class="form-control" id="inputTitle">
+                            </div>
+
+                            <div class="input-group" style="width: 70%; margin: 20px 15%">
+                                <span class="default input-group-addon" id="author" value="{{editBook.author}}">Автор</span>
+                                <input type="text" class="form-control" id="inputAuthor">
+                            </div>
+
+                            <div class="input-group" style="width: 70%; margin: 20px 15%">
+                                <span class="default input-group-addon" id="count" value="{{editBook.count}}">Всего книг</span>
+                                <input type="text" class="form-control"id="inputCount">
+                            </div>
+
+                            <div class="input-group" style="width: 70%; margin: 20px 15%">
+                                <span class="default input-group-addon" id="code" value="{{editBook.code}}">Введите или отсканируйте штрих код</span>
+                                <input type="text" class="form-control" id="inputCode">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-primary">Сохранить изменеия</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/static/js/jquery.js"></script>
+        <script>
+        function change_book(id, title, author, count, code) {
+            $("#image").src = 'http://localhost:5000/static/images/book/large-covers/' + id + '.jpg'
+            $("#inputTitle").val = title
+            $("#inputAuthor").val = author
+            $("#inputCount").val = count
+            $("#inputCode").val = code
+        }
+        $('#inputTitle').on('input', function() {
+            if($("#inputTitle")[0].value != "") {
+                $("#title").removeClass("default")
+                $("#title").addClass("green")
+            } else {
+                $("#title").removeClass("green")
+                $("#title").addClass("default")
+            }
+        });
+        $('#inputAuthor').on('input', function() {
+            if($("#inputAuthor")[0].value != "") {
+                $("#author").removeClass("default")
+                $("#author").addClass("green")
+            } else {
+                $("#author").removeClass("green")
+                $("#author").addClass("default")
+            }
+        });
+        $('#inputCount').on('input', function() {
+            if($("#inputCount")[0].value != "" &&
+                ~~Number($("#inputCount")[0].value) > 0
+                ) {
+                $("#count").removeClass("default")
+                $("#count").addClass("green")
+            } else {
+                $("#count").removeClass("green")
+                $("#count").addClass("default")
+            }
+        });
+        $('#inputCode').on('input', function() {
+            if($("#inputCode")[0].value != "" &&
+                $("#inputCode")[0].value.length == 13 &&
+                ~~Number($("#inputCode")[0].value) > 0
+                ) {
+                $("#code").removeClass("default")
+                $("#code").addClass("green")
+            } else {
+                $("#code").removeClass("green")
+                $("#code").addClass("default")
+            }
+        });
+        </script>
     {% endif %}
     {% if device == "terminal" %}
     	<script>

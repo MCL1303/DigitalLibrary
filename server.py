@@ -89,6 +89,7 @@ def render_template(template_name, **context):
             "oldOwnerName": "Иван Иванов",
             "oldOwnerNameInRP": "Ивана Иванова",
             "oldOwner": "IvanIvanovId",
+            "code": 1234567890123,
         },
     }
     return flask.render_template(
@@ -125,11 +126,6 @@ def books():
 @app.route("/operations")
 def operations():
     return render_template("operations")
-
-
-@app.route("/change")
-def change():
-    return render_template("change")
 
 
 @app.route("/add")
