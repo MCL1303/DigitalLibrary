@@ -13,7 +13,7 @@
             $("#inputCode")[0].value = code
         }
     </script>   
-    {% if user.ptiority == "student" %}
+    {% if user.priority == 'student' %}
         <div class="row">
             <h3>Должно понравиться</h3>
             {% for book in books %}
@@ -140,11 +140,6 @@
                 $("#code").addClass("default")
             }
         });
-        </script>
-    {% endif %}
-    {% if device == "terminal" %}
-        <script>
-            window.location.href = "http://localhost:5000/operations"
         </script>
     {% endif %}
 {% endblock %}

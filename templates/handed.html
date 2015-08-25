@@ -3,9 +3,13 @@
 {% block title %}Мои книги{% endblock %}
 
 {% block content %}
-    {% if user.ptiority != "student" %}
+    {% if user.priority == "student" %}
         <div class="row">
+            {% if handedBooksLen == 0 %}
+            <h3>У вас на руках нет книжек</h3>
+            {% else %}
             <h3>На руках</h3>
+            {% endif %}
             {% for book in books %}
                 <div class="col-sm-6 col-md-4">
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
@@ -18,10 +22,22 @@
                 </div>
             {% endfor %}
         </div>
-    {% else %}
-        <script>
-            window.location.href = "http://localhost:5000/"
-        </script>
+    {% endif %}
+    {% if user.priority == "librarian" %}
+        <div class="row">
+            <h3>На руках</h3>
+            {% for book in handedBooks %}
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
+                        <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                        <div class="caption" style="padding: 1em 0; text-align: center;">
+                            <h3 style="">{{book.title}}</h3>
+                            <p>{{book.author}}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
     {% if device == "terminal" %}
         <script>

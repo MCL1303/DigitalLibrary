@@ -39,37 +39,30 @@
     </head>
 
     <body cz-shortcut-listen="true">
-        {% if  template_name != "login" and template_name != "registration" %}
-            {% if device == "terminal"%}
-            {% else %}
-            <nav class="navbar navbar-default navbar-fixed-top">
-                <div class="container">
-                    <div class="navbar-header">
-                            <a class="navbar-brand" href="/">Библиотека МХЛ</a>
+        {% if  template_name != "login" and template_name != "registration" and device != "terminal"%}
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/">Библиотека МХЛ</a>
+                </div>
+                {% if user.priority == "student" %}
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="{{active_if('handed')}}"><a href="/handed">Мои книги</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="#" id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.RuName}}</a>
+                                <ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
+                                    <li><a href="/handed">На руках {{handedBooksLen}} {{inflect(handedBooksLen, 'книга', 'книги', 'книг')}}</a></li>
+                                    <li role="separator" class="divider"></li>
+                                    <li><a href="/" onclick="exit()">Выход</a></li>
+                                </ul>
+                            </li>
+                        </ul>
                     </div>
-                    {% if user.priority == "student" %}
-                        <div id="navbar" class="navbar-collapse collapse">
-                            <ul class="nav navbar-nav">
-                                {% macro active_if(tname) -%}
-                                    {{ 'active' if template_name == tname else '' }}
-                                {%- endmacro %}
-
-                                <li class="{{active_if('handed')}}"><a href="/handed">Мои книги</a></li>
-                                <li class="{{active_if('books')}}"><a href="/books">Каталог</a></li>
-                            </ul>
-                            <ul class="nav navbar-nav navbar-right">
-                                <li>
-                                    <a href="#" id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.name}}</a>
-                                    <ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
-                                        <li><a href="/handed">На руках {{booksLen}} {{inflect(booksLen, 'книга', 'книги', 'книг')}}</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="/login">Выход</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                    {% endif %}
-                    {% if user.priority == "librarian" %}
+                {% endif %}
+                {% if user.priority == "librarian" %}
                         <div id="navbar" class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 <li>
@@ -92,7 +85,7 @@
                                     <ul class="dropdown-menu" aria-labelledby="DropdownLibMenu">
                                         <li><a href="/">Что-то придумаем</a></li>
                                         <li role="separator" class="divider"></li>
-                                        <li><a href="/login">Выход</a></li>
+                                        <li><a href="/" onclick="exit()">Выход</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -100,14 +93,26 @@
                     {% endif %}
                 </div>
             </nav>
-            {% endif %}
         {% endif %}
-
         <div class="container">
             {% block content %}
             {% endblock %}
         </div>
         <script src="/static/js/jquery.js"></script>
         <script src="/static/js/bootstrap.js"></script>
+        <script>
+        function exit() {
+                    $.post(
+                        "http://localhost:1303/api/exit",
+                        {
+                            ip: "{{ip}}"
+                        },
+                        function(data) {
+                            window.location.replace("http://localhost:1303");
+                        },
+                        "json"
+                    )
+                }
+        </script>
     </body>
 </html>

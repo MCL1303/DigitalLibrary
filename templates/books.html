@@ -13,20 +13,14 @@
             $("#inputCode")[0].value = code
         }
     </script> 
-    {% if user.ptiority == "student" %}
+    {% if user.priority == "student" %}
         <div class="row">
-            <h3>На руках</h3>
-            {% for book in books %}
-                <div class="col-sm-6 col-md-4">
-                    <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
-                        <div class="caption" style="padding: 1em 0; text-align: center;">
-                            <h3 style="">{{book.title}}</h3>
-                            <p>{{book.author}}</p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+            <div class="input-group" style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px;">
+                <input type="text" class="form-control" placeholder="Введите запрос">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Поиск</button>
+                </span>
+            </div>
         </div>
     {% endif %}
     {% if user.priority == "librarian" %}
@@ -41,7 +35,7 @@
                 {% for book in handedBooks %}
                     <div class="col-sm-6 col-md-4">
                         <div class="thumbnail" style="height: 650;">
-                            <img src="{{'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                            <img src="{{'http://localhost:5000/static/images/book/small-covers/' + book.barcode + '.jpg'}}" alt="">
                             <div class="caption" style="text-align: center;">
                                 <h4>{{book.title}}</h4>
                                 <p>{{book.author}}</p>

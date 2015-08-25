@@ -5,23 +5,39 @@
 {% block content %}
 	<div class="row">
 	    <link href="/static/css/signin.css" rel="stylesheet">
-
-	    <form class="form-signin text-center" method="post" action="login">
+	    <div class="form-signin text-center">
 	        <h2 class="form-signin-heading">Регистрация</h2>
-	        <input type="text" name="inviteCode" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
-	        <input type="email" name="email" class="form-control text-center" placeholder="Почта" required="">
-	        <input type="password" name="password" class="form-control text-center" placeholder="Пароль" required="">
-	        <a class="btn btn-lg btn-primary btn-block" href="/registration">Регистрация</a>
-	    </form>
+	        <input id="inviteCode" type="text" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
+	        <input id="email" type="email" class="form-control text-center" placeholder="Почта" required="">
+	        <input id="login" type="text" class="form-control text-center" placeholder="Логин" required="">
+	        <input id="password" type="password" class="form-control text-center" placeholder="Пароль" required="">
+	        <button class="btn btn-lg btn-success btn-block" onclick="send_data()">Зарегестрироваться</button>
+	        <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px;" id="alert">
+	            <h4>Не правильно указан пришласительный код</h4>
+	            <p>Проверьте не пепрепутали ли вы 0 и O</p>
+	        </div>
+	        <script src="/static/js/jquery.js"></script>
+	        <script>
+	            function send_data() {
+	                $.post(
+	                    "http://localhost:1303/api/registration",
+	                    {
+	                    	inviteCode: $("#inviteCode")[0].value,
+	                    	email: $("#email")[0].value,
+	                    	login: $("#login")[0].value,
+	                    	password: $("#password")[0].value
+						},
+	                    function(data) {
+	                        if (data.answer == "ok") {
+	                            window.location.replace("http://localhost:1303");
+	                        } else {
+	                            $("#alert")[0].className += "in"
+	                        }
+	                    },
+	                    "json"
+	                )
+	            }
+	        </script>
+        </div>
 	</div>
-    {% if device == "terminal" %}
-		<script>
-			window.location.href = "http://localhost:5000/operations"
-		</script>
-	{% endif %}
-	{% if user == "librarian" %}
-		<script>
-			window.location.href = "http://localhost:5000/home"
-		</script>
-	{% endif %}
 {% endblock %}

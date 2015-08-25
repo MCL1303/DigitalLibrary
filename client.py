@@ -34,7 +34,6 @@ class Sender():
     @SimpleThread
     def send(self, user, book, uuid, webview):
         print(user)
-        webview.page().mainFrame().evaluateJavaScript('window.alert("ok")')
         webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
             user,
             book,

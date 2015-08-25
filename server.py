@@ -4,8 +4,9 @@
 from digital_library.database import DigitalLibraryDatabase
 from digital_library.types import Action
 
+from flask import Flask, jsonify, request, redirect
+from datetime import datetime
 import configparser
-from flask import Flask, jsonify, request
 import flask
 import logging
 import uuid
@@ -20,282 +21,260 @@ def load_config():
     return config['Server']
 
 
-def render_template(template_name, device, **context):
-    db = DigitalLibraryDatabase()
-    test_books = [
-        {
-            "title": "Что такое математика?",
-            "author": "Р. Курант, Г. Роббинс",
-            "id": "courant",
-            "handed": 14,
-            "count": 20,
-            "old": 30,
-            "oldOwnerName": "Иван Иванов",
-            "oldOwnerNameInRP": "Ивана Иванова",
-            "oldOwner": "IvanIvanovId",
-            "code": 1234567890123,
-        },
-        {
-            "title": "Сборник задач по алгебре",
-            "author": "М.Л. Галицкий, А.М. Гольдман, Л.И. Звавич",
-            "id": "gal",
-            "handed": 14,
-            "count": 20,
-            "old": 30,
-            "oldOwnerName": "Иван Иванов",
-            "oldOwnerNameInRP": "Ивана Иванова",
-            "oldOwner": "IvanIvanovId",
-            "code": 1234567890123,
-        },
-        {
-            "title": "Алгоритмы: построение и анализ",
-            "author": "К. Штайн, Р. Линн Ривест, Т. Кормен, Ч. Эрик Лейзерсон",
-            "id": "cormen",
-            "handed": 14,
-            "count": 20,
-            "old": 30,
-            "oldOwnerName": "Иван Иванов",
-            "oldOwnerNameInRP": "Ивана Иванова",
-            "oldOwner": "IvanIvanovId",
-            "code": 1234567890123,
-        },
-        {
-            "title": "Совершенный код",
-            "author": "С. Макконнелл",
-            "id": "codecompl",
-            "handed": 14,
-            "count": 20,
-            "old": 30,
-            "oldOwnerName": "Иван Иванов",
-            "oldOwnerNameInRP": "Ивана Иванова",
-            "oldOwner": "IvanIvanovId",
-            "code": 1234567890123,
-        },
-    ]
-    test_users = [
-        {
-            "name": "Игорь Тараканов",
-            "id": "Igor_Tarakanov",
-            "booksCount": 8,
-            "oldBookId": "courant",
-            "oldBookDate": 12,
-            "books": [
-                {"id": "courant", "title": "Что такое математика?"},
-                {"id": "gal", "title": "Сборник задач по алгебре"},
-            ],
-        },
-        {
-            "name": "Юрий Сыровецкий",
-            "id": "Yuriy_Syrovetskiy",
-            "booksCount": 8,
-            "oldBookId": "courant",
-            "oldBookDate": 12,
-            "books": [
-                {"id": "courant", "title": "Что такое математика?"},
-                {"id": "gal", "title": "Сборник задач по алгебре"},
-            ],
-        }
-    ]
-    test_context = {
-        'user': {
-            "name": "Иван Иванов",
-            "priority": "librarian" # student, specially_trained, librarian
-        },
-        'device': device,
-        'books': test_books,
-        'booksLen': len(test_books),
-        'recomendedBooks': test_books,
-        'recomendedBooksLen': len(test_books),
-        'page': template_name,
-        "handedBooks": test_books,
-        "editBook": {
-            "title": "Что такое математика?",
-            "author": "Р. Курант, Г. Роббинс",
-            "id": "courant",
-            "handed": 14,
-            "count": 20,
-            "old": 30,
-            "oldOwnerName": "Иван Иванов",
-            "oldOwnerNameInRP": "Ивана Иванова",
-            "oldOwner": "IvanIvanovId",
-            "code": 1234567890123,
-        },
-        "users": test_users,
-        "handlog": db.handlog.get(),
-        "handlogLen": len(db.handlog.get()),
-    }
-    return flask.render_template(
+def render_template(template_name, device, user, client_ip):
+	priority = user["priority"]
+	if device == "terminal" and template_name != "operations":
+		return redirect("operations")
+	if device == "computer" and template_name == "operations":
+		return flask.render_template("404.html")
+	if priority == "student" and template_name not in [
+		"login",
+		"registration",
+		"handed",
+		"books",
+	]:
+		return flask.render_template("404.html")
+	if priority == "librarian" and template_name not in [
+		"login",
+		"registration",
+		"home",
+		"handed",
+		"books",
+		"add",
+		"users",
+		"journal",
+	]:
+		return flask.render_template("404.html")
+	db = DigitalLibraryDatabase()
+	handedBooks = db.hands.find({"user": user["nfc"]})
+	print(user)
+	page_context = {
+		"user": user,
+		"handedBooks": handedBooks,
+		"handedBooksLen": len(handedBooks),
+		"ip": client_ip,
+	}
+	return flask.render_template(
         template_name + '.html',
-        **dict(context, template_name=template_name, **test_context)
+        **dict(template_name=template_name, **page_context)
     )
 
 
-@app.route("/login")
-def login():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("login", "terminall")
+def crossroad(template_name, client_ip):
+	db = DigitalLibraryDatabase()
+	log = db.logs.get({"ip": client_ip})
 
+	if log is None and template_name in ["login", "registration"]: # Перенаправление на страницы авторизации и решистрации
+		return render_template(template_name, "computer", {"priority": "student", "nfc": "asd"}, client_ip)
 
-@app.route("/registration")
-def reg():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("registration", "terminall")
+	if log is None: # Перенаправление на страницу авторизации(не найден лог)
+		return redirect("/login")
+
+	user = db.users.get({"id": log["user"]})
+
+	if template_name in ["login", "registration"]:
+		return redirect("/")
+
+	if user is None: # Перенаправление на страницу авторизации(неправильный лог)
+		db.logs.remove({"ip": client_ip})
+		return redirect("/login")
+
+	if log["remember"] == "false" and log["datetime"] != str(datetime.utcnow())[0:-11]: # Перенаправление на страницу авторизации(недолговременный лог)
+		db.logs.remove({"ip": client_ip})
+		return redirect("/login")
+
+	if log["device"] == "terminal" and template_name != "operations": # Перенаправление на страницу операций(запрос с терминала)
+		return redirect("operations")
+
+	if log["device"] == "computer" and template_name == "operations": # 404 (неправильное устройство запроса)
+		return flask.render_template("404.html")
+
+	if user["priority"] == "student" and template_name not in [ # 404 (неправильный приоритет запроса)
+		"login",
+		"registration",
+		"home",
+		"handed",
+		"books",
+	]:
+		return flask.render_template("404.html")
+	if user["priority"] == "librarian" and template_name not in [ # 404 (неправильный приоритет запроса)
+		"login",
+		"registration",
+		"home",
+		"handed",
+		"books",
+		"add",
+		"users",
+		"journal",
+	]:
+		return flask.render_template("404.html")
+
+	 # Данные корректны
+	return render_template(template_name, log["device"], db.users.get({"id": log["user"]}), client_ip)
 
 
 @app.route("/")
 def home():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("home", "terminall")
+	return crossroad("handed", request.remote_addr)
 
 
-@app.route("/handed")
-def handed():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("handed", "terminall")
+@app.route('/api/login', methods=['POST'])
+def api_login():
+	db = DigitalLibraryDatabase()
+	client_ip = request.remote_addr
+	ip = db.ips.get({"ip": client_ip})
+	form = request.form
+	user = db.users.get({"login": form["login"], "password": form["password"]})
+
+	if ip is None:
+		db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+		ip = db.ips.get({"ip": client_ip})
+
+	if ip["datetime"] != str(datetime.utcnow())[0:-16]:
+		db.ips.update({"ip": client_ip}, {"logAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+
+	if ip["logAttempts"] > 10:
+		return jsonify(answer="fail")
+
+	if user is None:
+		db.ips.update({"ip": client_ip}, {"logAttempts": ip["logAttempts"] + 1})
+		return jsonify(answer="fail")
+	else:
+		db.logs.insert({
+			"user": user["id"],
+			"ip": client_ip,
+			"device": user["device"],
+			"remember": form["remember"],
+			"datetime": str(datetime.utcnow())[0:-11],
+		})
+		return jsonify(answer="ok")
+	return jsonify(answer="fail")
 
 
-@app.route("/books")
-def books():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("books", "terminall")
+@app.route('/api/registration', methods=['POST'])
+def api_registration():
+	db = DigitalLibraryDatabase()
+	client_ip = request.remote_addr
+	ip = db.ips.get({"ip": client_ip})
+	form = request.form
+	invitation = db.invitations.get({"inviteCode": form["inviteCode"]})
+
+	if ip is None:
+		db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+		ip = db.ips.get({"ip": client_ip})
+
+	if ip["datetime"] != str(datetime.utcnow())[0:-16]:
+		db.ips.update({"ip": client_ip}, {"regAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+
+	if ip["regAttempts"] > 10:
+		return jsonify(answer="fail")
+
+	if invitation is None:
+		db.ips.update({"ip": client_ip}, {"regAttempts": ip["regAttempts"] + 1})
+		return jsonify(answer="fail")
+	else:
+		user_uudi = uuid.uuid4()
+		db.users.insert({
+			"login": form["login"],
+			"password": form["password"],
+			"nfc": invitation["nfc"],
+			"RuName": invitation["RuName"],
+			"id": user_uudi,
+			"priority": invitation["priority"],
+			"device": invitation["device"],
+		})
+		db.logs.insert({
+			"user": user_uudi,
+			"ip": client_ip,
+			"device": invitation["device"],
+			"remember": "false",
+			"datetime": str(datetime.utcnow())[0:-11],
+		})
+		db.invitations.remove(invitation)
+		return jsonify(answer="ok")
+	return jsonify(answer="fail")
 
 
-@app.route("/operations")
-def operations():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("operations", "terminall")
+@app.route('/api/exit', methods=['POST'])
+def api_exit():
+	form = request.form
+	db = DigitalLibraryDatabase()
+	db.logs.remove({"ip": form["ip"]})
+	print(form["ip"])
+	return jsonify(answer="ok")
 
 
-@app.route("/add")
-def add():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("add", "terminall")
-
-
-@app.route("/users")
-def users():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("users", "terminall")
-
-
-@app.route("/journal")
-def journal():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    if not db.logs._exists({"ip": client_ip}):
-        return render_template("auth", "terminall")
-    if db.logs._find_one({"ip": client_ip})["status"] == "terminal":
-        return render_template("operations", "terminal")
-    if db.logs._find_one({"ip": client_ip})["status"] == "computer":
-        return render_template("journal", "terminall")
-
-
-@app.route("/auth")
-def auth():
-    return render_template("auth", "terminall")
-
-
-@app.route('/connect')
-def get_current_user():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    terminal = db.terminals.get(client_ip)
-    if terminal is not None:
-        return jsonify(uuid=terminal['uuid'])
-    else:
-        terminal_uuid = uuid.uuid4()
-        db.terminals.add(client_ip, terminal_uuid)
-        return jsonify(uuid=terminal_uuid)
-
-
-@app.route('/api/book/action', methods=['POST'])
-def api_book_action():
-    form = request.form
-    db = DigitalLibraryDatabase()
-    user, book, uuid = form["user"], form["book"], form["uuid"]
-    print(db.hands.exists(user, book))
-    if db.hands.exists(user, book):
-        db.hands.delete(user, book)
-        action = Action.Return
-    else:
-        db.hands.add(user, book, uuid)
-        action = Action.Take
-    db.handlog.log(action, user, book, uuid)
-    return jsonify(action=action.name, book=book)
-
-
-@app.route('/api/device/auth', methods=['POST'])
-def api_device_auth():
-    client_ip = request.remote_addr
-    db = DigitalLibraryDatabase()
-    form = request.form
-    if not db.logs._exists({"ip": client_ip}):
-        db.logs._insert({"ip": client_ip, "try": 0, "status": "none"})
-    if db.logs._exists({"ip": client_ip}) and int(db.logs._find_one({"ip": client_ip})["try"]) > 10:
-        return ""
-    if form["password"] == "1303303113033031":
-        db.logs._remove({"ip": client_ip})
-        db.logs._insert({"ip": client_ip, "status": "computer", "try": "0"})
-    else:
-        tr = db.logs._find_one({"ip": client_ip})["try"]
-        db.logs._remove({"ip": client_ip})
-        db.logs._insert({"ip": client_ip, "try": int(tr) + 1, "status": "none"})
-    return jsonify(answer="good")
+@app.route("/<template_name>")
+def render(template_name):
+	if template_name not in [
+		"login",
+		"registration",
+		"home",
+		"handed",
+		"add",
+		"users",
+		"journal",
+	]:
+		return render_template("404", "computer", {"priority": "student", "nfc": "asd"}, request.remote_addr)
+	return crossroad(template_name, request.remote_addr)
 
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
     config = load_config()
-    app.run(host=config["host"], debug=True)
+    app.run(host=config["host"], debug=True, port=1303)
 
 
 if __name__ == '__main__':
     main()
+
+
+template_user = {
+    "login": "str",
+    "password": "str",
+    "nfc": "str",
+    "RuName": "RuStr",
+    "id": "str",
+    "priority": "str",
+}
+
+template_book = {
+    "title": "RuStr",
+    "author": "RuStr",
+    "count": "int",
+    "barcode": "int",
+}
+
+tempalte_log = {
+    "user": "str",
+    "ip": "str",
+    "attempts": "int",
+    "device": "str",
+    "remember": "str",
+    "datetime": "str",
+}
+
+tempalte_hand = {
+    "user": "str",
+    "book": "str",
+    "datetime": "str",
+}
+
+tempalte_journal =  {
+    "user": "str",
+    "book": "str",
+    "datetime": "str",
+}
+
+tempalte_ip = {
+	"ip": "str",
+	"attempts": "int",
+}
+
+tempalte_invitation = {
+	"RuName": "RuStr",
+	"nfc": "str",
+	"inviteCode": "str",
+	"device": "str",
+	"priority": "str",
+}
