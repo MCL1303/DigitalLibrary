@@ -21,14 +21,9 @@ def load_config():
     return config['Server']
 
 
-def render_template(template_name, device, user, client_ip):
-    priority = user["priority"]
-    if device == "terminal" and template_name != "operations":
-        return redirect("operations")
-    if device == "computer" and template_name == "operations":
-        return flask.render_template("404.html", template_name="404")
+def render_template(template_name, user, client_ip):
 
-    if priority == "student" and template_name not in [
+    if user["priority"] == "student" and template_name not in [
         "login",
         "registration",
         "handed",
@@ -36,7 +31,7 @@ def render_template(template_name, device, user, client_ip):
         "operations",
     ]:
         return flask.render_template("404.html", template_name="404")
-    if priority == "librarian" and template_name not in [
+    if user["priority"] == "librarian" and template_name not in [
         "login",
         "registration",
         "home",
@@ -61,6 +56,7 @@ def render_template(template_name, device, user, client_ip):
         "ip": client_ip,
         "handlog": handlog,
         "handlogLen": len(handlog),
+        "log": db.logs.get({"ip": client_ip}),
     }
     return flask.render_template(
         template_name + '.html',
@@ -71,14 +67,16 @@ def render_template(template_name, device, user, client_ip):
 def crossroad(template_name, client_ip):
     db = DigitalLibraryDatabase()
     log = db.logs.get({"ip": client_ip})
+    print(client_ip)
 
     if log is None and template_name in ["login", "registration"]: # Перенаправление на страницы авторизации и решистрации
-        return render_template(template_name, "computer", {"priority": "student", "nfc": "asd"}, client_ip)
+        return render_template(template_name, {"priority": "student", "nfc": ""}, client_ip)
 
     if log is None: # Перенаправление на страницу авторизации(не найден лог)
         return redirect("/login")
 
     user = db.users.get({"id": log["user"]})
+
 
     if template_name in ["login", "registration"]:
         return redirect("/")
@@ -91,10 +89,10 @@ def crossroad(template_name, client_ip):
         db.logs.remove({"ip": client_ip})
         return redirect("/login")
 
-    if log["device"] == "terminal" and template_name != "operations": # Перенаправление на страницу операций(запрос с терминала)
-        return redirect("operations")
+    if log["is_terminal"]: # Перенаправление на страницу операций(запрос с терминала)
+        return render_template("operations", {"priority": "student", "nfc": ""}, client_ip)
 
-    if log["device"] == "computer" and template_name == "operations": # 404 (неправильное устройство запроса)
+    if not log["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
         return flask.render_template("404.html", template_name="404")
 
 
@@ -121,7 +119,7 @@ def crossroad(template_name, client_ip):
         return flask.render_template("404.html", template_name="404")
 
      # Данные корректны
-    return render_template(template_name, log["device"], db.users.get({"id": log["user"]}), client_ip)
+    return render_template(template_name, db.users.get({"id": log["user"]}), client_ip)
 
 
 @app.route("/")
@@ -154,7 +152,7 @@ def api_login():
         db.logs.insert({
             "user": user["id"],
             "ip": client_ip,
-            "device": user["device"],
+            "is_terminal": False,
             "remember": form["remember"],
             "datetime": str(datetime.utcnow())[0:-11],
         })
@@ -192,12 +190,11 @@ def api_registration():
             "RuName": invitation["RuName"],
             "id": user_uudi,
             "priority": invitation["priority"],
-            "device": invitation["device"],
         })
         db.logs.insert({
             "user": user_uudi,
             "ip": client_ip,
-            "device": invitation["device"],
+            "is_terminal": False,
             "remember": "false",
             "datetime": str(datetime.utcnow())[0:-11],
         })
@@ -244,7 +241,7 @@ def render(template_name):
         "journal",
         "operations",
     ]:
-        return render_template("404", "computer", {"priority": "student", "nfc": "asd"}, request.remote_addr)
+        return render_template("404", {"priority": "student", "nfc": "asd"}, request.remote_addr)
     return crossroad(template_name, request.remote_addr)
 
 
@@ -277,8 +274,7 @@ template_book = {
 tempalte_log = {
     "user": "str",
     "ip": "str",
-    "attempts": "int",
-    "device": "str",
+    "is_terminal": "bool",
     "remember": "str",
     "datetime": "str",
 }
@@ -304,6 +300,5 @@ tempalte_invitation = {
     "RuName": "RuStr",
     "nfc": "str",
     "inviteCode": "str",
-    "device": "str",
     "priority": "str",
 }
