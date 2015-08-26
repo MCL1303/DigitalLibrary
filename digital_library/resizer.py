@@ -3,8 +3,12 @@ import PIL.Image
 
 
 class resizer():
-    def __init__(self, folder, name, exe):
-        img = PIL.Image.open("/home/igor/Coding/Library/{name}.{exe}".format(name=name, exe=exe))
+    def __init__(self, path, folder, name, exe):
+        print(path)
+        print(folder)
+        print(name)
+        print(exe)
+        img = PIL.Image.open(path)
         width = int(img.size[0] * (480 / img.size[1]))
         img = img.resize((width, 480), PIL.Image.ANTIALIAS)
         img.save(

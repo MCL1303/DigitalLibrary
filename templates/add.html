@@ -65,7 +65,7 @@
                         <div>
                             <div class="input-group" style="width: 370px; margin: auto;">
                                 <span class="default input-group-addon" id="labelUrl">URL</span>
-                                <input id="inputURL" type="text" class="form-control" placeholder="">
+                                <input id="inputUrl" type="text" class="form-control" placeholder="">
                             </div>
                         </div>
                     </div>
@@ -118,8 +118,8 @@
                 $("#code").addClass("default")
             }
         });
-        $('#inputURL').on('input', function() {
-            if($("#inputURL")[0].value != ""
+        $('#inputUrl').on('input', function() {
+            if($("#inputUrl")[0].value != ""
                 // $("#inputCode")[0].value.length == 13 &&
                 // ~~Number($("#inputCode")[0].value) > 0
                 ) {
@@ -132,10 +132,10 @@
         });
         </script>
         <script>
-            function send_book_data(title, author, count, code) {
+            function send_book_data(title, author, count, code, url) {
                 $.post(
                     "http://localhost:1303/api/book/add",
-                    {title: title, author: author, count: count, code: code},
+                    {title: title, author: author, count: count, code: code, url: url},
                     function(data) {
                         console.log("ok")
                     },
@@ -153,7 +153,8 @@
                         $("#inputTitle")[0].value,
                         $("#inputAuthor")[0].value,
                         $("#inputCount")[0].value,
-                        $("#inputCode")[0].value
+                        $("#inputCode")[0].value,
+                        $("#inputUrl")[0].value
                         )
                 }
             }

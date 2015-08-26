@@ -3,9 +3,11 @@
 
 from digital_library.database import DigitalLibraryDatabase
 from digital_library.types import Action
+from digital_library.resizer import resizer
 
 from flask import Flask, jsonify, request, redirect
 from datetime import datetime
+import urllib.request
 import configparser
 import flask
 import logging
@@ -28,6 +30,8 @@ def render_template(template_name, user, client_ip):
         handedBooks = []
         for hand in hands:
             book = db.books.get({"barcode": hand["book"]})
+            print(hand["user"])
+            book["owner"] = db.users.get({"nfc": hand["user"]})["name"]
             handedBooks += [book]
     else:
         hands = db.hands.find({"user": user["nfc"]})
@@ -246,6 +250,8 @@ def api_book_add():
         "count": form["count"],
         "barcode": form["code"],
         })
+    local_filename, trash = urllib.request.urlretrieve(form["url"])
+    resizer(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
 
 
