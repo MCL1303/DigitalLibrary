@@ -36,6 +36,13 @@ def render_template(template_name, user, client_ip):
             book = db.books.get({"barcode": hand["book"]})
             handedBooks += [book]
     handlog = db.handlog.find({})
+    for handl in handlog:
+        if handl["action"] == "Take":
+            handl["RuAction"] = "Взял"
+        else:
+            handl["RuAction"] = "Вернул"
+        handl["RuName"] = db.users.get({"nfc": handl["user"]})["name"]
+        handl["RuBook"] = db.books.get({"barcode": handl["book"]})["title"]
     page_context = {
         "user": user,
         "handedBooks": handedBooks,
@@ -183,7 +190,7 @@ def api_registration():
             "login": form["login"],
             "password": form["password"],
             "nfc": invitation["nfc"],
-            "RuName": invitation["RuName"],
+            "name": invitation["name"],
             "id": user_uudi,
             "priority": invitation["priority"],
         })
@@ -271,7 +278,7 @@ template_user = {
     "login": "str",
     "password": "str",
     "nfc": "str",
-    "RuName": "RuStr",
+    "name": "RuStr",
     "id": "str",
     "priority": "str",
 }
@@ -310,7 +317,7 @@ tempalte_ip = {
 }
 
 tempalte_invitation = {
-    "RuName": "RuStr",
+    "name": "RuStr",
     "nfc": "str",
     "inviteCode": "str",
     "priority": "str",

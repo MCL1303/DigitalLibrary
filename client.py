@@ -85,6 +85,7 @@ def main():
                 logging.debug('send_scanner_data%r', (user, book, browser))
                 send_scanner_data(user, book, browser)
         app.processEvents()
+        sleep(1)
 
 
 if __name__ == '__main__':
