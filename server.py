@@ -25,17 +25,39 @@ def load_config():
 
 def render_template(template_name, user, client_ip):
     db = DigitalLibraryDatabase()
+    handedBooks = []
     if user["priority"] == "librarian":
         hands = db.hands.find({})
-        handedBooks = []
+        allHandedBooks = []
         for hand in hands:
             book = db.books.get({"barcode": hand["book"]})
-            print(hand["user"])
             book["owner"] = db.users.get({"nfc": hand["user"]})["name"]
-            handedBooks += [book]
+            book["time"] = hand["datetime"]
+            book["count"] = int(book["count"])
+            allHandedBooks += [book]
+        curent_book = {}
+        for i in range (0, len(allHandedBooks)):
+            print("\n\n\n\n")
+            print(allHandedBooks[i])
+            curent_book = allHandedBooks[i]
+            curent_book["handed"] = 1
+            curent_book["old"] = int(str(datetime.utcnow() - allHandedBooks[i]["time"]).split(":")[0])
+            curent_book["oldName"] = allHandedBooks[i]["owner"]
+            curent_book["oldOwner"] = db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
+            for j in range (i + 1, len(allHandedBooks)):
+                if allHandedBooks[i]["book"] != allHandedBooks[j]["book"]:
+                    continue
+                else:
+                    curent_book["handed"] += 1
+                    if curent_book["old"] < int(str(datetime.utcnow() - allHandedBooks[j]["time"]).split(":")[0]):
+                        curent_book["old"] = int(str(datetime.utcnow() - allHandedBooks[j]["time"]).split(":")[0])
+                        curent_book["oldName"] = allHandedBooks[j]["owner"]
+                        curent_book["oldOwner"] = db.users.get({"name": allHandedBooks[j]["owner"]})["id"]
+            if curent_book != {}:
+                handedBooks += [curent_book]
+            print(curent_book)
     else:
         hands = db.hands.find({"user": user["nfc"]})
-        handedBooks = []
         for hand in hands:
             book = db.books.get({"barcode": hand["book"]})
             handedBooks += [book]
@@ -56,6 +78,7 @@ def render_template(template_name, user, client_ip):
         "handlogLen": len(handlog),
         "log": db.sessions.get({"ip": client_ip}),
     }
+    print(handedBooks)
     return flask.render_template(
         template_name + '.html',
         **dict(template_name=template_name, **page_context)
@@ -65,7 +88,6 @@ def render_template(template_name, user, client_ip):
 def crossroad(template_name, client_ip):
     db = DigitalLibraryDatabase()
     session = db.sessions.get({"ip": client_ip})
-    print(client_ip)
 
     if session is None and template_name in ["login", "registration"]: # Перенаправление на страницы авторизации и решистрации
         return render_template(template_name, {"priority": "student", "nfc": ""}, client_ip)
@@ -83,7 +105,7 @@ def crossroad(template_name, client_ip):
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if session["remember"] == "false" and session["datetime"] != str(datetime.utcnow())[0:-11]: # Перенаправление на страницу авторизации(недолговременный лог)
+    if session["remember"] == "false" and session["datetimeStr"] != str(datetime.utcnow())[0:-11]: # Перенаправление на страницу авторизации(недолговременный лог)
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
@@ -120,7 +142,7 @@ def crossroad(template_name, client_ip):
 
 @app.route("/")
 def home():
-    return crossroad("handed", request.remote_addr)
+    return redirect("/handed")
 
 
 @app.route('/api/login', methods=['POST'])
@@ -132,11 +154,11 @@ def api_login():
     user = db.users.get({"login": form["login"], "password": form["password"]})
 
     if ip is None:
-        db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+        db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
         ip = db.ips.get({"ip": client_ip})
 
-    if ip["datetime"] != str(datetime.utcnow())[0:-16]:
-        db.ips.update({"ip": client_ip}, {"logAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+    if ip["datetimeStr"] != str(datetime.utcnow())[0:-16]:
+        db.ips.update({"ip": client_ip}, {"logAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
 
     if ip["logAttempts"] > 10:
         return jsonify(answer="fail")
@@ -148,7 +170,7 @@ def api_login():
             "ip": client_ip,
             "is_terminal": True,
             "remember": form["remember"],
-            "datetime": str(datetime.utcnow())[0:-11],
+            "datetimeStr": str(datetime.utcnow())[0:-11],
         })
         return jsonify(answer="ok")
 
@@ -161,7 +183,7 @@ def api_login():
             "ip": client_ip,
             "is_terminal": False,
             "remember": form["remember"],
-            "datetime": str(datetime.utcnow())[0:-11],
+            "datetimeStr": str(datetime.utcnow())[0:-11],
         })
         return jsonify(answer="ok")
     return jsonify(answer="fail")
@@ -176,11 +198,11 @@ def api_registration():
     invitation = db.invitations.get({"inviteCode": form["inviteCode"]})
 
     if ip is None:
-        db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+        db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
         ip = db.ips.get({"ip": client_ip})
 
-    if ip["datetime"] != str(datetime.utcnow())[0:-16]:
-        db.ips.update({"ip": client_ip}, {"regAttempts": 0, "datetime": str(datetime.utcnow())[0:-16]})
+    if ip["datetimeStr"] != str(datetime.utcnow())[0:-16]:
+        db.ips.update({"ip": client_ip}, {"regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
 
     if ip["regAttempts"] > 10:
         return jsonify(answer="fail")
@@ -203,7 +225,7 @@ def api_registration():
             "ip": client_ip,
             "is_terminal": False,
             "remember": "false",
-            "datetime": str(datetime.utcnow())[0:-11],
+            "datetimeStr": str(datetime.utcnow())[0:-11],
         })
         db.invitations.remove({"inviteCode": invitation["inviteCode"]})
         return jsonify(answer="ok")
@@ -228,12 +250,13 @@ def api_book_action():
         db.hands.remove({"user": user, "book": book})
         action = Action.Return
     else:
-        db.hands.insert({"user": user, "book": book})
+        db.hands.insert({"user": user, "book": book, "datetime": datetime.utcnow()})
         action = Action.Take
     db.handlog.insert({
         "user": user,
         "book": book,
-        "datetime": str(datetime.utcnow())[0:-7],
+        "datetimeStr": str(datetime.utcnow())[0:-7],
+        "datetime": datetime.utcnow(),
         "action": action.name,
     })
     return jsonify(action=action.name, book=book)
@@ -242,7 +265,6 @@ def api_book_action():
 @app.route('/api/book/add', methods=['POST'])
 def api_book_add():
     form = request.form
-    print(form)
     db = DigitalLibraryDatabase()
     db.books.insert({
         "title": form["title"],
@@ -252,6 +274,32 @@ def api_book_add():
         })
     local_filename, trash = urllib.request.urlretrieve(form["url"])
     resizer(local_filename, "book", form["code"], "jpg")
+    return jsonify(answer="ok")
+
+
+@app.route('/api/book/change', methods=['POST'])
+def api_book_change():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    if db.books.get({"barcode": form["barcode"]}) == None:
+        return jsonify(answer="fail")
+    db.books.update({"barcode": form["barcode"]}, {
+        "title": form["title"],
+        "author": form["author"],
+        "count": form["count"],
+    })
+    return jsonify(answer="ok")
+
+
+@app.route('/api/book/delete', methods=['POST'])
+def api_book_delete():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    if db.books.get({"barcode": form["barcode"]}) == None:
+        return jsonify(answer="fail")
+    db.books.remove({"barcode": form["barcode"]})
+    db.handlog.remove({"book": form["barcode"]})
+    db.hands.remove({"book": form["barcode"]})
     return jsonify(answer="ok")
 
 
@@ -301,19 +349,19 @@ tempalte_log = {
     "ip": "str",
     "is_terminal": "bool",
     "remember": "str",
-    "datetime": "str",
+    "datetimeStr": "str",
 }
 
 tempalte_hand = {
     "user": "str",
     "book": "str",
-    "datetime": "str",
+    "datetimeStr": "str",
 }
 
 tempalte_journal =  {
     "user": "str",
     "book": "str",
-    "datetime": "str",
+    "datetimeStr": "str",
     "action": "srt",
 }
 

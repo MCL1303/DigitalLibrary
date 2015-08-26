@@ -107,9 +107,9 @@
             }
         });
         $('#inputCode').on('input', function() {
-            if($("#inputCode")[0].value != ""
-                // $("#inputCode")[0].value.length == 13 &&
-                // ~~Number($("#inputCode")[0].value) > 0
+            if($("#inputCode")[0].value != "" &&
+                $("#inputCode")[0].value.length == 13 &&
+                ~~Number($("#inputCode")[0].value) > 0
                 ) {
                 $("#code").removeClass("default")
                 $("#code").addClass("green")
@@ -119,9 +119,9 @@
             }
         });
         $('#inputUrl').on('input', function() {
-            if($("#inputUrl")[0].value != ""
-                // $("#inputCode")[0].value.length == 13 &&
-                // ~~Number($("#inputCode")[0].value) > 0
+            if($("#inputUrl")[0].value != "" &&
+                $("#inputCode")[0].value.length == 13 &&
+                ~~Number($("#inputCode")[0].value) > 0
                 ) {
                 $("#lableUrl").removeClass("default")
                 $("#labelUrl").addClass("green")
@@ -155,7 +155,7 @@
                         $("#inputCount")[0].value,
                         $("#inputCode")[0].value,
                         $("#inputUrl")[0].value
-                        )
+                    )
                 }
             }
         </script>

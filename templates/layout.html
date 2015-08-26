@@ -7,6 +7,13 @@
         {{form5}}
     {% endif %}
 {%- endmacro %}
+{% macro inflectProPro(n, form1, form2) -%}
+    {% if n % 10 == 1 %}
+        {{form1}}
+    {% else %}
+        {{form2}}
+    {% endif %}
+{%- endmacro %}
 {% macro inflectPro(n, form1, form2, form5) -%}
     {% if n % 100 in [11, 12, 13, 14] %}
         {{form5}}
