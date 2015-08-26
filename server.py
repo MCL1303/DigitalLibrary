@@ -92,7 +92,7 @@ def crossroad(template_name, client_ip):
     if session["is_terminal"]: # Перенаправление на страницу операций(запрос с терминала)
         return render_template("operations", {"priority": "student", "nfc": ""}, client_ip)
 
-    if notsession["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
+    if not session["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
         return flask.render_template("404.html", template_name="404")
 
 
@@ -237,7 +237,8 @@ def api_book_action():
     db.handlog.insert({
         "user": user,
         "book": book,
-        "datetime": str(datetime.utcnow())[0:-6],
+        "datetime": str(datetime.utcnow())[0:-7],
+        "action": action,
     })
     return jsonify(action=action.name, book=book)
 
