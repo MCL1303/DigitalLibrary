@@ -145,6 +145,17 @@ def api_login():
     if ip["logAttempts"] > 10:
         return jsonify(answer="fail")
 
+    if user is  None and form["login"] == "terminal" and form["password"] == "terminal":
+        db.users.insert({"id": "terminal", "priority": "student", "nfc": ""})
+        db.logs.insert({
+            "user": "terminal",
+            "ip": client_ip,
+            "is_terminal": True,
+            "remember": form["remember"],
+            "datetime": str(datetime.utcnow())[0:-11],
+        })
+        return jsonify(answer="ok")
+
     if user is None:
         db.ips.update({"ip": client_ip}, {"logAttempts": ip["logAttempts"] + 1})
         return jsonify(answer="fail")
