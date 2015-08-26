@@ -14,7 +14,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Server
  <insert long description, indented with spaces>
 
-Package: digital-library-termclient
+Package: digital-library-terminal
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Client
