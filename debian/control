@@ -5,8 +5,8 @@ Maintainer: Yuriy Syrovetskiy <cblp@cblp.su>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.5
 Homepage: <insert the upstream URL, if relevant>
-Vcs-Git: git@github.com:SetSplin/Library.git
-#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/digital-library.git;a=summary
+Vcs-Git: git://git@github.com:SetSplin/Library.git
+Vcs-Browser: https://github.com/SetSplin/Library
 
 Package: digital-library-server
 Architecture: any
