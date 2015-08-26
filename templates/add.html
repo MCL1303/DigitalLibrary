@@ -3,7 +3,6 @@
 {% block title %}Добавление книги{% endblock %}
 
 {% block content %}
-    {% if user.pryority != "librarian" %}
         <script src="/static/js/jquery.js"></script>
         <div class="row" style="text-align: center;">
         <style>
@@ -52,7 +51,6 @@
                     <div role="tabpanel" class="tab-pane fade active in" id="variants" aria-labelledby="variants-tab">
                         <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
                         <div style=" margin: 10px; text-align: center;">
-                            <button class="btn btn-primary">Следующая</button>
                             <button class="btn btn-success">Выбрать</button>
                         </div>
                     </div>
@@ -60,23 +58,22 @@
                         <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
                         <div style=" margin: 10px; text-align: center;">
                             <button class="btn btn-primary" style="">Загрузить файл</button>
-                            <button class="btn btn-success" style="">Выбрать</button>
                         </div>
                     </div>
                     <div role="tabpanel" class="tab-pane fade" id="url" aria-labelledby="url-tab">
                         <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
                         <div>
                             <div class="input-group" style="width: 370px; margin: auto;">
-                                <input type="text" class="form-control" placeholder="URL">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-success" type="button">Выбрать</button>
-                                </span>
+                                <span class="default input-group-addon" id="labelUrl">URL</span>
+                                <input id="inputURL" type="text" class="form-control" placeholder="">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             </div>
+            <div style="margin: 40px;"></div>
+            <button class="btn btn-lg btn-success" onclick="check()">Добавить</button>
             <div style="margin: 40px;"></div>
         </div>
         <script>
@@ -110,9 +107,9 @@
             }
         });
         $('#inputCode').on('input', function() {
-            if($("#inputCode")[0].value != "" &&
-                $("#inputCode")[0].value.length == 13 &&
-                ~~Number($("#inputCode")[0].value) > 0
+            if($("#inputCode")[0].value != ""
+                // $("#inputCode")[0].value.length == 13 &&
+                // ~~Number($("#inputCode")[0].value) > 0
                 ) {
                 $("#code").removeClass("default")
                 $("#code").addClass("green")
@@ -121,15 +118,44 @@
                 $("#code").addClass("default")
             }
         });
+        $('#inputURL').on('input', function() {
+            if($("#inputURL")[0].value != ""
+                // $("#inputCode")[0].value.length == 13 &&
+                // ~~Number($("#inputCode")[0].value) > 0
+                ) {
+                $("#lableUrl").removeClass("default")
+                $("#labelUrl").addClass("green")
+            } else {
+                $("#labelUrl").removeClass("green")
+                $("#labelUrl").addClass("default")
+            }
+        });
         </script>
-    {% else %}
         <script>
-            window.location.href = "http://localhost:5000/"
+            function send_book_data(title, author, count, code) {
+                $.post(
+                    "http://localhost:1303/api/book/add",
+                    {title: title, author: author, count: count, code: code},
+                    function(data) {
+                        console.log("ok")
+                    },
+                    "json"
+                )
+            }
+            function check() {
+                if(
+                    $("#title")[0].className == "input-group-addon green" &&
+                    $("#author")[0].className == "input-group-addon green" &&
+                    $("#count")[0].className == "input-group-addon green" &&
+                    $("#code")[0].className == "input-group-addon green"
+                ) {
+                    send_book_data(
+                        $("#inputTitle")[0].value,
+                        $("#inputAuthor")[0].value,
+                        $("#inputCount")[0].value,
+                        $("#inputCode")[0].value
+                        )
+                }
+            }
         </script>
-    {% endif %}
-    {% if device == "terminal" %}
-        <script>
-            window.location.href = "http://localhost:5000/operations"
-        </script>
-    {% endif %}
 {% endblock %}

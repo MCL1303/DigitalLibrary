@@ -1,9 +1,9 @@
 [Server]
 host = ::
-[Demon]
-url = http://localhost:1303/auth
-bookScanner = path
-userScanner = path
+[Terminal]
+url_start = http://localhost:1303/auth
+book_scanner = /tmp/book
+user_scanner = /tmp/user
 uuid = id
 [Resizer]
 name = curant

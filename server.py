@@ -22,32 +22,19 @@ def load_config():
 
 
 def render_template(template_name, user, client_ip):
-
-    if user["priority"] == "student" and template_name not in [
-        "login",
-        "registration",
-        "handed",
-        "books",
-        "operations",
-    ]:
-        return flask.render_template("404.html", template_name="404")
-    if user["priority"] == "librarian" and template_name not in [
-        "login",
-        "registration",
-        "home",
-        "handed",
-        "books",
-        "add",
-        "users",
-        "journal",
-    ]:
-        return flask.render_template("404.html", template_name="404")
     db = DigitalLibraryDatabase()
-    hands = db.hands.find({"user": user["nfc"]})
-    handedBooks = []
-    for hand in hands:
-        book = db.books.get({"barcode": hand["book"]})
-        handedBooks += [book]
+    if user["priority"] == "librarian":
+        hands = db.hands.find({})
+        handedBooks = []
+        for hand in hands:
+            book = db.books.get({"barcode": hand["book"]})
+            handedBooks += [book]
+    else:
+        hands = db.hands.find({"user": user["nfc"]})
+        handedBooks = []
+        for hand in hands:
+            book = db.books.get({"barcode": hand["book"]})
+            handedBooks += [book]
     handlog = db.handlog.find({})
     page_context = {
         "user": user,
@@ -93,7 +80,7 @@ def crossroad(template_name, client_ip):
         return render_template("operations", {"priority": "student", "nfc": ""}, client_ip)
 
     if not session["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
-        return flask.render_template("404.html", template_name="404")
+        return redirect("/")
 
 
     if user["priority"] == "student" and template_name not in [ # 404 (неправильный приоритет запроса)
@@ -104,19 +91,17 @@ def crossroad(template_name, client_ip):
         "books",
         "operations",
     ]:
-        return flask.render_template("404.html", template_name="404")
+        return redirect("/")
 
     if user["priority"] == "librarian" and template_name not in [ # 404 (неправильный приоритет запроса)
         "login",
         "registration",
         "home",
         "handed",
-        "books",
         "add",
-        "users",
         "journal",
     ]:
-        return flask.render_template("404.html", template_name="404")
+        return redirect("/")
 
      # Данные корректны
     return render_template(template_name, db.users.get({"id":session["user"]}), client_ip)
@@ -238,9 +223,23 @@ def api_book_action():
         "user": user,
         "book": book,
         "datetime": str(datetime.utcnow())[0:-7],
-        "action": action,
+        "action": action.name,
     })
     return jsonify(action=action.name, book=book)
+
+
+@app.route('/api/book/add', methods=['POST'])
+def api_book_add():
+    form = request.form
+    print(form)
+    db = DigitalLibraryDatabase()
+    db.books.insert({
+        "title": form["title"],
+        "author": form["author"],
+        "count": form["count"],
+        "barcode": form["code"],
+        })
+    return jsonify(answer="ok")
 
 
 @app.route("/<template_name>")
@@ -252,6 +251,7 @@ def render(template_name):
         "handed",
         "journal",
         "operations",
+        "add",
     ]:
         return render_template("404", {"priority": "student", "nfc": "asd"}, request.remote_addr)
     return crossroad(template_name, request.remote_addr)
@@ -301,6 +301,7 @@ tempalte_journal =  {
     "user": "str",
     "book": "str",
     "datetime": "str",
+    "action": "srt",
 }
 
 tempalte_ip = {

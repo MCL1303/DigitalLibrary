@@ -1,119 +1,90 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-from time import sleep
 from configparser import ConfigParser
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+import errno
+import logging
+import os
+from PyQt4.QtCore import QUrl
+from PyQt4.Qt import QApplication, pyqtSignal
 from PyQt4.QtWebKit import QWebView
 from sys import argv
-from threading import Thread
-from digital_library.simple_thread import SimpleThread
-
-
-USER_SCANNER_DEVICE_FILE = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+from time import sleep
 
 
 def load_config():
     config = ConfigParser()
     config.read("config")
-    return config["Demon"]
+    return config['Terminal']
+
+
+def opener_nonblock(path, mode):
+    return os.open(path, mode | os.O_NONBLOCK)
+
+
+def readline_nonblock(fileobject) -> 'Optional[str]':
+    try:
+        return fileobject.readline() or None
+    except OSError as err:
+        if err.errno == errno.EAGAIN or err.errno == errno.EWOULDBLOCK:
+            return None
+        else:
+            raise
 
 
 def scanner_read(device_file):
-    with open(device_file) as device:
-        return device.readline().strip("\2\3\r\n")
-
-
-class Sender():
-    def __init__(self):
-        pass
-
-    @SimpleThread
-    def send(self, user, book, webview):
-        print(user)
-        webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r})".format(
-            user,
-            book,
-        ))
-        print(user)
-
+    with open(device_file, opener=opener_nonblock) as device:
+        data = readline_nonblock(device)
+        if data is None:
+            return None
+        return data.strip("\2\3\r\n")
 
 
 def send_scanner_data(user, book, webview):
-    print(user)
-    sender = Sender()
-    sender.send(user, book, webview)
-    print("sended")
+    webview.page().mainFrame().evaluateJavaScript(
+        "send_scanner_data({!r}, {!r});".format(user, book)
+    )
 
 
-def scan_user(device_file, curent_user, curent_book, webview):
-    while True:
-        curent_book = "curant"
-        user = scanner_read(device_file)
-        print("scanned " + user)
-        if curent_user is not None and curent_book is None:
-            curent_user = user
-            continue
-        if curent_user is None and curent_book is None:
-            curent_user = user
-        else:
-            print("sending")
-            curent_user = user
-            send_scanner_data(curent_user, curent_book, webview)
-            curent_user = None
-            curent_book = None
+class BrowserWindow(QWebView):
+    closed = pyqtSignal()
 
+    def __init__(self, url):
+        super().__init__()
+        self.setWindowTitle("Библиотека Московского Химического Лицея")
+        self.load(QUrl(url))
 
-def scan_book(device_file, curent_user, curent_book, webview):
-    while True:
-        book = scanner_read(device_file)
-        if curent_book is not None and curent_user is None:
-            curent_book = book
-            continue
-        if curent_user is None and curent_book is None:
-            curent_book = book
-        else:
-            curent_book = book
-            send_scanner_data(curent_user, curent_book, webview)
-            curent_user = None
-            curent_book = None
+    def closeEvent(self, _event):
+        self.closed.emit()
 
 
 def main():
+    global running
+
+    logging.basicConfig(level=logging.DEBUG)
+
     config = load_config()
 
     app = QApplication(argv)
-    webview = QWebView()
-    webview.load(QUrl(config["url"]))
-    webview.setWindowTitle("Библиотека Московского Химического Лицея")
-    webview.showFullScreen()
+    browser = BrowserWindow(config['url_start'])
+    browser.show()
 
-    curent_user, curent_book = None, None
-    thread_user = Thread(
-        target=scan_user,
-        args=(
-            USER_SCANNER_DEVICE_FILE,
-            curent_user,
-            curent_book,
-            webview,
-        )
-    )
-    thread_user.start()
-    # thread_book = Thread(
-    #     target=scan_book,
-    #     args=(
-    #         config.get("Demon", "bookScanner"),
-    #         curent_user,
-    #         curent_book,
-    #         uuid,
-    #         webview,
-    #     ),
-    # )
-    # thread_book.start()
+    running = True
+    def quit():
+        global running
+        running = False
+    browser.closed.connect(quit)
 
-    app.exec_()
+    while running:
+        user = scanner_read(config["user_scanner"])
+        logging.debug('user = %r', user)
+        if user is not None:
+            book = scanner_read(config["book_scanner"])
+            logging.debug('user = %r', book)
+            if book is not None:
+                logging.debug('send_scanner_data%r', (user, book, browser))
+                send_scanner_data(user, book, browser)
+        app.processEvents()
 
 
 if __name__ == '__main__':
