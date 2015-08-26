@@ -56,7 +56,7 @@ def render_template(template_name, user, client_ip):
         "ip": client_ip,
         "handlog": handlog,
         "handlogLen": len(handlog),
-        "log": db.logs.get({"ip": client_ip}),
+        "log": db.sessions.get({"ip": client_ip}),
     }
     return flask.render_template(
         template_name + '.html',
@@ -66,33 +66,33 @@ def render_template(template_name, user, client_ip):
 
 def crossroad(template_name, client_ip):
     db = DigitalLibraryDatabase()
-    log = db.logs.get({"ip": client_ip})
+    session = db.sessions.get({"ip": client_ip})
     print(client_ip)
 
-    if log is None and template_name in ["login", "registration"]: # Перенаправление на страницы авторизации и решистрации
+    if session is None and template_name in ["login", "registration"]: # Перенаправление на страницы авторизации и решистрации
         return render_template(template_name, {"priority": "student", "nfc": ""}, client_ip)
 
-    if log is None: # Перенаправление на страницу авторизации(не найден лог)
+    if session is None: # Перенаправление на страницу авторизации(не найден лог)
         return redirect("/login")
 
-    user = db.users.get({"id": log["user"]})
+    user = db.users.get({"id":session["user"]})
 
 
     if template_name in ["login", "registration"]:
         return redirect("/")
 
     if user is None: # Перенаправление на страницу авторизации(неправильный лог)
-        db.logs.remove({"ip": client_ip})
+        db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if log["remember"] == "false" and log["datetime"] != str(datetime.utcnow())[0:-11]: # Перенаправление на страницу авторизации(недолговременный лог)
-        db.logs.remove({"ip": client_ip})
+    if session["remember"] == "false" and session["datetime"] != str(datetime.utcnow())[0:-11]: # Перенаправление на страницу авторизации(недолговременный лог)
+        db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if log["is_terminal"]: # Перенаправление на страницу операций(запрос с терминала)
+    if session["is_terminal"]: # Перенаправление на страницу операций(запрос с терминала)
         return render_template("operations", {"priority": "student", "nfc": ""}, client_ip)
 
-    if not log["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
+    if notsession["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
         return flask.render_template("404.html", template_name="404")
 
 
@@ -119,7 +119,7 @@ def crossroad(template_name, client_ip):
         return flask.render_template("404.html", template_name="404")
 
      # Данные корректны
-    return render_template(template_name, db.users.get({"id": log["user"]}), client_ip)
+    return render_template(template_name, db.users.get({"id":session["user"]}), client_ip)
 
 
 @app.route("/")
@@ -147,7 +147,7 @@ def api_login():
 
     if user is  None and form["login"] == "terminal" and form["password"] == "terminal":
         db.users.insert({"id": "terminal", "priority": "student", "nfc": ""})
-        db.logs.insert({
+        db.sessions.insert({
             "user": "terminal",
             "ip": client_ip,
             "is_terminal": True,
@@ -160,7 +160,7 @@ def api_login():
         db.ips.update({"ip": client_ip}, {"logAttempts": ip["logAttempts"] + 1})
         return jsonify(answer="fail")
     else:
-        db.logs.insert({
+        db.sessions.insert({
             "user": user["id"],
             "ip": client_ip,
             "is_terminal": False,
@@ -202,7 +202,7 @@ def api_registration():
             "id": user_uudi,
             "priority": invitation["priority"],
         })
-        db.logs.insert({
+        db.sessions.insert({
             "user": user_uudi,
             "ip": client_ip,
             "is_terminal": False,
@@ -218,7 +218,7 @@ def api_registration():
 def api_exit():
     form = request.form
     db = DigitalLibraryDatabase()
-    db.logs.remove({"ip": form["ip"]})
+    db.sessions.remove({"ip": form["ip"]})
     print(form["ip"])
     return jsonify(answer="ok")
 
@@ -259,7 +259,7 @@ def render(template_name):
 def main():
     logging.basicConfig(level=logging.DEBUG)
     config = load_config()
-    app.run(host=config["host"], debug=True, port=1303)
+    app.run(host=config[ "host"], debug=True, port=1303)
 
 
 if __name__ == '__main__':

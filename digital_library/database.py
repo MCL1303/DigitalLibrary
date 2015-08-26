@@ -43,6 +43,7 @@ class DigitalLibraryDatabase(Database):
         self.handlog = Collection(self, "handlog")
         self.users = Collection(self, "users")
         self.books = Collection(self, "books")
-        self.logs = Collection(self, "logs")
+        self.sessions = Collection(self, "sessions")
         self.ips = Collection(self, "ips")
         self.invitations = Collection(self, "invitations")
+        self.terminalPassword = Collection(self, "tterminalPassword")
