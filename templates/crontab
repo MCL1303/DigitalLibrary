@@ -1,0 +1,5 @@
+ SHELL=/bin/sh
+
+ * 0-23 * * * ./hour_backup
+ * * 1-31 * * ./day_backup
+ * * * * =0   ./week_backup
