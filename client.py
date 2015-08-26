@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import requests
 import sys
 from time import sleep
 from configparser import ConfigParser
@@ -32,23 +31,24 @@ class Sender():
         pass
 
     @SimpleThread
-    def send(self, user, book, uuid, webview):
+    def send(self, user, book, webview):
         print(user)
-        webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r}, {!r})".format(
+        webview.page().mainFrame().evaluateJavaScript("send_scanner_data({!r}, {!r})".format(
             user,
             book,
-            uuid,
         ))
+        print(user)
 
 
-def send_scanner_data(user, book, uuid, webview):
+
+def send_scanner_data(user, book, webview):
     print(user)
     sender = Sender()
-    sender.send(user, book, uuid, webview)
+    sender.send(user, book, webview)
     print("sended")
 
 
-def scan_user(device_file, curent_user, curent_book, uuid, webview):
+def scan_user(device_file, curent_user, curent_book, webview):
     while True:
         curent_book = "curant"
         user = scanner_read(device_file)
@@ -61,12 +61,12 @@ def scan_user(device_file, curent_user, curent_book, uuid, webview):
         else:
             print("sending")
             curent_user = user
-            send_scanner_data(curent_user, curent_book, uuid, webview)
+            send_scanner_data(curent_user, curent_book, webview)
             curent_user = None
             curent_book = None
 
 
-def scan_book(device_file, curent_user, curent_book, uuid, webview):
+def scan_book(device_file, curent_user, curent_book, webview):
     while True:
         book = scanner_read(device_file)
         if curent_book is not None and curent_user is None:
@@ -76,7 +76,7 @@ def scan_book(device_file, curent_user, curent_book, uuid, webview):
             curent_book = book
         else:
             curent_book = book
-            send_scanner_data(curent_user, curent_book, uuid, webview)
+            send_scanner_data(curent_user, curent_book, webview)
             curent_user = None
             curent_book = None
 
@@ -91,16 +91,12 @@ def main():
     webview.showFullScreen()
 
     curent_user, curent_book = None, None
-    uuid = requests.get(
-        "http://localhost:5000/connect"
-    ).json()["uuid"]
     thread_user = Thread(
         target=scan_user,
         args=(
             USER_SCANNER_DEVICE_FILE,
             curent_user,
             curent_book,
-            uuid,
             webview,
         )
     )

@@ -10,14 +10,14 @@
             <h2 id="status">Статус операции</h2>
         </div>
         <script>
-            function send_scaner_data(user, book, uuid) {
+            function send_scaner_data(user, book) {
                 $.post(
-                    "http://localhost:5000/api/book/action",
-                    {user: user, book: book, uuid: uuid},
+                    "http://localhost:1303/api/book/action",
+                    {user: user, book: book},
                     function(data) {
                         $("#cover").attr(
                             'src',
-                            "http://localhost:5000/static/images/book/large-covers/" +
+                            "http://localhost:1303/static/images/book/large-covers/" +
                                 data.book + ".jpg"
                         );
                         if (data.action == "Take") {
@@ -31,14 +31,4 @@
             }
         </script>
     </div>
-    {% if device != "terminal" %}
-        <script>
-            window.location.href = "http://localhost:5000/"
-        </script>
-    {% endif %}
-    {% if user == "librarian" %}
-        <script>
-            window.location.href = "http://localhost:5000/home"
-        </script>
-    {% endif %}
 {% endblock %}

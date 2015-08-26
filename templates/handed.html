@@ -10,10 +10,10 @@
             {% else %}
             <h3>На руках</h3>
             {% endif %}
-            {% for book in books %}
+            {% for book in handedBooks %}
                 <div class="col-sm-6 col-md-4">
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                        <img src="{{ 'http://localhost:1303/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
                         <div class="caption" style="padding: 1em 0; text-align: center;">
                             <h3>{{book.title}}</h3>
                             <p>{{book.author}}</p>
@@ -29,7 +29,7 @@
             {% for book in handedBooks %}
                 <div class="col-sm-6 col-md-4">
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                        <img src="{{ 'http://localhost:1303/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
                         <div class="caption" style="padding: 1em 0; text-align: center;">
                             <h3 style="">{{book.title}}</h3>
                             <p>{{book.author}}</p>
@@ -38,10 +38,5 @@
                 </div>
             {% endfor %}
         </div>
-    {% endif %}
-    {% if device == "terminal" %}
-        <script>
-            window.location.href = "http://localhost:5000/operations"
-        </script>
     {% endif %}
 {% endblock %}

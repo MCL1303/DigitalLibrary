@@ -1,8 +1,7 @@
 [Server]
 host = ::
 [Demon]
-uuid_url = http://localhost:5000/connect
-url = http://localhost:5000/operations
+url = http://localhost:1303/auth
 bookScanner = path
 userScanner = path
 uuid = id
