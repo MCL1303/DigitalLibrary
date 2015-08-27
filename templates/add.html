@@ -41,14 +41,23 @@
             <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                 <div style="width: 368px; margin: auto;">
                     <div class="btn-group" role="group" style="margin-top: 20px;">
-                        <button type="button" class="btn btn-default" role="presentation" class="active"><a href="#variants" id="variants-tab" role="tab" data-toggle="tab" aria-controls="variants" aria-expanded="true" style="text-decoration: none;">Предложенные</button>
+                        <button type="button" class="btn btn-default" role="presentation" class="active"><a href="#url" role="tab" id="url-tab" data-toggle="tab" aria-controls="url" aria-expanded="false" style="text-decoration: none;">По URL</button>
+                        <button type="button" class="btn btn-default" role="presentation" class=""><a href="#variants" id="variants-tab" role="tab" data-toggle="tab" aria-controls="variants" aria-expanded="true" style="text-decoration: none;">Предложенные</button>
                         <button type="button" class="btn btn-default" role="presentation" class=""><a href="#file" role="tab" id="file-tab" data-toggle="tab" aria-controls="file" aria-expanded="false" style="text-decoration: none;">Файл с компьютера</button>
-                        <button type="button" class="btn btn-default" role="presentation" class=""><a href="#url" role="tab" id="url-tab" data-toggle="tab" aria-controls="url" aria-expanded="false" style="text-decoration: none;">По URL</button>
                     </div>
                 </div>
 
                 <div id="myTabContent" class="tab-content">
-                    <div role="tabpanel" class="tab-pane fade active in" id="variants" aria-labelledby="variants-tab">
+                    <div role="tabpanel" class="tab-pane fade active in" id="url" aria-labelledby="url-tab">
+                        <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
+                        <div>
+                            <div class="input-group" style="width: 370px; margin: auto;">
+                                <span class="default input-group-addon" id="labelUrl">URL</span>
+                                <input id="inputUrl" type="text" class="form-control" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade" id="variants" aria-labelledby="variants-tab">
                         <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
                         <div style=" margin: 10px; text-align: center;">
                             <button class="btn btn-success">Выбрать</button>
@@ -58,15 +67,6 @@
                         <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
                         <div style=" margin: 10px; text-align: center;">
                             <button class="btn btn-primary" style="">Загрузить файл</button>
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane fade" id="url" aria-labelledby="url-tab">
-                        <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
-                        <div>
-                            <div class="input-group" style="width: 370px; margin: auto;">
-                                <span class="default input-group-addon" id="labelUrl">URL</span>
-                                <input id="inputUrl" type="text" class="form-control" placeholder="">
-                            </div>
                         </div>
                     </div>
                 </div>

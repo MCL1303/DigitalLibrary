@@ -40,9 +40,9 @@ def scanner_read(device_file):
         return data.strip("\2\3\r\n")
 
 
-def send_scanner_data(user, book, webview):
+def send_scanner_data(user, webview):
     webview.page().mainFrame().evaluateJavaScript(
-        "send_scanner_data({!r}, {!r});".format(user, book)
+        "send_scanner_data({!r});".format(user)
     )
 
 
@@ -79,13 +79,13 @@ def main():
         user = scanner_read(config["user_scanner"])
         logging.debug('user = %r', user)
         if user is not None:
-            book = scanner_read(config["book_scanner"])
-            logging.debug('user = %r', book)
-            if book is not None:
-                logging.debug('send_scanner_data%r', (user, book, browser))
-                send_scanner_data(user, book, browser)
+            # book = scanner_read(config["book_scanner"])
+            # logging.debug('user = %r', book)
+            # if book is not None:
+            # logging.debug('send_scanner_data%r', (user, browser))
+            send_scanner_data(user, browser)
         app.processEvents()
-        sleep(1)
+        sleep(0.5)
 
 
 if __name__ == '__main__':
