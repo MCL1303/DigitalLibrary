@@ -1,9 +1,11 @@
 [Server]
 host = ::
+
 [Terminal]
 url_start = http://localhost:1303/auth
-book_scanner = PATH
-user_scanner = PATH
+book_scanner = /tmp/book_scanner
+user_scanner = /tmp/user_scanner
 uuid = id
+
 [Resizer]
 name = curant

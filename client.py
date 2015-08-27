@@ -69,16 +69,11 @@ def main():
     browser = BrowserWindow(config['url_start'])
     browser.show()
 
-    running = True
+    app_state = {'running': True}
+    browser.closed.connect(lambda: app_state.__setitem__('running', False))
 
-    def quit():
-        global running
-        running = False
-    browser.closed.connect(quit)
-
-    while running:
+    while app_state['running']:
         user = scanner_read(config["user_scanner"])
-        logging.debug('user = %r', user)
         if user is not None:
             # book = scanner_read(config["book_scanner"])
             # logging.debug('user = %r', book)
@@ -86,7 +81,7 @@ def main():
             logging.debug('send_scanner_data%r', (user, browser))
             send_scanner_data(user, browser)
         app.processEvents()
-        sleep(0.5)
+        sleep(0.001)
 
 
 if __name__ == '__main__':
