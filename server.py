@@ -37,13 +37,6 @@ def render_template(template_name, user, client_ip):
             allHandedBooks += [book]
         current_book = {}
         for i in range(0, len(allHandedBooks)):
-            print("\n\n\n\n")
-            print(allHandedBooks[i])
-            current_book = allHandedBooks[i]
-            current_book["handed"] = 1
-            current_book["old"] = (datetime.utcnow() - allHandedBooks[i]["time"]).days
-            current_book["oldName"] = allHandedBooks[i]["owner"]
-            current_book["oldOwner"] = db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
             for j in range(i + 1, len(allHandedBooks)):
                 if allHandedBooks[i]["book"] != allHandedBooks[j]["book"]:
                     continue
@@ -55,7 +48,6 @@ def render_template(template_name, user, client_ip):
                         current_book["oldOwner"] = db.users.get({"name": allHandedBooks[j]["owner"]})["id"]
             if current_book != {}:
                 handedBooks += [current_book]
-            print(current_book)
     else:
         hands = db.hands.find({"user": user["nfc"]})
         for hand in hands:
