@@ -82,7 +82,7 @@ def main():
             # book = scanner_read(config["book_scanner"])
             # logging.debug('user = %r', book)
             # if book is not None:
-            # logging.debug('send_scanner_data%r', (user, browser))
+            logging.debug('send_scanner_data%r', (user, browser))
             send_scanner_data(user, browser)
         app.processEvents()
         sleep(0.5)
