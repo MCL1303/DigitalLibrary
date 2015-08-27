@@ -41,18 +41,31 @@ def render_template(template_name, user, client_ip):
             print(allHandedBooks[i])
             curent_book = allHandedBooks[i]
             curent_book["handed"] = 1
-            curent_book["old"] = (datetime.utcnow() - allHandedBooks[i]["time"]).days
+            curent_book["old"] = (
+                (datetime.utcnow() - allHandedBooks[i]["time"]).days
+            )
             curent_book["oldName"] = allHandedBooks[i]["owner"]
-            curent_book["oldOwner"] = db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
+            curent_book["oldOwner"] = (
+                db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
+            )
             for j in range(i + 1, len(allHandedBooks)):
                 if allHandedBooks[i]["book"] != allHandedBooks[j]["book"]:
                     continue
                 else:
                     curent_book["handed"] += 1
-                    if curent_book["old"] < (datetime.utcnow() - allHandedBooks[j]["time"]).days:
-                        curent_book["old"] = (datetime.utcnow() - allHandedBooks[j]["time"]).days
+                    if (
+                        curent_book["old"]
+                        < (datetime.utcnow() - allHandedBooks[j]["time"]).days
+                    ):
+                        curent_book["old"] = (
+                            (datetime.utcnow() - allHandedBooks[j]["time"])
+                            .days
+                        )
                         curent_book["oldName"] = allHandedBooks[j]["owner"]
-                        curent_book["oldOwner"] = db.users.get({"name": allHandedBooks[j]["owner"]})["id"]
+                        curent_book["oldOwner"] = (
+                            db.users.get({"name": allHandedBooks[j]["owner"]})
+                            ["id"]
+                        )
             if curent_book != {}:
                 handedBooks += [curent_book]
             print(curent_book)
