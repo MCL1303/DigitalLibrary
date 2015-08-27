@@ -59,8 +59,6 @@ class BrowserWindow(QWebView):
 
 
 def main():
-    global running
-
     logging.basicConfig(level=logging.DEBUG)
 
     config = load_config()
