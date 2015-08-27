@@ -36,7 +36,7 @@ def render_template(template_name, user, client_ip):
             book["count"] = int(book["count"])
             allHandedBooks += [book]
         curent_book = {}
-        for i in range (0, len(allHandedBooks)):
+        for i in range(0, len(allHandedBooks)):
             print("\n\n\n\n")
             print(allHandedBooks[i])
             curent_book = allHandedBooks[i]
@@ -44,7 +44,7 @@ def render_template(template_name, user, client_ip):
             curent_book["old"] = int(str(datetime.utcnow() - allHandedBooks[i]["time"]).split(":")[0])
             curent_book["oldName"] = allHandedBooks[i]["owner"]
             curent_book["oldOwner"] = db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
-            for j in range (i + 1, len(allHandedBooks)):
+            for j in range(i + 1, len(allHandedBooks)):
                 if allHandedBooks[i]["book"] != allHandedBooks[j]["book"]:
                     continue
                 else:
@@ -89,34 +89,44 @@ def crossroad(template_name, client_ip):
     db = DigitalLibraryDatabase()
     session = db.sessions.get({"ip": client_ip})
 
-    if session is None and template_name in ["login", "registration"]: # Перенаправление на страницы авторизации и решистрации
-        return render_template(template_name, {"priority": "student", "nfc": ""}, client_ip)
+    if session is None and
+    template_name in ["login", "registration"]:
+        return render_template(
+            template_name,
+            {"priority": "student", "nfc": ""},
+            client_ip
+        )
 
-    if session is None: # Перенаправление на страницу авторизации(не найден лог)
+    if session is None:
         return redirect("/login")
 
-    user = db.users.get({"id":session["user"]})
-
+    user = db.users.get({"id": session["user"]})
 
     if template_name in ["login", "registration"]:
         return redirect("/")
 
-    if user is None: # Перенаправление на страницу авторизации(неправильный лог)
+    if user is None:
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if session["remember"] == "false" and session["datetimeStr"] != str(datetime.utcnow())[0:-11]: # Перенаправление на страницу авторизации(недолговременный лог)
+    if session["remember"] == "false" and
+    session["datetimeStr"] != str(datetime.utcnow())[0:-11]:
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if session["is_terminal"]: # Перенаправление на страницу операций(запрос с терминала)
-        return render_template("operations", {"priority": "student", "nfc": ""}, client_ip)
+    if session["is_terminal"]:
+        return render_template(
+            "operations",
+            {"priority": "student", "nfc": ""},
+            client_ip
+        )
 
-    if not session["is_terminal"] and template_name == "operations": # 404 (неправильное устройство запроса)
+    if not session["is_terminal"] and
+    template_name == "operations":
         return redirect("/")
 
-
-    if user["priority"] == "student" and template_name not in [ # 404 (неправильный приоритет запроса)
+    if user["priority"] == "student" and
+    template_name not in [
         "login",
         "registration",
         "home",
@@ -126,7 +136,8 @@ def crossroad(template_name, client_ip):
     ]:
         return redirect("/")
 
-    if user["priority"] == "librarian" and template_name not in [ # 404 (неправильный приоритет запроса)
+    if user["priority"] == "librarian" and
+    template_name not in [
         "login",
         "registration",
         "home",
@@ -136,8 +147,11 @@ def crossroad(template_name, client_ip):
     ]:
         return redirect("/")
 
-     # Данные корректны
-    return render_template(template_name, db.users.get({"id":session["user"]}), client_ip)
+    return render_template(
+        template_name,
+        db.users.get({"id": session["user"]}),
+        client_ip
+    )
 
 
 @app.route("/")
@@ -154,16 +168,26 @@ def api_login():
     user = db.users.get({"login": form["login"], "password": form["password"]})
 
     if ip is None:
-        db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
+        db.ips.insert({
+            "ip": client_ip,
+            "logAttempts": 0,
+            "regAttempts": 0,
+            "datetimeStr": str(datetime.utcnow())[0:-16]
+        })
         ip = db.ips.get({"ip": client_ip})
 
     if ip["datetimeStr"] != str(datetime.utcnow())[0:-16]:
-        db.ips.update({"ip": client_ip}, {"logAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
+        db.ips.update(
+            {"ip": client_ip},
+            {"logAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]}
+        )
 
     if ip["logAttempts"] > 10:
         return jsonify(answer="fail")
 
-    if user is  None and form["login"] == "terminal" and form["password"] == "terminal":
+    if user is None and
+    form["login"] == "terminal" and
+    form["password"] == "terminal":
         db.users.insert({"id": "terminal", "priority": "student", "nfc": ""})
         db.sessions.insert({
             "user": "terminal",
@@ -175,7 +199,10 @@ def api_login():
         return jsonify(answer="ok")
 
     if user is None:
-        db.ips.update({"ip": client_ip}, {"logAttempts": ip["logAttempts"] + 1})
+        db.ips.update(
+            {"ip": client_ip},
+            {"logAttempts": ip["logAttempts"] + 1}
+        )
         return jsonify(answer="fail")
     else:
         db.sessions.insert({
@@ -198,17 +225,28 @@ def api_registration():
     invitation = db.invitations.get({"inviteCode": form["inviteCode"]})
 
     if ip is None:
-        db.ips.insert({"ip": client_ip, "logAttempts": 0, "regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
+        db.ips.insert({
+            "ip": client_ip,
+            "logAttempts": 0,
+            "regAttempts": 0,
+            "datetimeStr": str(datetime.utcnow())[0:-16]
+        })
         ip = db.ips.get({"ip": client_ip})
 
     if ip["datetimeStr"] != str(datetime.utcnow())[0:-16]:
-        db.ips.update({"ip": client_ip}, {"regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]})
+        db.ips.update(
+            {"ip": client_ip},
+            {"regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]}
+        )
 
     if ip["regAttempts"] > 10:
         return jsonify(answer="fail")
 
     if invitation is None:
-        db.ips.update({"ip": client_ip}, {"regAttempts": ip["regAttempts"] + 1})
+        db.ips.update(
+            {"ip": client_ip},
+            {"regAttempts": ip["regAttempts"] + 1}
+        )
         return jsonify(answer="fail")
     else:
         user_uudi = uuid.uuid4()
@@ -250,7 +288,11 @@ def api_book_action():
         db.hands.remove({"user": user, "book": book})
         action = Action.Return
     else:
-        db.hands.insert({"user": user, "book": book, "datetime": datetime.utcnow()})
+        db.hands.insert({
+            "user": user,
+            "book": book,
+            "datetime": datetime.utcnow()
+        })
         action = Action.Take
     db.handlog.insert({
         "user": user,
@@ -281,7 +323,7 @@ def api_book_add():
 def api_book_change():
     form = request.form
     db = DigitalLibraryDatabase()
-    if db.books.get({"barcode": form["barcode"]}) == None:
+    if db.books.get({"barcode": form["barcode"]}) is None:
         return jsonify(answer="fail")
     db.books.update({"barcode": form["barcode"]}, {
         "title": form["title"],
@@ -295,7 +337,7 @@ def api_book_change():
 def api_book_delete():
     form = request.form
     db = DigitalLibraryDatabase()
-    if db.books.get({"barcode": form["barcode"]}) == None:
+    if db.books.get({"barcode": form["barcode"]}) is None:
         return jsonify(answer="fail")
     db.books.remove({"barcode": form["barcode"]})
     db.handlog.remove({"book": form["barcode"]})
@@ -314,14 +356,21 @@ def render(template_name):
         "operations",
         "add",
     ]:
-        return render_template("404", {"priority": "student", "nfc": "asd"}, request.remote_addr)
+        return render_template(
+            "404",
+            {
+                "priority": "student",
+                "nfc": "asd"
+            },
+            request.remote_addr
+        )
     return crossroad(template_name, request.remote_addr)
 
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
     config = load_config()
-    app.run(host=config[ "host"], debug=True, port=1303)
+    app.run(host=config["host"], debug=True, port=1303)
 
 
 if __name__ == '__main__':
@@ -358,7 +407,7 @@ tempalte_hand = {
     "datetimeStr": "str",
 }
 
-tempalte_journal =  {
+tempalte_journal = {
     "user": "str",
     "book": "str",
     "datetimeStr": "str",

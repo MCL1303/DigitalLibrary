@@ -70,6 +70,7 @@ def main():
     browser.show()
 
     running = True
+
     def quit():
         global running
         running = False
