@@ -102,8 +102,7 @@ def crossroad(template_name, client_ip):
     db = DigitalLibraryDatabase()
     session = db.sessions.get({"ip": client_ip})
 
-    if session is None and
-    template_name in ["login", "registration"]:
+    if session is None and template_name in ["login", "registration"]:
         return render_template(
             template_name,
             {"priority": "student", "nfc": ""},
@@ -122,8 +121,7 @@ def crossroad(template_name, client_ip):
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if session["remember"] == "false" and
-    session["datetimeStr"] != str(datetime.utcnow())[0:-11]:
+    if session["remember"] == "false" and session["datetimeStr"] != str(datetime.utcnow())[0:-11]:
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
@@ -134,12 +132,10 @@ def crossroad(template_name, client_ip):
             client_ip
         )
 
-    if not session["is_terminal"] and
-    template_name == "operations":
+    if not session["is_terminal"] and template_name == "operations":
         return redirect("/")
 
-    if user["priority"] == "student" and
-    template_name not in [
+    if user["priority"] == "student" and template_name not in [
         "login",
         "registration",
         "home",
@@ -149,8 +145,7 @@ def crossroad(template_name, client_ip):
     ]:
         return redirect("/")
 
-    if user["priority"] == "librarian" and
-    template_name not in [
+    if user["priority"] == "librarian" and template_name not in [
         "login",
         "registration",
         "home",

@@ -1,4 +1,3 @@
-import configparser
 import PIL.Image
 
 
