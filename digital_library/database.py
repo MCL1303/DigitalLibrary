@@ -43,4 +43,3 @@ class DigitalLibraryDatabase(Database):
         self.sessions = Collection(self, "sessions")
         self.ips = Collection(self, "ips")
         self.invitations = Collection(self, "invitations")
-        self.terminalPassword = Collection(self, "tterminalPassword")
