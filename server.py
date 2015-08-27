@@ -121,7 +121,10 @@ def crossroad(template_name, client_ip):
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
-    if session["remember"] == "false" and session["datetimeStr"] != str(datetime.utcnow())[0:-11]:
+    if (
+        session["remember"] == "false"
+        and session["datetimeStr"] != str(datetime.utcnow())[0:-11]
+    ):
         db.sessions.remove({"ip": client_ip})
         return redirect("/login")
 
@@ -193,9 +196,11 @@ def api_login():
     if ip["logAttempts"] > 10:
         return jsonify(answer="fail")
 
-    if user is None and
-    form["login"] == "terminal" and
-    form["password"] == "terminal":
+    if (
+        user is None
+        and form["login"] == "terminal"
+        and form["password"] == "terminal"
+    ):
         db.users.insert({"id": "terminal", "priority": "student", "nfc": ""})
         db.sessions.insert({
             "user": "terminal",
