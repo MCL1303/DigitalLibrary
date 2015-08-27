@@ -35,40 +35,40 @@ def render_template(template_name, user, client_ip):
             book["time"] = hand["datetime"]
             book["count"] = int(book["count"])
             allHandedBooks += [book]
-        curent_book = {}
+        current_book = {}
         for i in range(0, len(allHandedBooks)):
             print("\n\n\n\n")
             print(allHandedBooks[i])
-            curent_book = allHandedBooks[i]
-            curent_book["handed"] = 1
-            curent_book["old"] = (
+            current_book = allHandedBooks[i]
+            current_book["handed"] = 1
+            current_book["old"] = (
                 (datetime.utcnow() - allHandedBooks[i]["time"]).days
             )
-            curent_book["oldName"] = allHandedBooks[i]["owner"]
-            curent_book["oldOwner"] = (
+            current_book["oldName"] = allHandedBooks[i]["owner"]
+            current_book["oldOwner"] = (
                 db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
             )
             for j in range(i + 1, len(allHandedBooks)):
                 if allHandedBooks[i]["book"] != allHandedBooks[j]["book"]:
                     continue
                 else:
-                    curent_book["handed"] += 1
+                    current_book["handed"] += 1
                     if (
-                        curent_book["old"]
+                        current_book["old"]
                         < (datetime.utcnow() - allHandedBooks[j]["time"]).days
                     ):
-                        curent_book["old"] = (
+                        current_book["old"] = (
                             (datetime.utcnow() - allHandedBooks[j]["time"])
                             .days
                         )
-                        curent_book["oldName"] = allHandedBooks[j]["owner"]
-                        curent_book["oldOwner"] = (
+                        current_book["oldName"] = allHandedBooks[j]["owner"]
+                        current_book["oldOwner"] = (
                             db.users.get({"name": allHandedBooks[j]["owner"]})
                             ["id"]
                         )
-            if curent_book != {}:
-                handedBooks += [curent_book]
-            print(curent_book)
+            if current_book != {}:
+                handedBooks += [current_book]
+            print(current_book)
     else:
         hands = db.hands.find({"user": user["nfc"]})
         for hand in hands:
