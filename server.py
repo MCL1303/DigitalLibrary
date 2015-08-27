@@ -53,14 +53,11 @@ def render_template(template_name, user, client_ip):
                     continue
                 else:
                     current_book["handed"] += 1
-                    if (
-                        current_book["old"]
-                        < (datetime.utcnow() - allHandedBooks[j]["time"]).days
-                    ):
-                        current_book["old"] = (
-                            (datetime.utcnow() - allHandedBooks[j]["time"])
-                            .days
-                        )
+                    handed_days_ago = (
+                        (datetime.utcnow() - allHandedBooks[j]["time"]).days
+                    )
+                    if current_book["old"] < handed_days_ago:
+                        current_book["old"] = handed_days_ago
                         current_book["oldName"] = allHandedBooks[j]["owner"]
                         current_book["oldOwner"] = (
                             db.users.get({"name": allHandedBooks[j]["owner"]})
