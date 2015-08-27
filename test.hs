@@ -17,7 +17,8 @@ main = do
 
     pyflakes $ pythonFiles ++ pythonPackages
 
-    let pylintOptions = [ "--disable=locally-disabled"
+    let pylintOptions = [ "--disable=bad-continuation"
+                        , "--disable=locally-disabled"
                         , "--disable=missing-docstring"
                         , "--disable=star-args"
                         , "--extension-pkg-whitelist=PyQt5"
