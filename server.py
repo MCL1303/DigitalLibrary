@@ -435,3 +435,12 @@ tempalte_invitation = {
     "inviteCode": "str",
     "priority": "str",
 }
+
+def init_test_db():
+    db = DigitalLibraryDatabase()
+    db.invitations.insert({
+        "name": "test",
+        "nfc": "str",
+        "inviteCode": "str",
+        "priority": "librarian",
+    })

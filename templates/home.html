@@ -4,22 +4,24 @@
 
 {% block content %}
     <script src="/static/js/jquery.js"></script>
+
     <script>
         function change_book(id, title, author, count, code) {
-            $("#cover")[0].src = 'http://localhost:5000/static/images/book/large-covers/' + id + '.jpg'
-            $("#inputTitle")[0].value = title
-            $("#inputAuthor")[0].value = author
-            $("#inputCount")[0].value = count
-            $("#inputCode")[0].value = code
+            $("#cover")[0].src = '/static/images/book/large-covers/' + id + '.jpg';
+            $("#inputTitle")[0].value = title;
+            $("#inputAuthor")[0].value = author;
+            $("#inputCount")[0].value = count;
+            $("#inputCode")[0].value = code;
         }
-    </script>   
+    </script>
+
     {% if user.priority == 'student' %}
         <div class="row">
             <h3>Должно понравиться</h3>
             {% for book in books %}
                 <div class="col-sm-6 col-md-4">
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="{{ 'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                        <img src="/static/images/book/small-covers/{{ book.id }}.jpg" alt="">
                         <div class="caption" style="padding: 1em 0; text-align: center;">
                             <h3 style="">{{book.title}}</h3>
                             <p>{{book.author}}</p>
@@ -29,6 +31,7 @@
             {% endfor %}
         </div>
     {% endif %}
+
     {% if user.priority == "librarian" %}
         <div class="row">
         <h3>Просроченные</h3>
@@ -36,7 +39,7 @@
                 {% for book in handedBooks %}
                     <div class="col-sm-6 col-md-4">
                         <div class="thumbnail" style="height: 650;">
-                            <img src="{{'http://localhost:5000/static/images/book/small-covers/' + book.id + '.jpg'}}" alt="">
+                            <img src="/static/images/book/small-covers/{{ book.id }}.jpg" alt="">
                             <div class="caption" style="text-align: center;">
                                 <h4>{{book.title}}</h4>
                                 <p>{{book.author}}</p>
@@ -97,47 +100,45 @@
                 </div>
             </div>
         </div>
-        
+
         <script>
         $('#inputTitle').on('input', function() {
-            if($("#inputTitle")[0].value != "") {
-                $("#title").removeClass("default")
-                $("#title").addClass("green")
+            if ($("#inputTitle")[0].value != "") {
+                $("#title").removeClass("default");
+                $("#title").addClass("green");
             } else {
-                $("#title").removeClass("green")
-                $("#title").addClass("default")
+                $("#title").removeClass("green");
+                $("#title").addClass("default");
             }
         });
         $('#inputAuthor').on('input', function() {
-            if($("#inputAuthor")[0].value != "") {
-                $("#author").removeClass("default")
-                $("#author").addClass("green")
+            if ($("#inputAuthor")[0].value != "") {
+                $("#author").removeClass("default");
+                $("#author").addClass("green");
             } else {
-                $("#author").removeClass("green")
-                $("#author").addClass("default")
+                $("#author").removeClass("green");
+                $("#author").addClass("default");
             }
         });
         $('#inputCount').on('input', function() {
-            if($("#inputCount")[0].value != "" &&
+            if (
+                $("#inputCount")[0].value != "" &&
                 ~~Number($("#inputCount")[0].value) > 0
-                ) {
-                $("#count").removeClass("default")
-                $("#count").addClass("green")
+            ) {
+                $("#count").removeClass("default");
+                $("#count").addClass("green");
             } else {
-                $("#count").removeClass("green")
-                $("#count").addClass("default")
+                $("#count").removeClass("green");
+                $("#count").addClass("default");
             }
         });
         $('#inputCode').on('input', function() {
-            if($("#inputCode")[0].value != "" &&
-                $("#inputCode")[0].value.length == 13 &&
-                ~~Number($("#inputCode")[0].value) > 0
-                ) {
-                $("#code").removeClass("default")
-                $("#code").addClass("green")
+            if (/^\d{13}$/.test($("#inputCode")[0].value)) {
+                $("#code").removeClass("default");
+                $("#code").addClass("green");
             } else {
-                $("#code").removeClass("green")
-                $("#code").addClass("default")
+                $("#code").removeClass("green");
+                $("#code").addClass("default");
             }
         });
         </script>

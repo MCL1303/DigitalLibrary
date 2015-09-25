@@ -43,7 +43,7 @@
                     <div class="btn-group" role="group" style="margin-top: 20px;">
                         <button type="button" class="btn btn-default" role="presentation" class="active"><a href="#url" role="tab" id="url-tab" data-toggle="tab" aria-controls="url" aria-expanded="false" style="text-decoration: none;">По URL</button>
                         <button type="button" class="btn btn-default" role="presentation" class=""><a href="#variants" id="variants-tab" role="tab" data-toggle="tab" aria-controls="variants" aria-expanded="true" style="text-decoration: none;">Предложенные</button>
-                        <button type="button" class="btn btn-default" role="presentation" class=""><a href="#file" role="tab" id="file-tab" data-toggle="tab" aria-controls="file" aria-expanded="false" style="text-decoration: none;">Файл с компьютера</button>
+                        <button type="button" class="btn btn-default" role="presentation" class=""><a href="#file" role="tab" id="file-tab" data-toggle="tab" aria-controls="file" aria-expanded="false" style="text-decoration: none;">Файл с компьютера</a></button>
                     </div>
                 </div>
 
@@ -122,12 +122,12 @@
             if($("#inputUrl")[0].value != "" &&
                 $("#inputCode")[0].value.length == 13 &&
                 ~~Number($("#inputCode")[0].value) > 0
-                ) {
-                $("#lableUrl").removeClass("default")
-                $("#labelUrl").addClass("green")
+            ) {
+                $("#lableUrl").removeClass("default");
+                $("#labelUrl").addClass("green");
             } else {
-                $("#labelUrl").removeClass("green")
-                $("#labelUrl").addClass("default")
+                $("#labelUrl").removeClass("green");
+                $("#labelUrl").addClass("default");
             }
         });
         </script>
