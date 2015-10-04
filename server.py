@@ -27,6 +27,7 @@ def load_config():
 HASH_BASE = sha512
 HASH_SIZE = HASH_BASE().digest_size
 
+
 def hash(password, salt):
     h = (password + salt).encode()
     for i in range(1024):
@@ -76,9 +77,14 @@ def api_registration():
             user["salt"] = salt
         except KeyError:
             return jsonify(answer="fail")
-    db.users.remove({"inviteCode" :form["inviteCode"], "nfc": user["nfc"]})
+    db.users.remove({"inviteCode": form["inviteCode"], "nfc": user["nfc"]})
     db.users.insert(user)
     return jsonify(answer="ok")
+
+
+COOKIE_AGE_REMEMBER = int(timedelta(days=4).total_seconds())
+
+COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=2).total_seconds())
 
 
 @app.route('/api/user/login', methods=['POST'])
@@ -87,7 +93,7 @@ def api_login():
     form = request.form
     salt = db.users.get({"login": form["login"]})
     if salt is None:
-         return jsonify(answer="error")
+        return jsonify(answer="error")
     salt = salt["salt"]
     user = db.users.get({
         "login": form["login"],
@@ -109,9 +115,11 @@ def api_login():
     })
     resp = make_response(jsonify(answer="ok"))
     if form["remember"] == "true":
-        resp.set_cookie("session_id", session_id, max_age=int(timedelta(days=4).total_seconds()))
+        resp.set_cookie("session_id", session_id, max_age=COOKIE_AGE_REMEMBER)
     else:
-        resp.set_cookie("session_id", session_id, max_age=int(timedelta(minutes=2).total_seconds()))
+        resp.set_cookie(
+            "session_id", session_id, max_age=COOKIE_AGE_NOT_REMEMBER
+        )
     return resp
 
 
@@ -219,12 +227,15 @@ def render_template(page_name, user):
                 flag = True
                 for hand in hands:
                     flag = True
+                    been_handed_days = (
+                        (datetime.utcnow() - hand["datetime"]).days
+                    )
                     for book in books:
                         if book["barcode"] == hand["book_barcode"]:
                             flag = False
                             book["handed"] += 1
-                            if book["old_datetime"] < (datetime.utcnow() - hand["datetime"]).days:
-                                book["old_datetime"] = (datetime.utcnow() - hand["datetime"]).days
+                            if book["old_datetime"] < been_handed_days:
+                                book["old_datetime"] = been_handed_days
                                 book["old_owner_id"] = hand["user_id"]
                                 book["old_owner_name"] = hand["user_name"]
                     if flag:
@@ -233,7 +244,7 @@ def render_template(page_name, user):
                             "barcode": book["barcode"],
                             "title": book["title"],
                             "author": book["author"],
-                            "old_datetime": (datetime.utcnow() - hand["datetime"]).days,
+                            "old_datetime": been_handed_days,
                             "old_owner_id": hand["user_id"],
                             "old_owner_name": hand["user_name"],
                             "handed": 1,
@@ -289,9 +300,13 @@ def cookie_check(page_name):
             else:
                 resp = make_response(render_template(page_name, user))
             if session["remember"] == "true":
-                resp.set_cookie("session_id", session_id, max_age=int(timedelta(days=4).total_seconds()))
+                resp.set_cookie(
+                    "session_id", session_id, max_age=COOKIE_AGE_REMEMBER
+                )
             else:
-                resp.set_cookie("session_id", session_id, max_age=int(timedelta(minutes=2).total_seconds()))
+                resp.set_cookie(
+                    "session_id", session_id, max_age=COOKIE_AGE_NOT_REMEMBER
+                )
             return resp
 
 
