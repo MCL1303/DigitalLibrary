@@ -323,7 +323,7 @@ template_book = {
     "barcode": "str",
 }
 
-tempalte_hand = {
+template_hand = {
     "user_id": "str",
     "user_name": "str",
     "book_barcode": "str",
@@ -332,7 +332,7 @@ tempalte_hand = {
     "datetime": "datetime",
 }
 
-tempalte_journal = {
+template_journal = {
     "user": "str",
     "book": "str",
     "datetime": "datetime",
@@ -343,7 +343,7 @@ tempalte_journal = {
     "user_name": "str",
 }
 
-tempalte_sessionl = {
+template_session = {
     "user": "str",
     "datetime": "datetime",
     "clienttype": "srt",
