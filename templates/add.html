@@ -119,16 +119,7 @@
             }
         });
         $('#inputUrl').on('input', function() {
-            if($("#inputUrl")[0].value != "" &&
-                $("#inputCode")[0].value.length == 13 &&
-                ~~Number($("#inputCode")[0].value) > 0
-            ) {
-                $("#lableUrl").removeClass("default");
-                $("#labelUrl").addClass("green");
-            } else {
-                $("#labelUrl").removeClass("green");
-                $("#labelUrl").addClass("default");
-            }
+            $('#cover')[0].css('background-image', 'url(' + $('#inputUrl').value + ')');
         });
         </script>
         <script>
@@ -137,7 +128,8 @@
                     "http://localhost:1303/api/book/add",
                     {title: title, author: author, count: count, code: code, url: url},
                     function(data) {
-                        console.log("ok")
+                        if(data.answer == "ok")
+                          window.location.replace("http://localhost:1303/add");
                     },
                     "json"
                 )

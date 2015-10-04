@@ -1,17 +1,24 @@
 import PIL.Image
 
 
-def resize(path, folder, name, ext):
-    img = PIL.Image.open(path)
-    width = int(img.size[0] * (480 / img.size[1]))
-    img = img.resize((width, 480), PIL.Image.ANTIALIAS)
-    img.save(
-        "static/images/{folder}/large-covers/{name}.{ext}"
-        .format(folder=folder, name=name, ext=ext)
-    )
-    width = int(img.size[0] * (320 / img.size[1]))
-    img = img.resize((width, 320), PIL.Image.ANTIALIAS)
-    img.save(
-        "static/images/{folder}/small-covers/{name}.{ext}"
-        .format(folder=folder, name=name, ext=ext)
-    )
+class Resize():
+    def __init__(self, path, folder, name, exe):
+        print(path)
+        print(folder)
+        print(name)
+        print(exe)
+        img = PIL.Image.open(path)
+        width = int(img.size[0] * (480 / img.size[1]))
+        img = img.resize((width, 480), PIL.Image.ANTIALIAS)
+        img.save(
+            "/home/igor/Calliope/static/images/" +
+            "{folder}/large-covers/{name}.{exe}"
+            .format(folder=folder, name=name, exe=exe)
+        )
+        width = int(img.size[0] * (320 / img.size[1]))
+        img = img.resize((width, 320), PIL.Image.ANTIALIAS)
+        img.save(
+            "/home/igor/Calliope/static/images/" +
+            "{folder}/small-covers/{name}.{exe}"
+            .format(folder=folder, name=name, exe=exe)
+        )
