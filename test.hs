@@ -22,11 +22,12 @@ main = do
                         , "--disable=missing-docstring"
                         , "--disable=star-args"
                         , "--dummy-variables-rgx=_.*"
-                        , "--extension-pkg-whitelist=PyQt5"
+                        , "--extension-pkg-whitelist=PyQt4,PyQt5"
                         , "--good-names=app,closeEvent,db"
                         , "--include-naming-hint=yes"
                         , "--output-format=colorized"
                         , "--reports=no"
+                        , "--variable-rgx=[a-z_][a-z0-9_]{,30}$"
                         ]
     pylint $ pylintOptions ++ pythonFiles ++ pythonPackages
 

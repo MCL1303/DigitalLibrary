@@ -34,6 +34,7 @@ class Collection:
 
 
 class DigitalLibraryDatabase(Database):
+    # pylint: disable=too-few-public-methods
     def __init__(self):
         super().__init__('digital_library')
         self.hands = Collection(self, "hands")
@@ -43,4 +44,3 @@ class DigitalLibraryDatabase(Database):
         self.sessions = Collection(self, "sessions")
         self.ips = Collection(self, "ips")
         self.invitations = Collection(self, "invitations")
-        self.terminalPassword = Collection(self, "tterminalPassword")

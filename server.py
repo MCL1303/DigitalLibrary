@@ -24,14 +24,14 @@ def load_config():
     return config['Server']
 
 
-HASH_BASE = sha512
-HASH_SIZE = HASH_BASE().digest_size
+Hash = sha512
+HASH_SIZE = Hash().digest_size  # pylint: disable=no-member
 
 
 def hash(password, salt):
     h = (password + salt).encode()
-    for i in range(1024):
-        h = HASH_BASE(h).digest()
+    for _ in range(1024):
+        h = Hash(h).digest()
     return h
 
 
@@ -49,7 +49,7 @@ def password_checker(password):
             a[0] = 1
         if i.isdigit():
             a[1] = 1
-    return not(a[0] == a[1] == 1)
+    return not a[0] == a[1] == 1
 
 
 @app.route('/api/user/registration', methods=['POST'])
@@ -180,7 +180,7 @@ def api_book_add():
         "count": int(form["count"]),
         "barcode": form["code"],
         })
-    local_filename, trash = urllib.request.urlretrieve(form["url"])
+    local_filename, _ = urllib.request.urlretrieve(form["url"])
     resize(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
 
