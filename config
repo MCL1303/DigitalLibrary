@@ -1,11 +1,6 @@
 [Server]
 host = ::
-
-[Terminal]
-url_start = http://localhost:1303/auth
-book_scanner = /tmp/book_scanner
-user_scanner = /tmp/user_scanner
-uuid = id
-
-[Resizer]
-name = curant
+port = 1303
+pages = ["login", "registration", "handed", "journal". "add"]
+librarian_pages = ["handed", "journal", "add"]
+student_pages = ["handed"]

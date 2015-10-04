@@ -1,7 +1,7 @@
 import PIL.Image
 
 
-class resizer():
+class Resize():
     def __init__(self, path, folder, name, exe):
         print(path)
         print(folder)

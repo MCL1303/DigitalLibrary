@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from flask import Flask, jsonify, request, redirect, make_response
 from digital_library.database import DigitalLibraryDatabase
-from digital_library.types import Action
-from digital_library.resizer import resizer
-
-from flask import Flask, jsonify, request, redirect
-from datetime import datetime
-import urllib.request
-import configparser
+from digital_library.types import Action, ClientType, AccessLevel
+from digital_library.resizer import Resize
+from datetime import datetime, timedelta
+from hashlib import sha512, sha1
 import flask
-import logging
+import configparser
 import uuid
+import random
+import string
+import urllib.request
 
 
 app = Flask('DigitalLibraryApplication')
@@ -23,143 +24,12 @@ def load_config():
     return config['Server']
 
 
-def render_template(template_name, user, client_ip):
-    db = DigitalLibraryDatabase()
-    handedBooks = []
-    if user["priority"] == "librarian":
-        hands = db.hands.find({})
-        allHandedBooks = []
-        for hand in hands:
-            book = db.books.get({"barcode": hand["book"]})
-            book["owner"] = db.users.get({"nfc": hand["user"]})["name"]
-            book["time"] = hand["datetime"]
-            book["count"] = int(book["count"])
-            allHandedBooks += [book]
-        current_book = {}
-        for i in range(0, len(allHandedBooks)):
-            print("\n\n\n\n")
-            print(allHandedBooks[i])
-            current_book = allHandedBooks[i]
-            current_book["handed"] = 1
-            current_book["old"] = (
-                (datetime.utcnow() - allHandedBooks[i]["time"]).days
-            )
-            current_book["oldName"] = allHandedBooks[i]["owner"]
-            current_book["oldOwner"] = (
-                db.users.get({"name": allHandedBooks[i]["owner"]})["id"]
-            )
-            for j in range(i + 1, len(allHandedBooks)):
-                if allHandedBooks[i]["book"] != allHandedBooks[j]["book"]:
-                    continue
-                else:
-                    current_book["handed"] += 1
-                    handed_days_ago = (
-                        (datetime.utcnow() - allHandedBooks[j]["time"]).days
-                    )
-                    if current_book["old"] < handed_days_ago:
-                        current_book["old"] = handed_days_ago
-                        current_book["oldName"] = allHandedBooks[j]["owner"]
-                        current_book["oldOwner"] = (
-                            db.users.get({"name": allHandedBooks[j]["owner"]})
-                            ["id"]
-                        )
-            if current_book != {}:
-                handedBooks += [current_book]
-            print(current_book)
-    else:
-        hands = db.hands.find({"user": user["nfc"]})
-        for hand in hands:
-            book = db.books.get({"barcode": hand["book"]})
-            handedBooks += [book]
-    handlog = db.handlog.find({})
-    for handl in handlog:
-        if handl["action"] == "Take":
-            handl["RuAction"] = "Взял"
-        else:
-            handl["RuAction"] = "Вернул"
-        handl["RuName"] = db.users.get({"nfc": handl["user"]})["name"]
-        handl["RuBook"] = db.books.get({"barcode": handl["book"]})["title"]
-    page_context = {
-        "user": user,
-        "handedBooks": handedBooks,
-        "handedBooksLen": len(handedBooks),
-        "ip": client_ip,
-        "handlog": handlog,
-        "handlogLen": len(handlog),
-        "log": db.sessions.get({"ip": client_ip}),
-    }
-    print(handedBooks)
-    return flask.render_template(
-        template_name + '.html',
-        **dict(template_name=template_name, **page_context)
-    )
-
-
-def crossroad(template_name, client_ip):
-    db = DigitalLibraryDatabase()
-    session = db.sessions.get({"ip": client_ip})
-
-    if session is None and template_name in ["login", "registration"]:
-        return render_template(
-            template_name,
-            {"priority": "student", "nfc": ""},
-            client_ip
-        )
-
-    if session is None:
-        return redirect("/login")
-
-    user = db.users.get({"id": session["user"]})
-
-    if template_name in ["login", "registration"]:
-        return redirect("/")
-
-    if user is None:
-        db.sessions.remove({"ip": client_ip})
-        return redirect("/login")
-
-    if (
-        session["remember"] == "false"
-        and session["datetimeStr"] != str(datetime.utcnow())[0:-11]
-    ):
-        db.sessions.remove({"ip": client_ip})
-        return redirect("/login")
-
-    if session["is_terminal"]:
-        return render_template(
-            "operations",
-            {"priority": "student", "nfc": ""},
-            client_ip
-        )
-
-    if not session["is_terminal"] and template_name == "operations":
-        return redirect("/")
-
-    if user["priority"] == "student" and template_name not in [
-        "login",
-        "registration",
-        "home",
-        "handed",
-        "books",
-        "operations",
-    ]:
-        return redirect("/")
-
-    if user["priority"] == "librarian" and template_name not in [
-        "login",
-        "registration",
-        "home",
-        "handed",
-        "add",
-        "journal",
-    ]:
-        return redirect("/")
-
-    return render_template(
-        template_name,
-        db.users.get({"id": session["user"]}),
-        client_ip
-    )
+def hash(password, salt):
+    password = str(sha1(salt.encode()).digest()) + password + str(sha512(salt.encode()).digest())
+    password = password.encode()
+    for i in range(1024):
+            password = sha512(password).digest()
+    return password
 
 
 @app.route("/")
@@ -167,166 +37,102 @@ def home():
     return redirect("/handed")
 
 
-@app.route('/api/login', methods=['POST'])
-def api_login():
-    db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    ip = db.ips.get({"ip": client_ip})
-    form = request.form
-    user = db.users.get({"login": form["login"], "password": form["password"]})
-
-    if ip is None:
-        db.ips.insert({
-            "ip": client_ip,
-            "logAttempts": 0,
-            "regAttempts": 0,
-            "datetimeStr": str(datetime.utcnow())[0:-16]
-        })
-        ip = db.ips.get({"ip": client_ip})
-
-    if ip["datetimeStr"] != str(datetime.utcnow())[0:-16]:
-        db.ips.update(
-            {"ip": client_ip},
-            {"logAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]}
-        )
-
-    if ip["logAttempts"] > 10:
-        return jsonify(answer="fail")
-
-    if (
-        user is None
-        and form["login"] == "terminal"
-        and form["password"] == "terminal"
-    ):
-        db.users.insert({"id": "terminal", "priority": "student", "nfc": ""})
-        db.sessions.insert({
-            "user": "terminal",
-            "ip": client_ip,
-            "is_terminal": True,
-            "remember": form["remember"],
-            "datetimeStr": str(datetime.utcnow())[0:-11],
-        })
-        return jsonify(answer="ok")
-
-    if user is None:
-        db.ips.update(
-            {"ip": client_ip},
-            {"logAttempts": ip["logAttempts"] + 1}
-        )
-        return jsonify(answer="fail")
-    else:
-        db.sessions.insert({
-            "user": user["id"],
-            "ip": client_ip,
-            "is_terminal": False,
-            "remember": form["remember"],
-            "datetimeStr": str(datetime.utcnow())[0:-11],
-        })
-        return jsonify(answer="ok")
-    return jsonify(answer="fail")
+def password_checker(password):
+    a = [0, 0]
+    if len(password) < 8:
+        return True
+    for i in password:
+        if i.isalpha():
+            a[0] = 1
+        if i.isdigit():
+            a[1] = 1
+    return not(a[0] == a[1] == 1)
 
 
-@app.route('/api/registration', methods=['POST'])
+@app.route('/api/user/registration', methods=['POST'])
 def api_registration():
     db = DigitalLibraryDatabase()
-    client_ip = request.remote_addr
-    ip = db.ips.get({"ip": client_ip})
     form = request.form
-    invitation = db.invitations.get({"inviteCode": form["inviteCode"]})
-
-    if ip is None:
-        db.ips.insert({
-            "ip": client_ip,
-            "logAttempts": 0,
-            "regAttempts": 0,
-            "datetimeStr": str(datetime.utcnow())[0:-16]
-        })
-        ip = db.ips.get({"ip": client_ip})
-
-    if ip["datetimeStr"] != str(datetime.utcnow())[0:-16]:
-        db.ips.update(
-            {"ip": client_ip},
-            {"regAttempts": 0, "datetimeStr": str(datetime.utcnow())[0:-16]}
-        )
-
-    if ip["regAttempts"] > 10:
-        return jsonify(answer="fail")
-
-    if invitation is None:
-        db.ips.update(
-            {"ip": client_ip},
-            {"regAttempts": ip["regAttempts"] + 1}
-        )
-        return jsonify(answer="fail")
+    if password_checker(form["password"]):
+        return jsonify(answer="bad_password")
+    if db.users.get({"login": form["login"]}) is not None:
+        return jsonify(answer="login_taken")
+    if db.users.get({"email": form["email"]}) is not None:
+        return jsonify(answer="email_taken")
+    user = db.users.get({"inviteCode": form["inviteCode"], "status": "off"})
+    if user is None:
+        return jsonify(answer="invite_not_found")
     else:
-        user_uudi = uuid.uuid4()
-        db.users.insert({
-            "login": form["login"],
-            "password": form["password"],
-            "nfc": invitation["nfc"],
-            "name": invitation["name"],
-            "id": user_uudi,
-            "priority": invitation["priority"],
-        })
-        db.sessions.insert({
-            "user": user_uudi,
-            "ip": client_ip,
-            "is_terminal": False,
-            "remember": "false",
-            "datetimeStr": str(datetime.utcnow())[0:-11],
-        })
-        db.invitations.remove({"inviteCode": invitation["inviteCode"]})
-        return jsonify(answer="ok")
-    return jsonify(answer="fail")
-
-
-@app.route('/api/exit', methods=['POST'])
-def api_exit():
-    form = request.form
-    db = DigitalLibraryDatabase()
-    db.sessions.remove({"ip": form["ip"]})
-    print(form["ip"])
+        try:
+            salt = "".join([random.choice(string.ascii_letters + string.digits) for n in range(16)])
+            user["login"] = form["login"]
+            user["email"] = form["email"]
+            user["password"] = hash(form["password"], salt)
+            user["status"] = "on"
+            user["id"] = str(uuid.uuid3(uuid.NAMESPACE_DNS, form["login"]))
+            user["salt"] = salt
+        except KeyError:
+            return jsonify(answer="fail")
+    db.users.remove({"inviteCode" :form["inviteCode"], "nfc": user["nfc"]})
+    db.users.insert(user)
     return jsonify(answer="ok")
 
 
-@app.route('/api/book/action', methods=['POST'])
-def api_book_action():
-    form = request.form
+@app.route('/api/user/login', methods=['POST'])
+def api_login():
     db = DigitalLibraryDatabase()
-    user, book = form["user"], form["book"]
-    if db.hands.exists({"user": user, "book": book}):
-        db.hands.remove({"user": user, "book": book})
-        action = Action.Return
-    else:
-        db.hands.insert({
-            "user": user,
-            "book": book,
-            "datetime": datetime.utcnow()
-        })
-        action = Action.Take
-    db.handlog.insert({
-        "user": user,
-        "book": book,
-        "datetimeStr": str(datetime.utcnow())[0:-7],
-        "datetime": datetime.utcnow(),
-        "action": action.name,
+    form = request.form
+    salt = db.users.get({"login": form["login"]})
+    if salt is None:
+         return jsonify(answer="error")
+    salt = salt["salt"]
+    user = db.users.get({
+        "login": form["login"],
+        "password": hash(form["password"], salt)
     })
-    return jsonify(action=action.name, book=book)
+    if user is None:
+        return jsonify(answer="error")
+    else:
+        session_id = str(uuid.uuid4())
+        db.sessions.insert({
+            "user": form["login"],
+            "id": session_id,
+            "datetime": datetime.utcnow(),
+            "clienttype": ClientType.User.name,
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": request.user_agent.version and
+            int(request.user_agent.version.split('.')[0]),
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
+            "remember": form["remember"],
+        })
+    resp = make_response(jsonify(answer="ok"))
+    if form["remember"] == "true":
+        resp.set_cookie("session_id", session_id, max_age=int(timedelta(days=4).total_seconds()))
+    else:
+        resp.set_cookie("session_id", session_id, max_age=int(timedelta(minutes=2).total_seconds()))
+    return resp
 
 
-@app.route('/api/book/add', methods=['POST'])
-def api_book_add():
+@app.route('/api/user/exit', methods=['POST'])
+def api_exit():
+    session_id = request.cookies.get('session_id')
     form = request.form
     db = DigitalLibraryDatabase()
-    db.books.insert({
-        "title": form["title"],
-        "author": form["author"],
-        "count": form["count"],
-        "barcode": form["code"],
-        })
-    local_filename, trash = urllib.request.urlretrieve(form["url"])
-    resizer(local_filename, "book", form["code"], "jpg")
+    db.sessions.remove({
+        "id": session_id,
+        "platform": request.user_agent.platform,
+        "browser": request.user_agent.browser,
+    })
     return jsonify(answer="ok")
+
+
+def int_checker(count):
+    for i in count:
+        if not i.isdigit():
+            return True
+    return False
 
 
 @app.route('/api/book/change', methods=['POST'])
@@ -335,11 +141,14 @@ def api_book_change():
     db = DigitalLibraryDatabase()
     if db.books.get({"barcode": form["barcode"]}) is None:
         return jsonify(answer="fail")
+    if int_checker(form["count"]):
+        return jsonify(answer="fail")
     db.books.update({"barcode": form["barcode"]}, {
         "title": form["title"],
         "author": form["author"],
-        "count": form["count"],
+        "count": int(form["count"]),
     })
+    print(db.books.get({"barcode": form["barcode"]}))
     return jsonify(answer="ok")
 
 
@@ -348,99 +157,210 @@ def api_book_delete():
     form = request.form
     db = DigitalLibraryDatabase()
     if db.books.get({"barcode": form["barcode"]}) is None:
+        print("asd")
         return jsonify(answer="fail")
     db.books.remove({"barcode": form["barcode"]})
     db.handlog.remove({"book": form["barcode"]})
-    db.hands.remove({"book": form["barcode"]})
+    db.hands.remove({"book_barcode": form["barcode"]})
     return jsonify(answer="ok")
 
 
-@app.route("/<template_name>")
-def render(template_name):
-    if template_name not in [
-        "login",
-        "registration",
-        "home",
-        "handed",
-        "journal",
-        "operations",
-        "add",
-    ]:
-        return render_template(
-            "404",
-            {
-                "priority": "student",
-                "nfc": "asd"
-            },
-            request.remote_addr
-        )
-    return crossroad(template_name, request.remote_addr)
+@app.route('/api/book/add', methods=['POST'])
+def api_book_add():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    if
+    if int_checker(form["count"]):
+        return jsonify(answer="fail")
+    db.books.insert({
+        "title": form["title"],
+        "author": form["author"],
+        "count": int(form["count"]),
+        "barcode": form["code"],
+        })
+    local_filename, trash = urllib.request.urlretrieve(form["url"])
+    resizer(local_filename, "book", form["code"], "jpg")
+    return jsonify(answer="ok")
+
+
+def render_template(page_name, user):
+    config = load_config()
+    db = DigitalLibraryDatabase()
+    page_context = {}
+    if user["accesslevel"] == AccessLevel.Student.name:
+        if page_name not in config["student_pages"]:
+            return redirect("/handed")
+        else:
+            handed = db.hands.find({"user_id": user["id"]})
+            page_context = {
+                "user": user,
+                "handed": handed,
+                "len": len(handed),
+                "page_name": page_name,
+            }
+    if user["accesslevel"] == AccessLevel.Librarian.name:
+        if page_name not in config["librarian_pages"]:
+            return redirect("/handed")
+        else:
+            if page_name == "add":
+                db = DigitalLibraryDatabase()
+                page_context = {
+                    "user": user,
+                    "page_name": page_name,
+                }
+            if page_name == "journal":
+                db = DigitalLibraryDatabase()
+                handlog = db.handlog.find({})
+                page_context = {
+                    "user": user,
+                    "handlog": handlog[-20:],
+                    "len": len(handlog[-20:]),
+                    "page_name": page_name,
+                }
+            if page_name == "handed":
+                hands = db.hands.find({})
+                books = []
+                flag = True
+                for hand in hands:
+                    flag = True
+                    for book in books:
+                        if book["barcode"] == hand["book_barcode"]:
+                            flag = False
+                            book["handed"] += 1
+                            if book["old_datetime"] < (datetime.utcnow() - hand["datetime"]).days:
+                                book["old_datetime"] = (datetime.utcnow() - hand["datetime"]).days
+                                book["old_owner_id"] = hand["user_id"]
+                                book["old_owner_name"] = hand["user_name"]
+                    if flag:
+                        book = db.books.get({"barcode": hand["book_barcode"]})
+                        new_book = {
+                            "barcode": book["barcode"],
+                            "title": book["title"],
+                            "author": book["author"],
+                            "old_datetime": (datetime.utcnow() - hand["datetime"]).days,
+                            "old_owner_id": hand["user_id"],
+                            "old_owner_name": hand["user_name"],
+                            "handed": 1,
+                            "count": book["count"]
+                        }
+                        books += [new_book]
+                page_context = {
+                    "user": user,
+                    "page_name": page_name,
+                    "len": len(books),
+                    "books": books,
+                }
+    return flask.render_template(page_name + '.html', **dict(**page_context))
+
+
+@app.route("/<page_name>")
+def cookie_check(page_name):
+    config = load_config()
+    if page_name not in config["pages"]:
+        return flask.render_template("404.html")
+    db = DigitalLibraryDatabase()
+    session_id = request.cookies.get('session_id')
+    session = db.sessions.get({
+        "id": session_id,
+        "platform": request.user_agent.platform,
+        "browser": request.user_agent.browser,
+    })
+    if session is None:
+        if page_name == "registration":
+            return flask.render_template("registration.html")
+        if page_name == "login":
+            return flask.render_template("login.html")
+        return redirect("/login")
+    else:
+        db.sessions.remove(session)
+        if (datetime.utcnow() - session["datetime"]).days > 7:
+            return redirect("/login")
+        client_session = {
+            "user": session["user"],
+            "id": session["id"],
+            "datetime": session["datetime"],
+            "clienttype": session["clienttype"],
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": request.user_agent.version and
+            int(request.user_agent.version.split('.')[0]),
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
+            "remember": session["remember"],
+            "_id": session["_id"],
+        }
+        if client_session == session:
+            user = db.users.get({"login": session["user"]})
+            session["datetime"] = datetime.utcnow()
+            db.sessions.insert(client_session)
+            if page_name in ["login", "registration"]:
+                return redirect("/handed")
+            else:
+                resp = make_response(render_template(page_name, user))
+            if session["remember"] == "true":
+                resp.set_cookie("session_id", session_id, max_age=int(timedelta(days=4).total_seconds()))
+            else:
+                resp.set_cookie("session_id", session_id, max_age=int(timedelta(minutes=2).total_seconds()))
+            return resp
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
     config = load_config()
-    app.run(host=config["host"], debug=True, port=1303)
+    app.run(host=config["host"], debug=True, port=int(config["port"]))
 
 
 if __name__ == '__main__':
     main()
 
-
 template_user = {
     "login": "str",
     "password": "str",
+    "name": "str",
+    "accesslevel": "str",
     "nfc": "str",
-    "name": "RuStr",
-    "id": "str",
-    "priority": "str",
+    "invitecode": "str",
+    "status": "str",
+    "email": "str",
+    "handed": "int",
+    "salt": "str",
 }
 
 template_book = {
-    "title": "RuStr",
-    "author": "RuStr",
+    "title": "str",
+    "author": "str",
     "count": "int",
-    "barcode": "int",
-}
-
-tempalte_log = {
-    "user": "str",
-    "ip": "str",
-    "is_terminal": "bool",
-    "remember": "str",
-    "datetimeStr": "str",
+    "barcode": "str",
 }
 
 tempalte_hand = {
-    "user": "str",
-    "book": "str",
-    "datetimeStr": "str",
+    "user_id": "str",
+    "user_name": "str",
+    "book_barcode": "str",
+    "book_title": "str",
+    "book_author": "str",
+    "datetime": "datetime",
 }
 
 tempalte_journal = {
     "user": "str",
     "book": "str",
-    "datetimeStr": "str",
-    "action": "srt",
+    "datetime": "datetime",
+    "action": "action",
+    "action_name": "srt",
+    "datetime_str": "str",
+    "book_title": "str",
+    "user_name": "str",
 }
 
-tempalte_ip = {
+tempalte_sessionl = {
+    "user": "str",
+    "id": "str",
+    "datetime": "datetime",
+    "clienttype": "srt",
     "ip": "str",
-    "attempts": "int",
+    "browser": "str",
+    "version":  "str",
+    "platform": "str",
+    "uas": "str",
+    "remember": "str",
 }
-
-tempalte_invitation = {
-    "name": "RuStr",
-    "nfc": "str",
-    "inviteCode": "str",
-    "priority": "str",
-}
-
-def init_test_db():
-    db = DigitalLibraryDatabase()
-    db.invitations.insert({
-        "name": "test",
-        "nfc": "str",
-        "inviteCode": "str",
-        "priority": "librarian",
-    })
