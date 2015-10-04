@@ -25,11 +25,10 @@ def load_config():
 
 
 def hash(password, salt):
-    password = str(sha1(salt.encode()).digest()) + password + str(sha512(salt.encode()).digest())
-    password = password.encode()
+    h = (password + salt).encode()
     for i in range(1024):
-            password = sha512(password).digest()
-    return password
+            h = sha512(h).digest()
+    return h
 
 
 @app.route("/")
