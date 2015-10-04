@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from flask import Flask, jsonify, request, redirect, make_response
 from digital_library.database import DigitalLibraryDatabase
-from digital_library.types import Action, ClientType, AccessLevel
-from digital_library.resizer import Resize
-from datetime import datetime, timedelta
-from hashlib import sha512, sha1
-import flask
+from digital_library.types import ClientType, AccessLevel
+from digital_library.resizer import resize
+
 import configparser
-import uuid
+from datetime import datetime, timedelta
+from flask import Flask, jsonify, request, redirect, make_response
+import flask
+from hashlib import sha512
 import random
 import string
 import urllib.request
@@ -126,7 +126,6 @@ def api_login():
 @app.route('/api/user/exit', methods=['POST'])
 def api_exit():
     session_id = request.cookies.get('session_id')
-    form = request.form
     db = DigitalLibraryDatabase()
     db.sessions.remove({"_id": session_id})
     return jsonify(answer="ok")
@@ -182,7 +181,7 @@ def api_book_add():
         "barcode": form["code"],
         })
     local_filename, trash = urllib.request.urlretrieve(form["url"])
-    resizer(local_filename, "book", form["code"], "jpg")
+    resize(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
 
 
