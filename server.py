@@ -24,10 +24,13 @@ def load_config():
     return config['Server']
 
 
+HASH_BASE = sha512
+HASH_SIZE = HASH_BASE().digest_size
+
 def hash(password, salt):
     h = (password + salt).encode()
     for i in range(1024):
-            h = sha512(h).digest()
+        h = HASH_BASE(h).digest()
     return h
 
 
@@ -63,7 +66,9 @@ def api_registration():
         return jsonify(answer="invite_not_found")
     else:
         try:
-            salt = "".join([random.choice(string.ascii_letters + string.digits) for n in range(16)])
+            salt = "".join(
+                random.choice(string.printable) for _ in range(HASH_SIZE)
+            )
             user["login"] = form["login"]
             user["email"] = form["email"]
             user["password"] = hash(form["password"], salt)
