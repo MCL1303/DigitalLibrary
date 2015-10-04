@@ -73,7 +73,6 @@ def api_registration():
             user["email"] = form["email"]
             user["password"] = hash(form["password"], salt)
             user["status"] = "on"
-            user["id"] = str(uuid.uuid3(uuid.NAMESPACE_DNS, form["login"]))
             user["salt"] = salt
         except KeyError:
             return jsonify(answer="fail")
@@ -96,21 +95,18 @@ def api_login():
     })
     if user is None:
         return jsonify(answer="error")
-    else:
-        session_id = str(uuid.uuid4())
-        db.sessions.insert({
-            "user": form["login"],
-            "id": session_id,
-            "datetime": datetime.utcnow(),
-            "clienttype": ClientType.User.name,
-            "ip": str(request.remote_addr),
-            "browser": request.user_agent.browser,
-            "version": request.user_agent.version and
-            int(request.user_agent.version.split('.')[0]),
-            "platform": request.user_agent.platform,
-            "uas": request.user_agent.string,
-            "remember": form["remember"],
-        })
+    session_id = db.sessions.insert({
+        "user": form["login"],
+        "datetime": datetime.utcnow(),
+        "clienttype": ClientType.User.name,
+        "ip": str(request.remote_addr),
+        "browser": request.user_agent.browser,
+        "version": request.user_agent.version and
+        int(request.user_agent.version.split('.')[0]),
+        "platform": request.user_agent.platform,
+        "uas": request.user_agent.string,
+        "remember": form["remember"],
+    })
     resp = make_response(jsonify(answer="ok"))
     if form["remember"] == "true":
         resp.set_cookie("session_id", session_id, max_age=int(timedelta(days=4).total_seconds()))
@@ -124,11 +120,7 @@ def api_exit():
     session_id = request.cookies.get('session_id')
     form = request.form
     db = DigitalLibraryDatabase()
-    db.sessions.remove({
-        "id": session_id,
-        "platform": request.user_agent.platform,
-        "browser": request.user_agent.browser,
-    })
+    db.sessions.remove({"_id": session_id})
     return jsonify(answer="ok")
 
 
@@ -264,11 +256,7 @@ def cookie_check(page_name):
         return flask.render_template("404.html")
     db = DigitalLibraryDatabase()
     session_id = request.cookies.get('session_id')
-    session = db.sessions.get({
-        "id": session_id,
-        "platform": request.user_agent.platform,
-        "browser": request.user_agent.browser,
-    })
+    session = db.sessions.get({"_id": session_id})
     if session is None:
         if page_name == "registration":
             return flask.render_template("registration.html")
@@ -280,20 +268,19 @@ def cookie_check(page_name):
         if (datetime.utcnow() - session["datetime"]).days > 7:
             return redirect("/login")
         client_session = {
-            "user": session["user"],
-            "id": session["id"],
-            "datetime": session["datetime"],
-            "clienttype": session["clienttype"],
+            "user": session["user"],  # TODO refactor
+            "datetime": session["datetime"],  # TODO refactor
+            "clienttype": session["clienttype"],  # TODO refactor
             "ip": str(request.remote_addr),
             "browser": request.user_agent.browser,
             "version": request.user_agent.version and
             int(request.user_agent.version.split('.')[0]),
             "platform": request.user_agent.platform,
             "uas": request.user_agent.string,
-            "remember": session["remember"],
-            "_id": session["_id"],
+            "remember": session["remember"],  # TODO refactor
+            "_id": session["_id"],  # TODO refactor
         }
-        if client_session == session:
+        if client_session == session:  # TODO refactor
             user = db.users.get({"login": session["user"]})
             session["datetime"] = datetime.utcnow()
             db.sessions.insert(client_session)
@@ -358,7 +345,6 @@ tempalte_journal = {
 
 tempalte_sessionl = {
     "user": "str",
-    "id": "str",
     "datetime": "datetime",
     "clienttype": "srt",
     "ip": "str",
