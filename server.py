@@ -173,7 +173,6 @@ def api_book_delete():
 def api_book_add():
     form = request.form
     db = DigitalLibraryDatabase()
-    if
     if int_checker(form["count"]):
         return jsonify(answer="fail")
     db.books.insert({
