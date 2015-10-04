@@ -1,0 +1,18 @@
+[Unit]
+Description=Digital_library_client
+
+[Servise]
+Type=simple
+WorkingDirectory=/digital_library
+User=digital_library
+Group=digital_library
+Environment=RACK_ENV=production
+OOMScoreAdjust=-100
+ExecStart=/usr/bin/python3.4 client.py
+ExecReload=/usr/bin/python3.4 client.py
+TimeoutSec=300
+PID=23563
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

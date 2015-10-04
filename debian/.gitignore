@@ -1,0 +1,5 @@
+/*.debhelper.log
+/*.substvars
+/files
+/digital-library-server/
+/digital-library-terminal/

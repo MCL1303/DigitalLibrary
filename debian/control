@@ -1,0 +1,21 @@
+Source: digital-library
+Section: unknown
+Priority: optional
+Maintainer: Yuriy Syrovetskiy <cblp@cblp.su>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: <insert the upstream URL, if relevant>
+Vcs-Git: git://git@github.com:SetSplin/Library.git
+Vcs-Browser: https://github.com/SetSplin/Library
+
+Package: digital-library-server
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Server
+ <insert long description, indented with spaces>
+
+Package: digital-library-terminal
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Client
+ <insert long description, indented with spaces>
