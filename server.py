@@ -197,7 +197,7 @@ def api_book_add():
         "author": form["author"],
         "count": int(form["count"]),
         "barcode": form["code"],
-        })
+    })
     local_filename, _ = urllib.request.urlretrieve(form["url"])
     resize(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
@@ -276,6 +276,10 @@ def render_template(page_name, user):
     return flask.render_template(page_name + '.html', **dict(**page_context))
 
 
+class Session:
+    __slots__ = []
+
+
 @app.route("/<page_name>")
 def cookie_check(page_name):
     config = load_config()
@@ -291,38 +295,34 @@ def cookie_check(page_name):
             return flask.render_template("login.html")
         return redirect("/login")
     else:
-        db.sessions.remove(session)
+        # db.sessions.remove(session)  # TODO WHYYYYYYYYYYYY???????????
         if (datetime.utcnow() - session["datetime"]).days > 7:
             return redirect("/login")
-        client_session = {
-            "user": session["user"],  # TODO refactor
-            "datetime": session["datetime"],  # TODO refactor
-            "clienttype": session["clienttype"],  # TODO refactor
-            "ip": str(request.remote_addr),
-            "browser": request.user_agent.browser,
-            "version": request.user_agent.version and
-            int(request.user_agent.version.split('.')[0]),
-            "platform": request.user_agent.platform,
-            "uas": request.user_agent.string,
-            "remember": session["remember"],  # TODO refactor
-            "_id": session["_id"],  # TODO refactor
-        }
-        if client_session == session:  # TODO refactor
+        if session.fields_are(
+            ip = str(request.remote_addr),
+            browser = request.user_agent.browser,
+            version = (
+                request.user_agent.version
+                and int(request.user_agent.version.split('.')[0])
+            ),
+            platform = request.user_agent.platform,
+            uas = request.user_agent.string,
+        ):
             user = db.users.get({"login": session["user"]})
             session["datetime"] = datetime.utcnow()
-            db.sessions.insert(client_session)
+            # db.sessions.insert(client_session)
             if page_name in ["login", "registration"]:
                 return redirect("/handed")
-            else:
-                resp = make_response(render_template(page_name, user))
-            if session["remember"] == "true":
-                resp.set_cookie(
-                    "session_id", session_id, max_age=COOKIE_AGE_REMEMBER
-                )
-            else:
-                resp.set_cookie(
-                    "session_id", session_id, max_age=COOKIE_AGE_NOT_REMEMBER
-                )
+            resp = make_response(render_template(page_name, user))
+            resp.set_cookie(
+                "session_id",
+                session_id,
+                max_age = (
+                    COOKIE_AGE_REMEMBER
+                    if session["remember"] == "true"
+                    else COOKIE_AGE_NOT_REMEMBER
+                ),
+            )
             return resp
 
 
@@ -380,7 +380,7 @@ template_session = {
     "clienttype": "srt",
     "ip": "str",
     "browser": "str",
-    "version":  "str",
+    "version": "str",
     "platform": "str",
     "uas": "str",
     "remember": "str",
