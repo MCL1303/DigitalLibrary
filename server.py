@@ -334,54 +334,55 @@ def main():
 if __name__ == '__main__':
     main()
 
-template_user = {
-    "login": "str",
-    "password": "str",
-    "name": "str",
-    "accesslevel": "str",
-    "nfc": "str",
-    "invitecode": "str",
-    "status": "str",
-    "email": "str",
-    "handed": "int",
-    "salt": "str",
-}
 
-template_book = {
-    "title": "str",
-    "author": "str",
-    "count": "int",
-    "barcode": "str",
-}
+# template_user = {
+#     "login": "str",
+#     "password": "str",
+#     "name": "str",
+#     "accesslevel": "str",
+#     "nfc": "str",
+#     "invitecode": "str",
+#     "status": "str",
+#     "email": "str",
+#     "handed": "int",
+#     "salt": "str",
+# }
 
-template_hand = {
-    "user_id": "str",
-    "user_name": "str",
-    "book_barcode": "str",
-    "book_title": "str",
-    "book_author": "str",
-    "datetime": "datetime",
-}
+# template_book = {
+#     "title": "str",
+#     "author": "str",
+#     "count": "int",
+#     "barcode": "str",
+# }
 
-template_journal = {
-    "user": "str",
-    "book": "str",
-    "datetime": "datetime",
-    "action": "action",
-    "action_name": "srt",
-    "datetime_str": "str",
-    "book_title": "str",
-    "user_name": "str",
-}
+# template_hand = {
+#     "user_id": "str",
+#     "user_name": "str",
+#     "book_barcode": "str",
+#     "book_title": "str",
+#     "book_author": "str",
+#     "datetime": "datetime",
+# }
 
-template_session = {
-    "user": "str",
-    "datetime": "datetime",
-    "clienttype": "srt",
-    "ip": "str",
-    "browser": "str",
-    "version": "str",
-    "platform": "str",
-    "uas": "str",
-    "remember": "str",
-}
+# template_journal = {
+#     "user": "str",
+#     "book": "str",
+#     "datetime": "datetime",
+#     "action": "action",
+#     "action_name": "srt",
+#     "datetime_str": "str",
+#     "book_title": "str",
+#     "user_name": "str",
+# }
+
+# template_session = {
+#     "user": "str",
+#     "datetime": "datetime",
+#     "clienttype": "srt",
+#     "ip": "str",
+#     "browser": "str",
+#     "version": "str",
+#     "platform": "str",
+#     "uas": "str",
+#     "remember": "str",
+# }
