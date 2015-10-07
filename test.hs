@@ -29,7 +29,7 @@ main = do
     pythonFiles <- filter (".py" `isSuffixOf`) `fmap` getDirectoryContents "."
     let pythonPackages = ["digital_library"]
 
-    let pep8Options = ["--show-source"]
+    let pep8Options = ["--show-source", "--ignore=E251"]
     pep8 $ pep8Options ++ ["."]
 
     pyflakes $ pythonFiles ++ pythonPackages
