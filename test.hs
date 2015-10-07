@@ -34,17 +34,9 @@ main = do
 
     pyflakes $ pythonFiles ++ pythonPackages
 
-    let pylintOptions = [ "--disable=bad-continuation"
-                        , "--disable=locally-disabled"
-                        , "--disable=missing-docstring"
-                        , "--disable=star-args"
-                        , "--dummy-variables-rgx=_.*"
-                        , "--extension-pkg-whitelist=PyQt4,PyQt5"
-                        , "--good-names=app,closeEvent,db"
-                        , "--include-naming-hint=yes"
-                        , "--output-format=colorized"
+    let pylintOptions = [ "--output-format=colorized"
+                        , "--rcfile=.pylintrc"
                         , "--reports=no"
-                        , "--variable-rgx=[a-z_][a-z0-9_]{,30}$"
                         ]
     pylint $ pylintOptions ++ pythonFiles ++ pythonPackages
 
