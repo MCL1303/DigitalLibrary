@@ -1,27 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Digital Library — a digital book management system
-# Copyright (C) 2015  Igor Tarakanov <igortarakanov144999usa@gmail.com>,
-#                     Yuriy Syrovetskiy <cblp@cblp.su>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from digital_library.database import DigitalLibraryDatabase
 from digital_library.types import ClientType, AccessLevel
-from digital_library.resizer import resize
+from digital_library.resizer import Resize
 
 import configparser
 from datetime import datetime, timedelta
@@ -31,6 +13,7 @@ from hashlib import sha512
 import random
 import string
 import urllib.request
+from uuid import uuid4
 
 
 app = Flask('DigitalLibraryApplication')
@@ -84,6 +67,8 @@ def api_registration():
     if user is None:
         return jsonify(answer="invite_not_found")
     else:
+        print(form)
+        print(form)
         try:
             salt = "".join(
                 random.choice(string.printable) for _ in range(HASH_SIZE)
@@ -93,6 +78,7 @@ def api_registration():
             user["password"] = hash(form["password"], salt)
             user["status"] = "on"
             user["salt"] = salt
+            user["_id"] = str(uuid4())
         except KeyError:
             return jsonify(answer="fail")
     db.users.remove({"inviteCode": form["inviteCode"], "nfc": user["nfc"]})
@@ -119,7 +105,8 @@ def api_login():
     })
     if user is None:
         return jsonify(answer="error")
-    session_id = db.sessions.insert({
+    session_id = str(uuid4())
+    db.sessions.insert({
         "user": form["login"],
         "datetime": datetime.utcnow(),
         "clienttype": ClientType.User.name,
@@ -130,6 +117,7 @@ def api_login():
         "platform": request.user_agent.platform,
         "uas": request.user_agent.string,
         "remember": form["remember"],
+        "_id": session_id,
     })
     resp = make_response(jsonify(answer="ok"))
     if form["remember"] == "true":
@@ -192,14 +180,16 @@ def api_book_add():
     db = DigitalLibraryDatabase()
     if int_checker(form["count"]):
         return jsonify(answer="fail")
+    if db.books.get({"barcode": form["code"]}) is not None:
+        return jsonify(answer="fail")
     db.books.insert({
         "title": form["title"],
         "author": form["author"],
         "count": int(form["count"]),
         "barcode": form["code"],
-    })
+        })
     local_filename, _ = urllib.request.urlretrieve(form["url"])
-    resize(local_filename, "book", form["code"], "jpg")
+    Resize(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
 
 
@@ -256,6 +246,8 @@ def render_template(page_name, user):
                                 book["old_owner_name"] = hand["user_name"]
                     if flag:
                         book = db.books.get({"barcode": hand["book_barcode"]})
+                        if book is None:
+                            continue
                         new_book = {
                             "barcode": book["barcode"],
                             "title": book["title"],
@@ -276,10 +268,6 @@ def render_template(page_name, user):
     return flask.render_template(page_name + '.html', **dict(**page_context))
 
 
-class Session:
-    __slots__ = []
-
-
 @app.route("/<page_name>")
 def cookie_check(page_name):
     config = load_config()
@@ -295,34 +283,38 @@ def cookie_check(page_name):
             return flask.render_template("login.html")
         return redirect("/login")
     else:
-        # db.sessions.remove(session)  # TODO WHYYYYYYYYYYYY???????????
+        db.sessions.remove(session)
         if (datetime.utcnow() - session["datetime"]).days > 7:
             return redirect("/login")
-        if session.fields_are(
-            ip = str(request.remote_addr),
-            browser = request.user_agent.browser,
-            version = (
-                request.user_agent.version
-                and int(request.user_agent.version.split('.')[0])
-            ),
-            platform = request.user_agent.platform,
-            uas = request.user_agent.string,
-        ):
+        client_session = {
+            "user": session["user"],  # TODO refactor
+            "datetime": session["datetime"],  # TODO refactor
+            "clienttype": session["clienttype"],  # TODO refactor
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": request.user_agent.version and
+            int(request.user_agent.version.split('.')[0]),
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
+            "remember": session["remember"],  # TODO refactor
+            "_id": session["_id"],  # TODO refactor
+        }
+        if client_session == session:  # TODO refactor
             user = db.users.get({"login": session["user"]})
             session["datetime"] = datetime.utcnow()
-            # db.sessions.insert(client_session)
+            db.sessions.insert(client_session)
             if page_name in ["login", "registration"]:
                 return redirect("/handed")
-            resp = make_response(render_template(page_name, user))
-            resp.set_cookie(
-                "session_id",
-                session_id,
-                max_age = (
-                    COOKIE_AGE_REMEMBER
-                    if session["remember"] == "true"
-                    else COOKIE_AGE_NOT_REMEMBER
-                ),
-            )
+            else:
+                resp = make_response(render_template(page_name, user))
+            if session["remember"] == "true":
+                resp.set_cookie(
+                    "session_id", session_id, max_age=COOKIE_AGE_REMEMBER
+                )
+            else:
+                resp.set_cookie(
+                    "session_id", session_id, max_age=COOKIE_AGE_NOT_REMEMBER
+                )
             return resp
 
 
@@ -334,55 +326,54 @@ def main():
 if __name__ == '__main__':
     main()
 
+template_user = {
+    "login": "str",
+    "password": "str",
+    "name": "str",
+    "accesslevel": "str",
+    "nfc": "str",
+    "invitecode": "str",
+    "status": "str",
+    "email": "str",
+    "handed": "int",
+    "salt": "str",
+}
 
-# template_user = {
-#     "login": "str",
-#     "password": "str",
-#     "name": "str",
-#     "accesslevel": "str",
-#     "nfc": "str",
-#     "invitecode": "str",
-#     "status": "str",
-#     "email": "str",
-#     "handed": "int",
-#     "salt": "str",
-# }
+template_book = {
+    "title": "str",
+    "author": "str",
+    "count": "int",
+    "barcode": "str",
+}
 
-# template_book = {
-#     "title": "str",
-#     "author": "str",
-#     "count": "int",
-#     "barcode": "str",
-# }
+template_hand = {
+    "user_id": "str",
+    "user_name": "str",
+    "book_barcode": "str",
+    "book_title": "str",
+    "book_author": "str",
+    "datetime": "datetime",
+}
 
-# template_hand = {
-#     "user_id": "str",
-#     "user_name": "str",
-#     "book_barcode": "str",
-#     "book_title": "str",
-#     "book_author": "str",
-#     "datetime": "datetime",
-# }
+template_journal = {
+    "user": "str",
+    "book": "str",
+    "datetime": "datetime",
+    "action": "action",
+    "action_name": "srt",
+    "datetime_str": "str",
+    "book_title": "str",
+    "user_name": "str",
+}
 
-# template_journal = {
-#     "user": "str",
-#     "book": "str",
-#     "datetime": "datetime",
-#     "action": "action",
-#     "action_name": "srt",
-#     "datetime_str": "str",
-#     "book_title": "str",
-#     "user_name": "str",
-# }
-
-# template_session = {
-#     "user": "str",
-#     "datetime": "datetime",
-#     "clienttype": "srt",
-#     "ip": "str",
-#     "browser": "str",
-#     "version": "str",
-#     "platform": "str",
-#     "uas": "str",
-#     "remember": "str",
-# }
+template_session = {
+    "user": "str",
+    "datetime": "datetime",
+    "clienttype": "srt",
+    "ip": "str",
+    "browser": "str",
+    "version":  "str",
+    "platform": "str",
+    "uas": "str",
+    "remember": "str",
+}
