@@ -14,48 +14,47 @@
             color: #555555;
         }
     </style>
-    <script src="/static/js/jquery.js"></script>
-    {% if user.priority == "student" %}
-            {% if handedBooksLen == 0 %}
-            <h3>У вас на руках нет книжек</h3>
+    {% if user.accesslevel == "Student" %}
+            {% if len == 0 %}
+            <h3 class="text-center">У вас на руках нет книг</h3>
             {% else %}
-            <h3>На руках</h3>
+            <h3 class="text-center">На руках</h3>
             {% endif %}
-            {% for book in handedBooks %}
+            {% for hand in handed %}
                 <div class="col-sm-6 col-md-4">
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="{{ 'http://localhost:1303/static/images/book/small-covers/' + book.barcode + '.jpg'}}" alt="">
+                        <img src="{{ 'http://localhost:1303/static/images/book/small-covers/' + hand.book_barcode + '.jpg'}}" alt="">
                         <div class="caption" style="padding: 1em 0; text-align: center;">
-                            <h3>{{book.title}}</h3>
-                            <p>{{book.author}}</p>
+                            <h3>{{hand.book_title}}</h3>
+                            <p>{{hand.book_author}}</p>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% endif %}
-    {% if user.priority == "librarian" %}
+    {% if user.accesslevel == "Librarian" %}
         <div class="row">
-            {% if handedBooksLen == 0 %}
-            <h3>На руках нет книжек</h3>
+            {% if len == 0 %}
+            <h3 class="text-center">На руках нет книг</h3>
             {% else %}
-            <h3>На руках</h3>
+            <h3 class="text-center">На руках</h3>
             {% endif %}
-            {% for book in handedBooks %}
-                <div class="col-sm-6 col-md-4" id="book.barcode">
+            {% for book in books %}
+                <div class="col-sm-6 col-md-4" id="{{book.barcode}}">
                         <div class="thumbnail" style="height: 650;">
                             <img src="{{'http://localhost:1303/static/images/book/small-covers/' + book['barcode'] + '.jpg'}}" alt="">
                             <div class="caption" style="text-align: center;">
                                 <h4>{{book.title}}</h4>
                                 <p>{{book.author}}</p>
                                 <div style="position: absolute; bottom: 30px; left: 50px; right: 50px;">
-                                    <a href="/users/{{book.oldOwner}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.oldName}}</a>
-                                    <p>Держит книгу дольше всех <br> ( {{book.old}} {{inflect(book.old, "день", "дня", "дней")}})</p>
+                                    <a href="/users/{{book.old_owner_hashed_nfc}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.old_owner_name}}</a>
+                                    <p>Держит книгу дольше всех <br> ( {{book.old_datetime}} {{inflect(book.old_datetime, "день", "дня", "дней")}})</p>
                                     <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} {{inflectProPro(book.handed, "выдан", "выдано")}}</p>
-                                    <p>Осталось {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
+                                    <p>{{inflectProProPro(book.count - book.handed, "Остался", "Осталось")}} {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin-bottom: 10px;" onclick="change('{{book.title}}', '{{book.author}}', '{{book.count}}', '{{book.barcode}}')">Изменить информацию о книге
                                     </button>
-                                    <button type="button" class="btn btn-danger" onclick="deleteBook('{{book.barcode}}')">Удалить книгу</button>
+                                    <button id="delete{{book.barcode}}" type="button" class="btn btn-danger" onclick="deleteBook('{{book.barcode}}')">Удалить книгу</button>
                                 </div>
                             </div>
                         </div>
@@ -99,26 +98,35 @@
                     </div>
                 </div>
             </div>
+            <script src="/static/js/jquery.js"></script>
             <script>
             var editBook = ""
+            var sure = "no"
             </script>
             <script>
             function deleteBook(barcode) {
-                $.post(
-                    "http://localhost:1303/api/book/delete",
-                    {barcode: barcode},
-                    function(data) {
-                        if(data.answer == "ok") {
-                            $("#" + barcode)[0].style.display = "none";
-                        }
-                    },
-                    "json"
-                )
+                if(sure == "no") {
+                  $("#delete" + barcode)[0].firstChild.data = "Вы уверены?"
+                  sure = "yes"
+                } else {
+                  sure == "no"
+                  $.post(
+                      "http://localhost:1303/api/book/delete",
+                      {barcode: barcode},
+                      function(data) {
+                          if(data.answer == "ok") {
+                              $("#" + barcode)[0].style.display = "none";
+                            }
+                          },
+                          "json"
+                        )
+                  sure = "no"
+                }
             }
             </script>
             <script>
             function check() {
-                if(
+                if (
                     $("#title")[0].className == "input-group-addon green" &&
                     $("#author")[0].className == "input-group-addon green" &&
                     $("#count")[0].className == "input-group-addon green"

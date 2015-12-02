@@ -1,6 +1,10 @@
 [Server]
 host = ::
 port = 1303
-pages = ["login", "registration", "handed", "journal". "add"]
-librarian_pages = ["handed", "journal", "add"]
+pages = ["login", "registration", "handed", "journal", "add", "operations"]
+librarian_pages = ["handed", "journal", "add", "operations"]
 student_pages = ["handed"]
+[Client]
+user_scanner = ""
+book_scanner = "/dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd"
+operations_url = "http://localhost"

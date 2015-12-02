@@ -1,21 +1,21 @@
 #!/usr/bin/env runhaskell
 {-# OPTIONS -Wall -Werror #-}
 
--- Digital Library — a digital book management system
--- Copyright (C) 2015  Yuriy Syrovetskiy <cblp@cblp.su>
---
--- This program is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
---
--- This program is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
---
--- You should have received a copy of the GNU General Public License
--- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+{-  Digital Library — a digital book management system
+    Copyright (C) 2015  Yuriy Syrovetskiy <cblp@cblp.su>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. -}
 
 
 import Data.List
@@ -29,22 +29,14 @@ main = do
     pythonFiles <- filter (".py" `isSuffixOf`) `fmap` getDirectoryContents "."
     let pythonPackages = ["digital_library"]
 
-    let pep8Options = ["--show-source"]
+    let pep8Options = ["--show-source", "--ignore=E251"]
     pep8 $ pep8Options ++ ["."]
 
     pyflakes $ pythonFiles ++ pythonPackages
 
-    let pylintOptions = [ "--disable=bad-continuation"
-                        , "--disable=locally-disabled"
-                        , "--disable=missing-docstring"
-                        , "--disable=star-args"
-                        , "--dummy-variables-rgx=_.*"
-                        , "--extension-pkg-whitelist=PyQt4,PyQt5"
-                        , "--good-names=app,closeEvent,db"
-                        , "--include-naming-hint=yes"
-                        , "--output-format=colorized"
+    let pylintOptions = [ "--output-format=colorized"
+                        , "--rcfile=.pylintrc"
                         , "--reports=no"
-                        , "--variable-rgx=[a-z_][a-z0-9_]{,30}$"
                         ]
     pylint $ pylintOptions ++ pythonFiles ++ pythonPackages
 

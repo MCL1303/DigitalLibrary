@@ -20,8 +20,8 @@
 
 
 from digital_library.database import DigitalLibraryDatabase
-from digital_library.types import ClientType, AccessLevel
-from digital_library.resizer import resize
+from digital_library.types import ClientType, AccessLevel, Action
+from digital_library.resizer import Resize
 
 import configparser
 from datetime import datetime, timedelta
@@ -31,9 +31,23 @@ from hashlib import sha512
 import random
 import string
 import urllib.request
+from uuid import uuid4
+import re
+from bson import ObjectId
 
 
 app = Flask('DigitalLibraryApplication')
+
+
+def fields_are(first, second):
+    for item in second.items():
+        key = item[0]
+        try:
+            if first[key] != item[1]:
+                return False
+        except KeyError:
+            return False
+    return True
 
 
 def load_config():
@@ -49,6 +63,13 @@ HASH_SIZE = Hash().digest_size  # pylint: disable=no-member
 def hash(password, salt):
     h = (password + salt).encode()
     for _ in range(1024):
+        h = Hash(h).digest()
+    return h
+
+
+def hash2(password):
+    h = (password).encode()
+    for _ in range(3):
         h = Hash(h).digest()
     return h
 
@@ -70,12 +91,35 @@ def password_checker(password):
     return not a[0] == a[1] == 1
 
 
+def login_checker(login):
+    for i in login:
+        if (
+            not(ord(i) >= ord("A") and ord(i) <= ord("Z")) and
+            not(ord(i) >= ord("a") and ord(i) <= ord("z")) and
+            not(ord(i) >= ord("0") and ord(i) <= ord("9")) and
+            not(ord(i) == ord("-") or ord(i) == ord("_"))
+        ):
+            return True
+    return False
+
+
+def email_checker(email):
+    if len(email) > 7 and not(" " in email):
+        if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
+            return False
+    return True
+
+
 @app.route('/api/user/registration', methods=['POST'])
 def api_registration():
     db = DigitalLibraryDatabase()
     form = request.form
+    if login_checker(form["login"]):
+        return jsonify(answer="bad_login")
     if password_checker(form["password"]):
         return jsonify(answer="bad_password")
+    if email_checker(form["email"]):
+        return jsonify(answer="bad_email")
     if db.users.get({"login": form["login"]}) is not None:
         return jsonify(answer="login_taken")
     if db.users.get({"email": form["email"]}) is not None:
@@ -102,14 +146,14 @@ def api_registration():
 
 COOKIE_AGE_REMEMBER = int(timedelta(days=4).total_seconds())
 
-COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=2).total_seconds())
+COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=10).total_seconds())
 
 
 @app.route('/api/user/login', methods=['POST'])
 def api_login():
     db = DigitalLibraryDatabase()
     form = request.form
-    salt = db.users.get({"login": form["login"]})
+    salt = db.users.get({"login": form["login"], "status": "on"})
     if salt is None:
         return jsonify(answer="error")
     salt = salt["salt"]
@@ -119,8 +163,9 @@ def api_login():
     })
     if user is None:
         return jsonify(answer="error")
-    session_id = db.sessions.insert({
-        "user": form["login"],
+    session_id = str(uuid4())
+    db.sessions.insert({
+        "user_login": form["login"],
         "datetime": datetime.utcnow(),
         "clienttype": ClientType.User.name,
         "ip": str(request.remote_addr),
@@ -130,6 +175,7 @@ def api_login():
         "platform": request.user_agent.platform,
         "uas": request.user_agent.string,
         "remember": form["remember"],
+        "id": session_id,
     })
     resp = make_response(jsonify(answer="ok"))
     if form["remember"] == "true":
@@ -145,7 +191,7 @@ def api_login():
 def api_exit():
     session_id = request.cookies.get('session_id')
     db = DigitalLibraryDatabase()
-    db.sessions.remove({"_id": session_id})
+    db.sessions.remove({"id": session_id})
     return jsonify(answer="ok")
 
 
@@ -197,21 +243,74 @@ def api_book_add():
         "author": form["author"],
         "count": int(form["count"]),
         "barcode": form["code"],
-        })
+    })
     local_filename, _ = urllib.request.urlretrieve(form["url"])
-    resize(local_filename, "book", form["code"], "jpg")
+    Resize(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
 
 
+@app.route('/api/book/action', methods=['POST'])
+def api_book_action():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    user = db.users.get({"nfc": form["user"]})
+    book = db.books.get({"barcode": form["book"]})
+    if user is None:
+        action = Action.Fail
+        return jsonify(action=action.name, book=book)
+    if book is None:
+        action = Action.Fail
+        return jsonify(action=action.name, book=book)
+    if db.hands.get({
+        "user_nfc": form["user"],
+        "book_barcode": book["barcode"],
+    }) is not None:
+        db.hands.remove({
+            "user_nfc": form["user"],
+            "book_barcode": book["barcode"],
+        })
+        action = Action.Return
+    else:
+        db.hands.insert({
+            "user_nfc": form["user"],
+            "user_name": user["name"],
+            "book_barcode": book["barcode"],
+            "book_title": book["title"],
+            "book_author": book["author"],
+            "datetime": datetime.utcnow(),
+        })
+        action = Action.Take
+    db.handlog.insert({
+        "user_nfc": form["user"],
+        "book_barcode": book["barcode"],
+        "datetime": datetime.utcnow(),
+        "action": action.name,
+        "action_ru_name": (
+            "Взял"
+            if action.name == "Take"
+            else "Вернул"
+        ),
+        "datetime_str": str(datetime.utcnow())[:-7],
+        "book_title": book["title"],
+        "user_name": user["name"],
+    })
+    book["_id"] = ""
+    return jsonify(action=action.name, book=book)
+
+
 def render_template(page_name, user):
+    if page_name in ["login", "registration"]:
+        return flask.render_template(page_name + ".html")
+    if user is None:
+        return redirect("/login")
     config = load_config()
     db = DigitalLibraryDatabase()
-    page_context = {}
+    page_context = {"user": user}
     if user["accesslevel"] == AccessLevel.Student.name:
         if page_name not in config["student_pages"]:
             return redirect("/handed")
         else:
-            handed = db.hands.find({"user_id": user["id"]})
+            handed = db.hands.find({"user_nfc": user["nfc"]})
             page_context = {
                 "user": user,
                 "handed": handed,
@@ -252,7 +351,8 @@ def render_template(page_name, user):
                             book["handed"] += 1
                             if book["old_datetime"] < been_handed_days:
                                 book["old_datetime"] = been_handed_days
-                                book["old_owner_id"] = hand["user_id"]
+                                book["old_owner_nfc"] = hand["user_nfc"]
+                                book["old_owner_hashed_nfc"] = hash2(hand["user_nfc"])
                                 book["old_owner_name"] = hand["user_name"]
                     if flag:
                         book = db.books.get({"barcode": hand["book_barcode"]})
@@ -261,7 +361,7 @@ def render_template(page_name, user):
                             "title": book["title"],
                             "author": book["author"],
                             "old_datetime": been_handed_days,
-                            "old_owner_id": hand["user_id"],
+                            "old_owner_hashed_nfc": hash2(hand["user_nfc"]),
                             "old_owner_name": hand["user_name"],
                             "handed": 1,
                             "count": book["count"]
@@ -276,6 +376,10 @@ def render_template(page_name, user):
     return flask.render_template(page_name + '.html', **dict(**page_context))
 
 
+class Session:
+    __slots__ = []
+
+
 @app.route("/<page_name>")
 def cookie_check(page_name):
     config = load_config()
@@ -283,7 +387,7 @@ def cookie_check(page_name):
         return flask.render_template("404.html")
     db = DigitalLibraryDatabase()
     session_id = request.cookies.get('session_id')
-    session = db.sessions.get({"_id": session_id})
+    session = db.sessions.get({"id": session_id})
     if session is None:
         if page_name == "registration":
             return flask.render_template("registration.html")
@@ -291,38 +395,33 @@ def cookie_check(page_name):
             return flask.render_template("login.html")
         return redirect("/login")
     else:
-        db.sessions.remove(session)
         if (datetime.utcnow() - session["datetime"]).days > 7:
+            db.sessions.remove(session)
             return redirect("/login")
-        client_session = {
-            "user": session["user"],  # TODO refactor
-            "datetime": session["datetime"],  # TODO refactor
-            "clienttype": session["clienttype"],  # TODO refactor
-            "ip": str(request.remote_addr),
-            "browser": request.user_agent.browser,
-            "version": request.user_agent.version and
-            int(request.user_agent.version.split('.')[0]),
-            "platform": request.user_agent.platform,
-            "uas": request.user_agent.string,
-            "remember": session["remember"],  # TODO refactor
-            "_id": session["_id"],  # TODO refactor
-        }
-        if client_session == session:  # TODO refactor
-            user = db.users.get({"login": session["user"]})
-            session["datetime"] = datetime.utcnow()
-            db.sessions.insert(client_session)
+        if fields_are(session, {
+            "ip" : str(request.remote_addr),
+            "browser" : request.user_agent.browser,
+            "version" : (
+                request.user_agent.version
+                and int(request.user_agent.version.split('.')[0])
+            ),
+            "platform" : request.user_agent.platform,
+            "uas" : request.user_agent.string,
+        }):
+            user = db.users.get({"login": session["user_login"]})
+            db.sessions.update(session, {"@set": {"datetime": datetime.utcnow()}})
             if page_name in ["login", "registration"]:
                 return redirect("/handed")
-            else:
-                resp = make_response(render_template(page_name, user))
-            if session["remember"] == "true":
-                resp.set_cookie(
-                    "session_id", session_id, max_age=COOKIE_AGE_REMEMBER
-                )
-            else:
-                resp.set_cookie(
-                    "session_id", session_id, max_age=COOKIE_AGE_NOT_REMEMBER
-                )
+            resp = make_response(render_template(page_name, user))
+            resp.set_cookie(
+                "session_id",
+                session_id,
+                max_age = (
+                    COOKIE_AGE_REMEMBER
+                    if session["remember"] == "true"
+                    else COOKIE_AGE_NOT_REMEMBER
+                ),
+            )
             return resp
 
 
@@ -334,54 +433,55 @@ def main():
 if __name__ == '__main__':
     main()
 
-template_user = {
-    "login": "str",
-    "password": "str",
-    "name": "str",
-    "accesslevel": "str",
-    "nfc": "str",
-    "invitecode": "str",
-    "status": "str",
-    "email": "str",
-    "handed": "int",
-    "salt": "str",
-}
 
-template_book = {
-    "title": "str",
-    "author": "str",
-    "count": "int",
-    "barcode": "str",
-}
+# template_user = {
+#     "login": "str",
+#     "password": "str",
+#     "name": "str",
+#     "accesslevel": "str",
+#     "nfc": "str",
+#     "invitecode": "str",
+#     "status": "str",
+#     "email": "str",
+#     "handed": "int",
+#     "salt": "str",
+# }
 
-template_hand = {
-    "user_id": "str",
-    "user_name": "str",
-    "book_barcode": "str",
-    "book_title": "str",
-    "book_author": "str",
-    "datetime": "datetime",
-}
+# template_book = {
+#     "title": "str",
+#     "author": "str",
+#     "count": "int",
+#     "barcode": "str",
+# }
 
-template_journal = {
-    "user": "str",
-    "book": "str",
-    "datetime": "datetime",
-    "action": "action",
-    "action_name": "srt",
-    "datetime_str": "str",
-    "book_title": "str",
-    "user_name": "str",
-}
+# template_hand = {
+#     "user_nfc": "str",
+#     "user_name": "str",
+#     "book_barcode": "str",
+#     "book_title": "str",
+#     "book_author": "str",
+#     "datetime": "datetime",
+# }
 
-template_session = {
-    "user": "str",
-    "datetime": "datetime",
-    "clienttype": "srt",
-    "ip": "str",
-    "browser": "str",
-    "version":  "str",
-    "platform": "str",
-    "uas": "str",
-    "remember": "str",
-}
+# template_journal = {
+#     "user_nfc": "str",
+#     "book_barcode": "str",
+#     "datetime": "datetime",
+#     "action": "action",
+#     "action_ru_name": "srt",
+#     "datetime_str": "str",
+#     "book_title": "str",
+#     "user_name": "str",
+# }
+
+# template_session = {
+#     "user_login": "str",
+#     "datetime": "datetime",
+#     "clienttype": "srt",
+#     "ip": "str",
+#     "browser": "str",
+#     "version": "str",
+#     "platform": "str",
+#     "uas": "str",
+#     "remember": "str",
+# }
