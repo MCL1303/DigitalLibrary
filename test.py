@@ -22,6 +22,7 @@ from ast import literal_eval
 from os import listdir
 from subprocess import CalledProcessError, check_call, check_output
 from sys import stderr
+import sys
 
 
 PEP8_OPTIONS = [
@@ -51,6 +52,7 @@ def get_python_exe_version():
 def main():
     python_files = [f for f in listdir() if f.endswith('.py')]
     python_packages = ["digital_library"]
+    print('sys.path =', sys.path)
 
     try:
         python_exe_version = get_python_exe_version()
