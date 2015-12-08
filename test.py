@@ -73,9 +73,11 @@ def main():
             check_call(cmd)
     except CalledProcessError as e:
         print(e, file=stderr)
+        return 1
     else:
         print("OK")
+        return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

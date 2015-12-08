@@ -3,7 +3,5 @@ python: "3.4"  # as in Ubuntu 15.10
 addons:
     apt:
         packages:
-            - python3-pyside.qtcore
-            - python3-pyside.qtgui
-            - python3-pyside.qtwebkit
+            - python3-pyqt4
 script: PYTHONPATH=/usr/lib/python3/dist-packages ./test.py
