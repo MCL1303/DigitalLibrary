@@ -1,0 +1,5 @@
+flask
+pep8
+pyflakes
+pylint
+PySide
