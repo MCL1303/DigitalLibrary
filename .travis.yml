@@ -1,5 +1,7 @@
 language: python
-python: "3.4"  # as in Ubuntu 15.10
+python:
+    - "3.2"  # TODO as in Travis's Ubuntu 12
+    - "3.4"  # as in Ubuntu 15.10
 addons:
     apt:
         packages:
