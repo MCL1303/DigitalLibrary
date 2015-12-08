@@ -23,9 +23,9 @@ from configparser import ConfigParser
 import errno
 import logging
 import os
-from PyQt4.QtCore import QUrl
-from PyQt4.Qt import QApplication, pyqtSignal
-from PyQt4.QtWebKit import QWebView
+from PySide.QtCore import QUrl, Signal
+from PySide.QtGui import QApplication
+from PySide.QtWebKit import QWebView
 from sys import argv
 from time import sleep
 
@@ -65,7 +65,7 @@ def send_scanner_data(user, webview):
 
 
 class BrowserWindow(QWebView):
-    closed = pyqtSignal()
+    closed = Signal()
 
     def __init__(self, url):
         super().__init__()

@@ -20,7 +20,8 @@
 
 from ast import literal_eval
 from os import listdir
-from subprocess import check_call, check_output
+from subprocess import CalledProcessError, check_call, check_output
+from sys import stderr
 
 
 PEP8_OPTIONS = [
@@ -51,19 +52,27 @@ def main():
     python_files = [f for f in listdir() if f.endswith('.py')]
     python_packages = ["digital_library"]
 
-    python_exe_version = get_python_exe_version()
-    if python_exe_version >= (3,):
-        pyflakes_cmd = "pyflakes"
-        pylint_cmd = "pylint"
-    else:
-        pyflakes_cmd = "pyflakes3"
-        pylint_cmd = "pylint3"
+    try:
+        python_exe_version = get_python_exe_version()
+        if python_exe_version >= (3,):
+            pyflakes_cmd = "pyflakes"
+            pylint_cmd = "pylint"
+        else:
+            pyflakes_cmd = "pyflakes3"
+            pylint_cmd = "pylint3"
 
-    check_call(["pep8"] + PEP8_OPTIONS + ["."])
-    check_call([pyflakes_cmd] + python_files + python_packages)
-    check_call([pylint_cmd] + PYLINT_OPTIONS + python_files + python_packages)
-    check_call(["py.test-3"])
-    print("OK")
+        cmds = [
+            ["pep8"] + PEP8_OPTIONS + ["."],
+            [pyflakes_cmd] + python_files + python_packages,
+            [pylint_cmd] + PYLINT_OPTIONS + python_files + python_packages,
+            ["py.test-3"],
+        ]
+        for cmd in cmds:
+            check_call(cmd)
+    except CalledProcessError as e:
+        print(e, file=stderr)
+    else:
+        print("OK")
 
 
 if __name__ == '__main__':

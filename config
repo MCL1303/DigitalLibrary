@@ -4,3 +4,7 @@ port = 1303
 pages = ["login", "registration", "handed", "journal". "add"]
 librarian_pages = ["handed", "journal", "add"]
 student_pages = ["handed"]
+
+[Terminal]
+url_start = http://yandex.ru/
+user_scanner = /dev/null
