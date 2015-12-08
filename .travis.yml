@@ -4,4 +4,6 @@ addons:
     apt:
         packages:
             - python3-pyqt4
-script: PYTHONPATH=/usr/lib/python3/dist-packages ./test.py
+env:
+    - PYTHONPATH=/usr/lib/python3/dist-packages
+script: ./test.py
