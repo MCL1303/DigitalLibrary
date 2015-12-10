@@ -1,8 +1,8 @@
 [Server]
 host = ::
 port = 1303
-pages = ["login", "registration", "handed", "journal", "add", "operations"]
-librarian_pages = ["handed", "journal", "add", "operations"]
+pages = ["login", "registration", "handed", "journal", "add", "operations", "users"]
+librarian_pages = ["handed", "journal", "add", "operations", "users"]
 student_pages = ["handed"]
 [Client]
 user_scanner = ""

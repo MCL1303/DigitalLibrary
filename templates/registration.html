@@ -60,7 +60,8 @@
 		                    	email: $("#email")[0].value,
 		                    	login: $("#login")[0].value,
 		                    	password: $("#password")[0].value,
-                          name: $("#name")[0].value + $("#s_name")[0].value
+                          name: $("#name")[0].value,
+                          s_name: $("#s_name")[0].value
 							          },
 		                    function(data) {
 		                        if (data.answer == "invite_not_found") {

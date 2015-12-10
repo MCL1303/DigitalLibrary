@@ -140,7 +140,10 @@ def api_registration():
             user["password"] = hash(form["password"], salt)
             user["status"] = "on"
             user["salt"] = salt
-            user["name"] = form["name"]
+            user["name"] = form["name"].replace(" ", "") + " " + form["s_name"].replace(" ", "")
+            user["search_full_name"] = (form["name"].lower() + form["s_name"].lower()).replace(" ", "")
+            user["search_name"] = form["name"].lower().replace(" ", "")
+            user["search_s_name"] = form["s_name"].lower().replace(" ", "")
             flag = True
             while flag:
                 n_id = id_generator(16)
@@ -274,12 +277,25 @@ def api_book_add():
     db = DigitalLibraryDatabase()
     if int_checker(form["count"]):
         return jsonify(answer="fail")
-    db.books.insert({
+    first = form["author"].split(" ")
+    print(first)
+    second = []
+    for word in first:
+        print(second)
+        second += word.split(".")
+    second = sorted(second, key=lambda s: len(s), reverse=True)
+    print(second)
+    book = {
         "title": form["title"],
         "author": form["author"],
         "count": int(form["count"]),
         "barcode": form["code"],
-    })
+        "search_title": form["title"].replace(" ", "").lower(),
+    }
+    for i in range(4):
+        if len(second[i]) != 1:
+            book[str(i) + "_author"] = second[i]
+    db.books.insert(book)
     local_filename, _ = urllib.request.urlretrieve(form["url"])
     Resize(local_filename, "book", form["code"], "jpg")
     return jsonify(answer="ok")
@@ -334,6 +350,34 @@ def api_book_action():
     })
     book["_id"] = ""
     return jsonify(action=action.name, book=book)
+
+
+@app.route('/api/user/get', methods=['POST'])
+def api_user_get():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    results = []
+    for word in form["request"].lower().split(" "):
+        results += db.users.find({"search_name": word})
+        results += db.users.find({"search_s_name": word})
+        results += db.users.find({"search_full_name": word})
+    results += db.users.find({"search_full_name": form["request"].lower().replace(" ", "")})
+    public_results = []
+    for i in results:
+        public_results += [{
+            "handed": i["handed"],
+            "name": i["name"],
+            "id": i["id"],
+            "image": "",
+        }]
+    return jsonify(results=public_results)
+
+
+@app.route('/api/book/get', methods=['POST'])
+def api_book_get():
+    form = request.form
+    db = DigitalLibraryDatabase()
+
 
 
 def render_template(page_name, user):
