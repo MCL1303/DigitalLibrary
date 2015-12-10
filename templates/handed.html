@@ -105,11 +105,15 @@
             </script>
             <script>
             function deleteBook(barcode) {
-                if(sure == "no") {
-                  $("#delete" + barcode)[0].firstChild.data = "Вы уверены?"
-                  sure = "yes"
+                if(sure != barcode) {
+                  $("#delete" + barcode)[0].firstChild.data = "Вы уверены?";
+                  if(sure != "no") {
+                    $("#delete" + sure)[0].firstChild.data = "Удалить книгу";
+                    sure = barcode;
+                  } else {
+                    sure = barcode;
+                  }
                 } else {
-                  sure == "no"
                   $.post(
                       "http://localhost:1303/api/book/delete",
                       {barcode: barcode},
