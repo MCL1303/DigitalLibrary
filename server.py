@@ -33,7 +33,6 @@ import string
 import urllib.request
 from uuid import uuid4
 import re
-from bson import ObjectId
 
 
 app = Flask('DigitalLibraryApplication')
@@ -48,6 +47,10 @@ def fields_are(first, second):
         except KeyError:
             return False
     return True
+
+
+def id_generator(n):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(n))
 
 
 def load_config():
@@ -137,6 +140,13 @@ def api_registration():
             user["password"] = hash(form["password"], salt)
             user["status"] = "on"
             user["salt"] = salt
+            user["name"] = form["name"]
+            flag = True
+            while flag:
+                n_id = id_generator(16)
+                if db.users.get({"id": n_id}) is None:
+                    user["id"] = id_generator(16)
+                    flag = False
         except KeyError:
             return jsonify(answer="fail")
     db.users.remove({"inviteCode": form["inviteCode"], "nfc": user["nfc"]})
@@ -201,6 +211,32 @@ def int_checker(count):
             return True
     return False
 
+
+@app.route('/api/user/add', methods=['POST'])
+def api_user_add():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    if db.users.get({"nfc": form["user"]}) is None:
+        flag = True
+        while flag:
+            inviteCode = id_generator(6)
+            if db.users.get({"inviteCode": inviteCode}) is None:
+                flag = False
+        db.users.insert({
+            "login": "asd",
+            "password": "asd",
+            "name": "asd",
+            "accesslevel": "Student",
+            "nfc": form["user"],
+            "inviteCode": inviteCode,
+            "status": "off",
+            "email": "asd",
+            "handed": 0,
+            "salt": "asd"
+        })
+        return jsonify(answer="Done", code=inviteCode)
+    else:
+        return jsonify(answer="fail")
 
 @app.route('/api/book/change', methods=['POST'])
 def api_book_change():
@@ -273,6 +309,7 @@ def api_book_action():
     else:
         db.hands.insert({
             "user_nfc": form["user"],
+            "user_id": user["id"],
             "user_name": user["name"],
             "book_barcode": book["barcode"],
             "book_title": book["title"],
@@ -293,6 +330,7 @@ def api_book_action():
         "datetime_str": str(datetime.utcnow())[:-7],
         "book_title": book["title"],
         "user_name": user["name"],
+        "user_id": user["id"],
     })
     book["_id"] = ""
     return jsonify(action=action.name, book=book)
@@ -352,7 +390,7 @@ def render_template(page_name, user):
                             if book["old_datetime"] < been_handed_days:
                                 book["old_datetime"] = been_handed_days
                                 book["old_owner_nfc"] = hand["user_nfc"]
-                                book["old_owner_hashed_nfc"] = hash2(hand["user_nfc"])
+                                book["old_owner_id"] = hand["user_id"]
                                 book["old_owner_name"] = hand["user_name"]
                     if flag:
                         book = db.books.get({"barcode": hand["book_barcode"]})
@@ -361,7 +399,7 @@ def render_template(page_name, user):
                             "title": book["title"],
                             "author": book["author"],
                             "old_datetime": been_handed_days,
-                            "old_owner_hashed_nfc": hash2(hand["user_nfc"]),
+                            "old_owner_id": hand["user_id"],
                             "old_owner_name": hand["user_name"],
                             "handed": 1,
                             "count": book["count"]
@@ -379,6 +417,49 @@ def render_template(page_name, user):
 class Session:
     __slots__ = []
 
+
+@app.route("/users/<user_id>")
+def user_page(user_id):
+    db = DigitalLibraryDatabase()
+    s_user = db.users.get({"id": user_id})
+    if s_user is None:
+        return flask.render_template("404.html")
+    s_user["handed"] = len(db.hands.find({"user_id": user_id}))
+    session_id = request.cookies.get('session_id')
+    session = db.sessions.get({"id": session_id})
+    if session is None:
+        return redirect("/login")
+    else:
+        if (datetime.utcnow() - session["datetime"]).days > 7:
+            db.sessions.remove(session)
+            return redirect("/login")
+        if fields_are(session, {
+            "ip" : str(request.remote_addr),
+            "browser" : request.user_agent.browser,
+            "version" : (
+                request.user_agent.version
+                and int(request.user_agent.version.split('.')[0])
+            ),
+            "platform" : request.user_agent.platform,
+            "uas" : request.user_agent.string,
+        }):
+            user = db.users.get({"login": session["user_login"]})
+            db.sessions.update(session, {"@set": {"datetime": datetime.utcnow()}})
+            resp = make_response(flask.render_template(
+                "user.html",
+                user=user,
+                s_user=s_user
+            ))
+            resp.set_cookie(
+                "session_id",
+                session_id,
+                max_age = (
+                    COOKIE_AGE_REMEMBER
+                    if session["remember"] == "true"
+                    else COOKIE_AGE_NOT_REMEMBER
+                ),
+            )
+            return resp
 
 @app.route("/<page_name>")
 def cookie_check(page_name):
@@ -443,7 +524,6 @@ if __name__ == '__main__':
 #     "invitecode": "str",
 #     "status": "str",
 #     "email": "str",
-#     "handed": "int",
 #     "salt": "str",
 # }
 

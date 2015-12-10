@@ -48,7 +48,7 @@
                                 <h4>{{book.title}}</h4>
                                 <p>{{book.author}}</p>
                                 <div style="position: absolute; bottom: 30px; left: 50px; right: 50px;">
-                                    <a href="/users/{{book.old_owner_hashed_nfc}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.old_owner_name}}</a>
+                                    <a href="/users/{{book.old_owner_id}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.old_owner_name}}</a>
                                     <p>Держит книгу дольше всех <br> ( {{book.old_datetime}} {{inflect(book.old_datetime, "день", "дня", "дней")}})</p>
                                     <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} {{inflectProPro(book.handed, "выдан", "выдано")}}</p>
                                     <p>{{inflectProProPro(book.count - book.handed, "Остался", "Осталось")}} {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>

@@ -14,6 +14,8 @@
 		        <input id="inviteCode" type="text" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
 		        <input id="email" type="email" class="form-control text-center" placeholder="Почта" required="">
 		        <input id="login" type="text" class="form-control text-center" placeholder="Логин" required="">
+            <input id="name" type="text" class="form-control text-center" placeholder="Имя" required="">
+            <input id="s_name" type="text" class="form-control text-center" placeholder="Фамилия" required="">
 		        <input id="password" type="password" class="form-control text-center" placeholder="Пароль" required="">
 		        <button class="btn btn-lg btn-success btn-block" onclick="send_data()">Зарегистрироваться</button>
             <div>
@@ -57,7 +59,8 @@
 		                    	inviteCode: $("#inviteCode")[0].value,
 		                    	email: $("#email")[0].value,
 		                    	login: $("#login")[0].value,
-		                    	password: $("#password")[0].value
+		                    	password: $("#password")[0].value,
+                          name: $("#name")[0].value + $("#s_name")[0].value
 							          },
 		                    function(data) {
 		                        if (data.answer == "invite_not_found") {

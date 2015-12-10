@@ -56,8 +56,10 @@ def user_scanner(driver, package):
     config = load_config()
     scanner = open(config["user_scanner"])
     while True:
+        new_user = scanner.read().strip("\2\3\r\n")
+        driver.execute_script("new_user(" + new_user + ")")
         new_package(
-            scanner.read().strip("\2\3\r\n"),
+            new_user,
             "user",
             driver,
             package,

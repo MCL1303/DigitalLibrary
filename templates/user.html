@@ -1,0 +1,22 @@
+{% macro status() -%}
+    {% if s_user.priority == "Student" %}
+        {{'Ученик'}}
+    {% else %}
+        {{'Библиотекарь'}}
+    {% endif %}
+{%- endmacro %}
+
+{% extends "layout.html" %}
+
+{% block title %}{{user.name}}{% endblock %}
+
+{% block content %}
+<div class="content" style="text-align: center;">
+    <h2>{{s_user.name}}</h2>
+    <img id="cover" src="{{'http://localhost:1303/static/images/user/large-covers/' + s_user['id'] + '.jpg'}}" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
+    <div style="width: 400px; heigth: 200px; margin: auto;">
+      <h3>Должность: {{status()}}</h3>
+      <h3>Выдано книг: {{s_user.handed}}</h3>
+    </div>
+</div>
+{% endblock %}

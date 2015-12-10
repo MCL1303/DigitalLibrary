@@ -74,11 +74,18 @@
                                 <li>
                                     <a href="#" id="DropdownLibBooks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Книги</a>
                                     <ul class="dropdown-menu" aria-labelledby="DropdownLibBooks">
+                                        <li><a href="/books">Каталог</a></li>
                                         <li><a href="/add">Добавить книгу</a></li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="/journal">Журнал</a>
+                                    <a href="#" id="DropdownLibUsers" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Пользователи</a>
+                                    <ul class="dropdown-menu" aria-labelledby="DropdownLibUsers">
+                                        <li><a href="/invite">Каталог</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a class="{{active_if('journal')}}" href="/journal">Журнал</a>
                                 </li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
