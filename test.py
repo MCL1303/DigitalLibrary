@@ -49,23 +49,26 @@ def get_python_exe_version():
 
 
 def main():
-    python_files = [f for f in listdir() if f.endswith('.py')]
-    python_packages = ["digital_library"]
+    src_files = [f for f in listdir() if f.endswith('.py')]
+    src_packages = ["digital_library"]
+    srcs = src_files + src_packages
 
     try:
         python_exe_version = get_python_exe_version()
         if python_exe_version >= (3,):
-            pyflakes_cmd = "pyflakes"
-            pylint_cmd = "pylint"
+            pyflakes = 'pyflakes'
+            pylint = 'pylint'
+            pytest = 'py.test'
         else:
-            pyflakes_cmd = "pyflakes3"
-            pylint_cmd = "pylint3"
+            pyflakes = 'pyflakes3'
+            pylint = 'pylint3'
+            pytest = 'py.test-3'
 
         cmds = [
-            ["pep8"] + PEP8_OPTIONS + ["."],
-            [pyflakes_cmd] + python_files + python_packages,
-            [pylint_cmd] + PYLINT_OPTIONS + python_files + python_packages,
-            ["py.test-3"],
+            ['pep8'] + PEP8_OPTIONS + ['.'],
+            [pyflakes, '.'],
+            [pylint] + PYLINT_OPTIONS + srcs,
+            [pytest],
         ]
         for cmd in cmds:
             check_call(cmd)
