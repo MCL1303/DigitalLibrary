@@ -1,5 +1,5 @@
 [MASTER]
-extension-pkg-whitelist = PySide
+extension-pkg-whitelist = PyQt4, PyQt4.QtCore, PyQt4.QtGui, PyQt4.QtWebKit
 
 [MESSAGES CONTROL]
 disable = bad-continuation, bad-whitespace, locally-disabled, missing-docstring,

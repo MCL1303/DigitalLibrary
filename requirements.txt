@@ -1,0 +1,6 @@
+flask
+pep8
+Pillow
+pyflakes
+pylint
+pymongo
