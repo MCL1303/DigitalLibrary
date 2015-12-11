@@ -31,12 +31,14 @@ PEP8_OPTIONS = [
     # W503: line break before binary operator
 ]
 
-
 PYLINT_OPTIONS = [
     "--output-format=colorized",
     "--rcfile=.pylintrc",
     "--reports=no",
 ]
+
+PYLINT_ISSUED_WARNING = 4
+PYLINT_ISSUED_REFACTOR = 8
 
 
 def get_python_exe_version():
@@ -46,6 +48,22 @@ def get_python_exe_version():
         )
         .decode()
     )
+
+
+def run(prog, args=None, ignore_exit_code=None):
+    if args is None:
+        args = []
+    try:
+        check_call([prog] + args)
+    except CalledProcessError as e:
+        if ignore_exit_code is not None and ignore_exit_code(e.returncode):
+            print(e, file=stderr)
+        else:
+            raise e from None
+
+
+def ignore_flags(mask):
+    return lambda code: code & ~mask == 0
 
 
 def main():
@@ -64,14 +82,16 @@ def main():
             pylint = 'pylint3'
             pytest = 'py.test-3'
 
-        cmds = [
-            ['pep8'] + PEP8_OPTIONS + ['.'],
-            [pyflakes, '.'],
-            [pylint] + PYLINT_OPTIONS + srcs,
-            [pytest],
-        ]
-        for cmd in cmds:
-            check_call(cmd)
+        run('pep8', PEP8_OPTIONS + ['.'])
+        run(pyflakes, ['.'])
+        run(
+            pylint,
+            PYLINT_OPTIONS + srcs,
+            ignore_exit_code = ignore_flags(
+                PYLINT_ISSUED_WARNING | PYLINT_ISSUED_REFACTOR
+            ),
+        )
+        run(pytest)
     except CalledProcessError as e:
         print(e, file=stderr)
     else:
