@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}{{book.title}}{% endblock %}
+
+{% block content %}
+
+<style>
+  .error{
+    background-color: #c9302c;
+    color: #fff;
+  }
+</style>
+
+<div class="content" style="text-align: center;">
+    <h2>{{book.title}}</h2>
+    <img id="cover" src="http://localhost:1303/static/images/book/small-covers/{{book.barcode}}.jpg" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px; margin-bottom: 30px;">
+    <div style="width: 400px; heigth: 200px; margin: auto;">
+      <h4>{{book.author}}</h4>
+    </div>
+      <h3>Выдано: {{book.handed}}</h3>
+</div>
+{% endblock %}
