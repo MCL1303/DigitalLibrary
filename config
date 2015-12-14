@@ -8,3 +8,7 @@ student_pages = ["handed", "books"]
 user_scanner = ""
 book_scanner = "/dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd"
 operations_url = "http://localhost"
+
+[Terminal]
+url_start = http://yandex.ru/
+user_scanner = /dev/null

@@ -96,7 +96,7 @@ def book_scanner(driver, package):
 def main():
     config = load_config()
     driver = Firefox()
-    # driver.get(config["operations_url"])
+    driver.get("http://yandex.ru/")
     package = {
         "user": "",
         "book": "",

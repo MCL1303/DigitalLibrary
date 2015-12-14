@@ -20,7 +20,7 @@
 
 
 from digital_library.database import DigitalLibraryDatabase
-from digital_library.types import ClientType, AccessLevel, Action
+from digital_library.typesx import ClientType, AccessLevel, Action
 from digital_library.resizer import Resize
 
 import configparser
@@ -295,7 +295,7 @@ def api_book_add():
         print(second)
         second += word.split(".")
     second = sorted(second, key=lambda s: len(s), reverse=True)
-    
+
     third = form["title"].split(" ")
     fourth = []
     for word in third:
@@ -335,7 +335,7 @@ def api_user_photo():
         return jsonify(answer="fail")
     user = db.users.get({"id": form["id"]})
     if user is None:
-        return jsonify(answer="ok") 
+        return jsonify(answer="ok")
     try:
         local_filename, _ = urllib.request.urlretrieve(form["url"])
     except ValueError:
@@ -507,7 +507,7 @@ def render_template(page_name, user):
                 "len": len(handed),
                 "page_name": page_name,
             }
-    if user["accessLevel"] == AccessLevel.Librarian.name:
+    elif user["accessLevel"] == AccessLevel.Librarian.name:
         if page_name not in config["librarian_pages"]:
             return redirect("/handed")
         else:
@@ -568,7 +568,6 @@ def render_template(page_name, user):
 
 class Session:
     __slots__ = []
-
 
 
 @app.route("/books/<barcode>")
@@ -703,6 +702,7 @@ def user_page(user_id):
             )
             return resp
 
+
 @app.route("/<page_name>")
 def cookie_check(page_name):
     config = load_config()
@@ -715,7 +715,7 @@ def cookie_check(page_name):
         if page_name == "registration":
             return flask.render_template("registration.html")
         if page_name == "login":
-            return flask.render_template("login.html")
+            return render_template("login", None)
         return redirect("/login")
     else:
         if (datetime.utcnow() - session["datetime"]).days > 7:
@@ -732,7 +732,7 @@ def cookie_check(page_name):
             "uas" : request.user_agent.string,
         }):
             user = db.users.get({"login": session["user_login"]})
-            db.sessions.update(session, {"@set": {"datetime": datetime.utcnow()}})
+            session["datetime"] = datetime.utcnow()
             if page_name in ["login", "registration"]:
                 return redirect("/handed")
             resp = make_response(render_template(page_name, user))
@@ -755,55 +755,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# template_user = {
-#     "login": "str",
-#     "password": "str",
-#     "name": "str",
-#     "accessLevel": "str",
-#     "nfc": "str",
-#     "invitecode": "str",
-#     "status": "str",
-#     "email": "str",
-#     "salt": "str",
-# }
-
-# template_book = {
-#     "title": "str",
-#     "author": "str",
-#     "count": "int",
-#     "barcode": "str",
-# }
-
-# template_hand = {
-#     "user_nfc": "str",
-#     "user_name": "str",
-#     "book_barcode": "str",
-#     "book_title": "str",
-#     "book_author": "str",
-#     "datetime": "datetime",
-# }
-
-# template_journal = {
-#     "user_nfc": "str",
-#     "book_barcode": "str",
-#     "datetime": "datetime",
-#     "action": "action",
-#     "action_ru_name": "srt",
-#     "datetime_str": "str",
-#     "book_title": "str",
-#     "user_name": "str",
-# }
-
-# template_session = {
-#     "user_login": "str",
-#     "datetime": "datetime",
-#     "clienttype": "srt",
-#     "ip": "str",
-#     "browser": "str",
-#     "version": "str",
-#     "platform": "str",
-#     "uas": "str",
-#     "remember": "str",
-# }
