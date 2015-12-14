@@ -7,7 +7,7 @@
 #                     Yuriy Syrovetskiy <cblp@cblp.su>
 #                     Pavel Fedorov <pfedorovs18@gmail.com>
 #                     Danila Starostin <starostindanila@yandex.ru>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -22,14 +22,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import time
+from threading import Thread
+import configparser
 
 sys.path.append("./selenium.egg")
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import Firefox
-import time
-from threading import Thread
-import configparser
 
 
 def load_config():
@@ -40,7 +40,7 @@ def load_config():
 
 def send_scanner_data(package, driver):
     driver.execute_script(
-        "send('" + package["user"] + "', '"+ package["book"] + "')"
+        "send('" + package["user"] + "', '" + package["book"] + "')"
     )
 
 

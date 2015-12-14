@@ -6,7 +6,7 @@
 #                     Yuriy Syrovetskiy <cblp@cblp.su>
 #                     Pavel Fedorov <pfedorovs18@gmail.com>
 #                     Danila Starostin <starostindanila@yandex.ru>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -117,7 +117,8 @@ def validate_login(login):
 def validate_email(email):
     if len(email) > 7 and not(" " in email):
         if re.match(
-            "^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$",
+            "^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+" +
+            "\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$",
             email
         ) != None:
             return False
@@ -292,6 +293,7 @@ def api_user_add():
     else:
         return jsonify(answer="fail")
 
+
 @app.route('/api/book/change', methods=['POST'])
 def api_book_change():
     if bad_permitions(session_id = request.cookies.get('session_id')):
@@ -386,7 +388,11 @@ def api_user_photo():
     Resize(local_filename, "user", form["id"], "jpg")
     db.users.update(
         {"id": form["id"], "status": "on"},
-        {"image": "http://localhost:1303/static/images/user/$-covers/" + form["id"] + ".jpg"}
+        {"image": (
+            "http://localhost:1303/static/images/user/$-covers/" +
+            form["id"] +
+            ".jpg"
+        )}
     )
     return jsonify(answer="ok")
 
@@ -427,7 +433,7 @@ def api_book_action():
             {"handed": db.users.get({
                 "nfc": form["user"],
                 "status": "on",
-                })["handed"] + 1}
+            })["handed"] + 1}
         )
         db.hands.insert({
             "user_nfc": form["user"],
@@ -561,7 +567,11 @@ def api_book_get():
             "author": i["author"],
             "barcode": i["barcode"],
         }
-        new_reqult["image"] = "http://localhost:1303/static/images/book/small-covers/" + i["barcode"] + ".jpg"
+        new_reqult["image"] = (
+            "http://localhost:1303/static/images/book/small-covers/" +
+            i["barcode"] +
+            ".jpg"
+        )
         if not (new_reqult in public_results):
             public_results += [new_reqult]
     return jsonify(results=public_results)
@@ -661,20 +671,20 @@ def book_barcode(barcode):
             db.sessions.remove(session)
             return redirect("/login")
         if fields_are(session, {
-            "ip" : str(request.remote_addr),
-            "browser" : request.user_agent.browser,
-            "version" : (
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": (
                 request.user_agent.version
                 and int(request.user_agent.version.split('.')[0])
             ),
-            "platform" : request.user_agent.platform,
-            "uas" : request.user_agent.string,
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
         }):
             ib_book = db.books.get({"barcode": barcode})
             if ib_book is None:
                 return redirect("/handed")
             book = {
-                "title" : ib_book["title"],
+                "title": ib_book["title"],
                 "author": ib_book["author"],
                 "count": ib_book["count"],
                 "barcode": ib_book["barcode"],
@@ -685,7 +695,7 @@ def book_barcode(barcode):
                 ib_owner = db.users.get({
                     "nfc": hand["user_nfc"],
                     "status": "on",
-                    })
+                })
                 if ib_owner is None:
                     continue
                 owner = {
@@ -703,7 +713,7 @@ def book_barcode(barcode):
                 user=db.users.get({
                     "login": session["user_login"],
                     "status": "on",
-                    }),
+                }),
                 book=book,
                 users=owners,
             ))
@@ -719,7 +729,6 @@ def book_barcode(barcode):
             return resp
         else:
             return redirect("/login")
-
 
 
 @app.route("/users/<user_id>")
@@ -740,7 +749,10 @@ def user_page(user_id):
             "https://en.opensuse.org/images/0/0b/Icon-user.png"
         )
     else:
-        searched_user["image"] = ib_searched_user["image"].replace("$", "large")
+        searched_user["image"] = ib_searched_user["image"].replace(
+            "$",
+            "large"
+        )
     session_id = request.cookies.get('session_id')
     session = db.sessions.get({"id": session_id})
     if session is None:
@@ -750,14 +762,14 @@ def user_page(user_id):
             db.sessions.remove(session)
             return redirect("/login")
         if fields_are(session, {
-            "ip" : str(request.remote_addr),
-            "browser" : request.user_agent.browser,
-            "version" : (
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": (
                 request.user_agent.version
                 and int(request.user_agent.version.split('.')[0])
             ),
-            "platform" : request.user_agent.platform,
-            "uas" : request.user_agent.string,
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
         }):
             user = db.users.get({
                 "login": session["user_login"],
@@ -768,7 +780,9 @@ def user_page(user_id):
                     "@set": {"datetime": datetime.utcnow()}
                 }
             )
-            searcheds_user_hands = db.hands.find({"user_nfc": ib_searched_user["nfc"]})
+            searcheds_user_hands = db.hands.find({
+                "user_nfc": ib_searched_user["nfc"]
+            })
             searched_user_books = []
             for hand in searcheds_user_hands:
                 new_book = {
@@ -815,14 +829,14 @@ def cookie_check(page_name):
             db.sessions.remove(session)
             return redirect("/login")
         if fields_are(session, {
-            "ip" : str(request.remote_addr),
-            "browser" : request.user_agent.browser,
-            "version" : (
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": (
                 request.user_agent.version
                 and int(request.user_agent.version.split('.')[0])
             ),
-            "platform" : request.user_agent.platform,
-            "uas" : request.user_agent.string,
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
         }):
             user = db.users.get({
                 "login": session["user_login"],
