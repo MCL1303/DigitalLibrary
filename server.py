@@ -20,7 +20,7 @@
 
 
 from digital_library.database import DigitalLibraryDatabase
-from digital_library.types import ClientType, AccessLevel
+from digital_library.typesx import ClientType, AccessLevel
 from digital_library.resizer import resize
 
 import configparser
