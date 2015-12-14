@@ -1,49 +1,52 @@
-{% extends "layout.html" %}
-
-{% block title %}Вход{% endblock %}
-
-{% block content %}
-<div class="row">
-    <link href="/static/css/signin.css" rel="stylesheet">
-    <div class="form-signin text-center">
-        <h2 class="form-signin-heading">Авторизаия</h2>
-        <input id="login" type="text" name="login" class="form-control text-center" placeholder="Логин" required="" autofocus="">
-        <input id="password" type="password" name="password" class="form-control text-center" placeholder="Пароль" required="">
-        <div class="checkbox">
-            <label>
-                <input id="checkbox" type="checkbox" name="remember-me"> Запомнить меня
-            </label>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>{% block title %}{% endblock %}</title>
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/navbar.css" rel="stylesheet">
+        <link href="/static/css/signin.css" rel="stylesheet">
+        <link rel="icon" type="image/ico" href="/static/images/favicon.ico">
+    </head>
+    <body>
+        <div class="row">
+            <div class="form-signin text-center">
+                <h2 class="form-signin-heading">Авторизаия</h2>
+                <input id="login" type="text" name="login" class="form-control text-center" placeholder="Логин" required="" autofocus="">
+                <input id="password" type="password" name="password" class="form-control text-center" placeholder="Пароль" required="">
+                <div class="checkbox">
+                    <label>
+                        <input id="checkbox" type="checkbox" name="remember-me"> Запомнить меня
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-success btn-block" onclick="send_data()">Войти</button>
+                <a class="btn btn-lg btn-primary btn-block" href="registration">Зарегистрироваться</a>
+                <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px;" id="alert_error">
+                    <h4>Неправильно указан логин или пароль</h4>
+                    <p>Проверьте раскладку клавиатуры и не нажата ли клавиша Caps Lock</p>
+                </div>
+                <script src="/static/js/jquery.js"></script>
+                <script>
+                    function send_data() {
+                        $("#alert_error").removeClass("in");
+                        $.post(
+                            "http://localhost:1303/api/user/login",
+                            {
+                                login: $("#login")[0].value,
+                                password: $("#password")[0].value,
+                                remember: $("#checkbox")[0].checked
+                            },
+                            function(data) {
+                                if (data.answer == "error") {
+                                    $("#alert_error").addClass("in");
+                                } else {
+                                    window.location.replace("http://localhost:1303/handed");
+                                }
+                            },
+                            "json"
+                        )
+                    }
+                </script>
+            </div>
         </div>
-        <button class="btn btn-lg btn-success btn-block" onclick="send_data()">Войти</button>
-        <a class="btn btn-lg btn-primary btn-block" href="registration">Зарегистрироваться</a>
-        {% if device == "terminal" %}
-            <p class="btn btn-lg btn-info btn-block">Или приложите карту к сканеру</p>
-        {% endif %}
-        <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px;" id="alert">
-            <h4>Не правильно указан логин или пароль</h4>
-            <p>Проверьте раскладку клавиатуры и не нажата ли клавиша Caps Lock</p>
-        </div>
-        <script src="/static/js/jquery.js"></script>
-        <script>
-            function send_data() {
-                $.post(
-                    "http://localhost:1303/api/login",
-                    {
-                        login: $("#login")[0].value,
-                        password: $("#password")[0].value,
-                        remember: $("#checkbox")[0].checked
-                    },
-                    function(data) {
-                        if (data.answer == "ok") {
-                            window.location.replace("http://localhost:1303");
-                        } else {
-                            $("#alert")[0].className += "in"
-                        }
-                    },
-                    "json"
-                )
-            }
-        </script>
-    </div>
-</div>
-{% endblock %}
+    </body>
+</html>

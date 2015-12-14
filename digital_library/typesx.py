@@ -23,6 +23,7 @@ class Action(Enum):
     # pylint: disable=no-init
     Take = 1
     Return = 2
+    Fail = 3
 
 
 class ClientType(Enum):

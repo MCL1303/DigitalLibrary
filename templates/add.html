@@ -39,13 +39,13 @@
         <h2>Шаг 2: Выберите обложку книги для</h2>
         <div style="width: 40%; margin: auto;">
             <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
-                <div style="width: 368px; margin: auto;">
+                <!-- <div style="width: 368px; margin: auto;">
                     <div class="btn-group" role="group" style="margin-top: 20px;">
                         <button type="button" class="btn btn-default" role="presentation" class="active"><a href="#url" role="tab" id="url-tab" data-toggle="tab" aria-controls="url" aria-expanded="false" style="text-decoration: none;">По URL</button>
                         <button type="button" class="btn btn-default" role="presentation" class=""><a href="#variants" id="variants-tab" role="tab" data-toggle="tab" aria-controls="variants" aria-expanded="true" style="text-decoration: none;">Предложенные</button>
                         <button type="button" class="btn btn-default" role="presentation" class=""><a href="#file" role="tab" id="file-tab" data-toggle="tab" aria-controls="file" aria-expanded="false" style="text-decoration: none;">Файл с компьютера</a></button>
                     </div>
-                </div>
+                </div> -->
 
                 <div id="myTabContent" class="tab-content">
                     <div role="tabpanel" class="tab-pane fade active in" id="url" aria-labelledby="url-tab">
@@ -73,7 +73,7 @@
             </div>
             </div>
             <div style="margin: 40px;"></div>
-            <button class="btn btn-lg btn-success" onclick="check()">Добавить</button>
+            <button class="btn btn-lg btn-success" onclick="check()" id="add_button">Добавить</button>
             <div style="margin: 40px;"></div>
         </div>
         <script>
@@ -119,16 +119,8 @@
             }
         });
         $('#inputUrl').on('input', function() {
-            if($("#inputUrl")[0].value != "" &&
-                $("#inputCode")[0].value.length == 13 &&
-                ~~Number($("#inputCode")[0].value) > 0
-            ) {
-                $("#lableUrl").removeClass("default");
-                $("#labelUrl").addClass("green");
-            } else {
-                $("#labelUrl").removeClass("green");
-                $("#labelUrl").addClass("default");
-            }
+            $('#cover')[0].style.background = 'url(' + $('#inputUrl')[0].value + ') no-repeat center'
+            $('#cover')[0].style.backgroundSize = "98%"
         });
         </script>
         <script>
@@ -137,7 +129,11 @@
                     "http://localhost:1303/api/book/add",
                     {title: title, author: author, count: count, code: code, url: url},
                     function(data) {
-                        console.log("ok")
+                        if(data.answer == "ok")
+                          window.location.replace("http://localhost:1303/add");
+                        else {
+                          $("#add_button")[0].firstChild.data = "Ошибка"
+                        }
                     },
                     "json"
                 )
@@ -156,7 +152,9 @@
                         $("#inputCode")[0].value,
                         $("#inputUrl")[0].value
                     )
+                    $("#add_button")[0].firstChild.data = "Ждите"
                 }
+
             }
         </script>
 {% endblock %}
