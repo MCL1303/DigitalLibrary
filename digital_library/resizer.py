@@ -1,6 +1,9 @@
 # Digital Library — a digital book management system
 # Copyright (C) 2015  Igor Tarakanov <igortarakanov144999usa@gmail.com>,
-#
+#                     Yuriy Syrovetskiy <cblp@cblp.su>
+#                     Pavel Fedorov <pfedorovs18@gmail.com>
+#                     Danila Starostin <starostindanila@yandex.ru>
+# 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
