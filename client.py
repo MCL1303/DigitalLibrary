@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+
+sys.path.append("./selenium-2.48.0-py3.4.egg")
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import Firefox
