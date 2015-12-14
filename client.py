@@ -23,7 +23,7 @@
 
 import sys
 
-sys.path.append("./selenium-2.48.0-py3.4.egg")
+sys.path.append("./selenium.egg")
 
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import Firefox

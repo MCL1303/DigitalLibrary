@@ -23,9 +23,9 @@
             {% for hand in handed %}
                 <div class="col-sm-6 col-md-4">
                     <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="{{ 'http://localhost:1303/static/images/book/small-covers/' + hand.book_barcode + '.jpg'}}" alt="">
+                        <img src="http://localhost:1303/static/images/book/small-covers/{{hand.book_barcode}}.jpg" alt="">
                         <div class="caption" style="padding: 1em 0; text-align: center;">
-                            <h3>{{hand.book_title}}</h3>
+                            <a href="http://localhost:1303/books/{{hand.book_barcode}}"><h3>{{hand.book_title}}</h3></a>
                             <p>{{hand.book_author}}</p>
                         </div>
                     </div>
