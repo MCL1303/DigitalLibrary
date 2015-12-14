@@ -1,27 +1,17 @@
 {% extends "layout.html" %}
-
-{% block title %}Мои книги{% endblock %}
-
+{% block title %}Журнал{% endblock %}
 {% block content %}
-    {% if user.ptiority != "librarian" %}
-        <div class="row">
-            {% for i in range(handlogLen) %}
-            <div class="input-group">
-                <span class="input-group-addon" id="basic-addon2" style="width: 5%;">{{handlog[handlogLen - i - 1].datetime}}</span>
-                <span class="input-group-addon" id="basic-addon2" style="width: 10%;">{{handlog[handlogLen - i - 1].RuAction}}</span>
-                <span class="input-group-addon" id="basic-addon2" style="width: 30%;">{{handlog[handlogLen - i - 1].RuBook}}</span>
-                <span class="input-group-addon" id="basic-addon2" style="width: 20%;">{{handlog[handlogLen - i - 1].RuName}}</span>
-            </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <script>
-            window.location.href = "http://localhost:5000/"
-        </script>
+<div class="row">
+    {% if len == 0 %}
+    <h3 class="text-center">Журнал пуст</h3>
     {% endif %}
-    {% if device == "terminal" %}
-        <script>
-            window.location.href = "http://localhost:5000/operations"
-        </script>
-    {% endif %}
+    {% for i in range(len) %}
+    <div class="input-group" style="width: 100%;">
+        <span class="input-group-addon" id="basic-addon2" style="width: 15%;">{{handlog[len - i - 1].datetime_str}}</span>
+        <span class="input-group-addon" id="basic-addon2" style="width: 30%;"><a href="http://localhost:1303/users/{{handlog[len - i - 1].user_id}}">{{handlog[len - i - 1].user_name}}</a></span>
+        <span class="input-group-addon" id="basic-addon2" style="width: 15%;">{{handlog[len - i - 1].action_ru_name}}</span>
+        <span class="input-group-addon" id="basic-addon2" style="width: 40%;"><a href="http://localhost:1303/books/{{handlog[len - i - 1].book_barcode}}">{{handlog[len - i - 1].book_title}}</a></span>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

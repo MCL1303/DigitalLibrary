@@ -1,100 +1,102 @@
 {% macro inflect(n, form1, form2, form5) -%}
-    {% if n % 10 == 1 %}
-        {{form1}}
-    {% elif n % 10 in [2, 3, 4] %}
-        {{form2}}
-    {% else %}
-        {{form5}}
-    {% endif %}
-{%- endmacro %}
-{% macro inflectProPro(n, form1, form2) -%}
-    {% if n % 10 == 1 %}
-        {{form1}}
-    {% else %}
-        {{form2}}
-    {% endif %}
+{% if n % 10 == 1 %}
+{{form1}}
+{% elif n % 10 in [2, 3, 4] %}
+{{form2}}
+{% else %}
+{{form5}}
+{% endif %}
 {%- endmacro %}
 {% macro inflectPro(n, form1, form2, form5) -%}
-    {% if n % 100 in [11, 12, 13, 14] %}
-        {{form5}}
-    {% elif n % 10 == 1 %}
-        {{form1}}
-    {% elif n % 10 in [2, 3, 4] %}
-        {{form2}}
-    {% else %}
-        {{form5}}
-    {% endif %}
+{% if n % 100 in [11, 12, 13, 14] %}
+{{form5}}
+{% elif n % 10 == 1 %}
+{{form1}}
+{% elif n % 10 in [2, 3, 4] %}
+{{form2}}
+{% else %}
+{{form5}}
+{% endif %}
+{%- endmacro %}
+{% macro inflectProPro(n, form1, form2) -%}
+{% if n % 10 == 1 %}
+{{form1}}
+{% else %}
+{{form2}}
+{% endif %}
 {%- endmacro %}
 {% macro active_if(tname) -%}
-    {{ 'active' if template_name == tname else '' }}
+{{ 'active' if page_name == tname else '' }}
 {%- endmacro %}
-
+{% macro inflectProProPro(n, form1, form2) -%}
+{% if n == 1 %}
+{{form1}}
+{% else %}
+{{form2}}
+{% endif %}
+{%- endmacro %}
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="">
         <title>{% block title %}{% endblock %}</title>
         <link href="/static/css/bootstrap.css" rel="stylesheet">
         <link href="/static/css/navbar.css" rel="stylesheet">
-        <link rel="icon" href="/static/images/icon.png">
-        <link rel="shortcut icon" href="/static/images/favicon.ico">
         <link rel="icon" type="image/ico" href="/static/images/favicon.ico">
     </head>
-
     <body cz-shortcut-listen="true">
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="/">Библиотека МХЛ</a>
+                    <a class="navbar-brand" href="/handed">Библиотека МХЛ</a>
                 </div>
-                {% if user.priority == "student" %}
-                    <div id="navbar" class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li class="{{active_if('handed')}}"><a href="/handed">Мои книги</a></li>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li>
-                                <a href="#" id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.RuName}}</a>
-                                <ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
-                                    <li><a href="/handed">На руках {{handedBooksLen}} {{inflect(handedBooksLen, 'книга', 'книги', 'книг')}}</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href="/" onclick="exit()">Выход</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                {% elif user.priority == "librarian" %}
-                    <div id="navbar" class="navbar-collapse collapse">
-                        <ul class="nav navbar-nav">
-                            <li>
-                                <a href="#" id="DropdownLibBooks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Книги</a>
-                                <ul class="dropdown-menu" aria-labelledby="DropdownLibBooks">
-                                    <li><a href="/books">Каталог</a></li>
-                                    <li><a href="/add">Добавить книгу</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <a href="/users">Пользователи</a>
-                            </li>
-                            <li>
-                                <a href="/journal">Журнал</a>
-                            </li>
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li>
-                                <a href="#" id="DropdownLibMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.name}}</a>
-                                <ul class="dropdown-menu" aria-labelledby="DropdownLibMenu">
-                                    <li><a href="/">Что-то придумаем</a></li>
-                                    <li role="separator" class="divider"></li>
-                                    <li><a href="/" onclick="exit()">Выход</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
+                {% if user.accessLevel == "Student" %}
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="{{active_if('handed')}}"><a href="/handed">Мои книги</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.name}}</a>
+                            <ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
+                                <li><a href="/handed">На руках {{len}} {{inflect(len, 'книга', 'книги', 'книг')}}</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/" onclick="exit()">Выход</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+                {% if user.accessLevel == "Librarian" %}
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="#" id="DropdownLibBooks" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Книги</a>
+                            <ul class="dropdown-menu" aria-labelledby="DropdownLibBooks">
+                                <li><a href="/books">Каталог</a></li>
+                                <li><a href="/add">Добавить книгу</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" id="DropdownLibUsers" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Пользователи</a>
+                            <ul class="dropdown-menu" aria-labelledby="DropdownLibUsers">
+                                <li><a href="/users">Каталог</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a class="{{active_if('journal')}}" href="/journal">Журнал</a>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" id="DropdownLibMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">{{user.name}}</a>
+                            <ul class="dropdown-menu" aria-labelledby="DropdownLibMenu">
+                                <li><a href="/">Coming soon</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="/" onclick="exit()">Выход</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
                 {% endif %}
             </div>
         </nav>
@@ -105,18 +107,18 @@
         <script src="/static/js/jquery.js"></script>
         <script src="/static/js/bootstrap.js"></script>
         <script>
-        function exit() {
-                    $.post(
-                        "http://localhost:1303/api/exit",
-                        {
-                            ip: "{{ip}}"
-                        },
-                        function(data) {
-                            window.location.replace("http://localhost:1303");
-                        },
-                        "json"
-                    )
-                }
+            function exit() {
+                        $.post(
+                            "http://localhost:1303/api/user/exit",
+                            {
+                                session_id: "session_id"
+                            },
+                            function(data) {
+                                window.location.replace("http://localhost:1303/login");
+                            },
+                            "json"
+                        )
+                    }
         </script>
     </body>
 </html>

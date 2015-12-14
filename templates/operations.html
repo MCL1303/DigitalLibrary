@@ -1,45 +1,67 @@
-{% extends "layout.html" %}
-
-{% block title %}Взять/Вернуть книги{% endblock %}
-
-{% block content %}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Взять/Вернуть книги</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/navbar.css" rel="stylesheet">
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/bootstrap.js"></script>
+    <link rel="icon" type="image/ico" href="/static/images/favicon.ico">
+</head>
+<body>
     <div class="row">
         <div class="content" style="text-align: center;">
-            <h2>Введите штрих код книги и приложите карту к скканеру, чтобы взять или вернуть её</h2>
-            <div class="input-group" style="width: 70%; margin: 20px 15%">
-                <span class=" input-group-addon" id="code" value="">Цифры штрих кода</span>
-                <input type="text" class="form-control" id="inputCode">
-            </div>
+            <h2>Отсканируйте штрих код книги и приложите карту к сканеру, чтобы взять или вернуть её</h2>
             <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
             <h2 id="status">Статус операции</h2>
         </div>
+        <div class="modal fade" id="InviteModal" tabindex="-1" role="dialog" aria-labelledby="InviteModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="text-align: center;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                        <h4 class="modal-title" id="InviteModalLabel" style="margin: auto;">Ура, новый пользователь!</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <p>Ваш пригласительный код: 
+                        <h2 id="inviteCode">asd</h2>
+                        </p>
+                        <p>Запишите его и приложите карточку еще раз, чтобы никто не украл ваш пригласительный код</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
-            $('#inputCode').on('input', function() {
-                if($("#inputCode")[0].value != "" &&
-                    $("#inputCode")[0].value.length == 13 &&
-                    ~~Number($("#inputCode")[0].value) > 0
-                    ) {
-                    $("#code").removeClass("default")
-                    $("#code").addClass("green")
-                } else {
-                    $("#code").removeClass("green")
-                    $("#code").addClass("default")
-                }
-            });
-            function send_scanner_data(user) {
+            function send(user, book) {
                 $.post(
                     "http://localhost:1303/api/book/action",
-                    {user: user, book: $("#inputCode")[0].value},
+                    {user: user, book: book},
                     function(data) {
                         $("#cover").attr(
                             'src',
                             "http://localhost:1303/static/images/book/large-covers/" +
-                                data.book + ".jpg"
+                                book + ".jpg"
                         );
                         if (data.action == "Take") {
                             $("#status").text("Вы взяли книгу");
-                        } else {
+                        } else if (data.action == "Return") {
                             $("#status").text("Вы вернули книгу");
+                        } else if (data.action == "Fail") {
+                            $("#status").text("Ошибка. Попробуйте еще раз");
+                        }
+                    },
+                    "json"
+                )
+            }
+            function new_user(user) {
+                $.post(
+                    "http://localhost:1303/api/user/add",
+                    {user: user},
+                    function(data) {
+                        if (data.answer == "Done") {
+                            $("#inviteCode")[0].innerHTML = data.code;
+                            $("#InviteModal").modal();
+                        } else {
+                          $("#InviteModal").modal("hide");
                         }
                     },
                     "json"
@@ -47,4 +69,4 @@
             }
         </script>
     </div>
-{% endblock %}
+</body>
