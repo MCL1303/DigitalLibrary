@@ -166,6 +166,8 @@ def api_registration():
             return jsonify(answer="fail")
     db.users.remove({"inviteCode": form["inviteCode"], "nfc": user["nfc"]})
     db.users.insert(user)
+    local_filename, _ = urllib.request.urlretrieve("https://en.opensuse.org/images/0/0b/Icon-user.png")
+    Resize(local_filename, "user", user["id"], "jpg")
     return jsonify(answer="ok")
 
 
