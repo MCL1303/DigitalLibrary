@@ -1,238 +1,235 @@
 {% extends "layout.html" %}
-
 {% block title %}Мои книги{% endblock %}
-
 {% block content %}
 <div class="row">
     <style>
         .green {
-            background-color: #5cb85c;
-            color: white;
+        background-color: #5cb85c;
+        color: white;
         }
         .default {
-            background-color: #eeeeee;
-            color: #555555;
+        background-color: #eeeeee;
+        color: #555555;
         }
     </style>
     {% if user.accessLevel == "Student" %}
-            {% if len == 0 %}
-            <h3 class="text-center">У вас на руках нет книг</h3>
-            {% else %}
-            <h3 class="text-center">На руках</h3>
-            {% endif %}
-            {% for hand in handed %}
-                <div class="col-sm-6 col-md-4">
-                    <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
-                        <img src="http://localhost:1303/static/images/book/small-covers/{{hand.book_barcode}}.jpg" alt="">
-                        <div class="caption" style="padding: 1em 0; text-align: center;">
-                            <a href="http://localhost:1303/books/{{hand.book_barcode}}"><h3>{{hand.book_title}}</h3></a>
-                            <p>{{hand.book_author}}</p>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
+    {% if len == 0 %}
+    <h3 class="text-center">У вас на руках нет книг</h3>
+    {% else %}
+    <h3 class="text-center">На руках</h3>
+    {% endif %}
+    {% for hand in handed %}
+    <div class="col-sm-6 col-md-4">
+        <div class="thumbnail" style="min-height: 470px; max-height: 470px;">
+            <img src="http://localhost:1303/static/images/book/small-covers/{{hand.book_barcode}}.jpg" alt="">
+            <div class="caption" style="padding: 1em 0; text-align: center;">
+                <a href="http://localhost:1303/books/{{hand.book_barcode}}">
+                    <h3>{{hand.book_title}}</h3>
+                </a>
+                <p>{{hand.book_author}}</p>
+            </div>
         </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% if user.accessLevel == "Librarian" %}
+<div class="row">
+    {% if len == 0 %}
+    <h3 class="text-center">На руках нет книг</h3>
+    {% else %}
+    <h3 class="text-center">На руках</h3>
     {% endif %}
-    {% if user.accessLevel == "Librarian" %}
-        <div class="row">
-            {% if len == 0 %}
-            <h3 class="text-center">На руках нет книг</h3>
-            {% else %}
-            <h3 class="text-center">На руках</h3>
-            {% endif %}
-            {% for book in books %}
-                <div class="col-sm-6 col-md-4" id="{{book.barcode}}">
-                        <div class="thumbnail" style="height: 650;">
-                            <img src="{{'http://localhost:1303/static/images/book/small-covers/' + book['barcode'] + '.jpg'}}" alt="">
-                            <div class="caption" style="text-align: center;">
-                                <h4>{{book.title}}</h4>
-                                <p>{{book.author}}</p>
-                                <div style="position: absolute; bottom: 30px; left: 50px; right: 50px;">
-                                    <a href="/users/{{book.old_owner_id}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.old_owner_name}}</a>
-                                    <p>Держит книгу дольше всех <br> ( {{book.old_datetime}} {{inflect(book.old_datetime, "день", "дня", "дней")}})</p>
-                                    <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} {{inflectProPro(book.handed, "выдан", "выдано")}}</p>
-                                    <p>{{inflectProProPro(book.count - book.handed, "Остался", "Осталось")}} {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin-bottom: 10px;" onclick="change('{{book.title}}', '{{book.author}}', '{{book.count}}', '{{book.barcode}}')">Изменить информацию о книге
-                                    </button>
-                                    <button id="delete{{book.barcode}}" type="button" class="btn btn-danger" onclick="deleteBook('{{book.barcode}}')">Удалить книгу</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-            {% endfor %}
+    {% for book in books %}
+    <div class="col-sm-6 col-md-4" id="{{book.barcode}}">
+        <div class="thumbnail" style="height: 650;">
+            <img src="{{'http://localhost:1303/static/images/book/small-covers/' + book['barcode'] + '.jpg'}}" alt="">
+            <div class="caption" style="text-align: center;">
+                <h4>{{book.title}}</h4>
+                <p>{{book.author}}</p>
+                <div style="position: absolute; bottom: 30px; left: 50px; right: 50px;">
+                    <a href="/users/{{book.old_owner_id}}" class="btn btn-default" style="margin-bottom: 5px;">{{book.old_owner_name}}</a>
+                    <p>Держит книгу дольше всех <br> ( {{book.old_datetime}} {{inflect(book.old_datetime, "день", "дня", "дней")}})</p>
+                    <p>{{book.handed}}{{inflectPro(book.handed, "экземпляр", "экземпляра", "экземпляров")}} {{inflectProPro(book.handed, "выдан", "выдано")}}</p>
+                    <p>{{inflectProProPro(book.count - book.handed, "Остался", "Осталось")}} {{book.count - book.handed}}{{inflectPro(book.count - book.handed, "экземпляр", "экземпляра", "экземпляров")}}</p>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#change" style="margin-bottom: 10px;" onclick="change('{{book.title}}', '{{book.author}}', '{{book.count}}', '{{book.barcode}}')">Изменить информацию о книге
+                    </button>
+                    <button id="delete{{book.barcode}}" type="button" class="btn btn-danger" onclick="deleteBook('{{book.barcode}}')">Удалить книгу</button>
+                </div>
             </div>
-                <div class="modal fade" id="change" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="myModalLabel">Изменение информации о книге</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    <div class="content" style="text-align: center;">
-                                        <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
-                                    </div>
-
-                                    <div class="input-group" style="width: 70%; margin: 20px 15%">
-                                        <span class=" input-group-addon" id="title" value="">Название</span>
-                                        <input type="text" class="form-control" id="inputTitle">
-                                    </div>
-
-                                    <div class="input-group" style="width: 70%; margin: 20px 15%">
-                                        <span class="default input-group-addon" id="author" value="">Автор</span>
-                                        <input type="text" class="form-control" id="inputAuthor">
-                                    </div>
-
-                                    <div class="input-group" style="width: 70%; margin: 20px 15%">
-                                        <span class="default input-group-addon" id="count" value="">Всего книг</span>
-                                        <input type="text" class="form-control"id="inputCount">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
-                                <button type="button" class="btn btn-primary" id="save" onclick="check()">Сохранить изменеия</button>
-                            </div>
-                        </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="modal fade" id="change" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Изменение информации о книге</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="content" style="text-align: center;">
+                        <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
+                    </div>
+                    <div class="input-group" style="width: 70%; margin: 20px 15%">
+                        <span class=" input-group-addon" id="title" value="">Название</span>
+                        <input type="text" class="form-control" id="inputTitle">
+                    </div>
+                    <div class="input-group" style="width: 70%; margin: 20px 15%">
+                        <span class="default input-group-addon" id="author" value="">Автор</span>
+                        <input type="text" class="form-control" id="inputAuthor">
+                    </div>
+                    <div class="input-group" style="width: 70%; margin: 20px 15%">
+                        <span class="default input-group-addon" id="count" value="">Всего книг</span>
+                        <input type="text" class="form-control"id="inputCount">
                     </div>
                 </div>
             </div>
-            <script src="/static/js/jquery.js"></script>
-            <script>
-            var editBook = ""
-            var sure = "no"
-            </script>
-            <script>
-            function deleteBook(barcode) {
-                if(sure != barcode) {
-                  $("#delete" + barcode)[0].firstChild.data = "Вы уверены?";
-                  if(sure != "no") {
-                    $("#delete" + sure)[0].firstChild.data = "Удалить книгу";
-                    sure = barcode;
-                  } else {
-                    sure = barcode;
-                  }
-                } else {
-                  $.post(
-                      "http://localhost:1303/api/book/delete",
-                      {barcode: barcode},
-                      function(data) {
-                          if(data.answer == "ok") {
-                              $("#" + barcode)[0].style.display = "none";
-                            }
-                          },
-                          "json"
-                        )
-                  sure = "no"
-                }
-            }
-            </script>
-            <script>
-            function check() {
-                if (
-                    $("#title")[0].className == "input-group-addon green" &&
-                    $("#author")[0].className == "input-group-addon green" &&
-                    $("#count")[0].className == "input-group-addon green"
-                ) {
-                    send_book_data(
-                        $("#inputTitle")[0].value,
-                        $("#inputAuthor")[0].value,
-                        $("#inputCount")[0].value
-                    )
-                } else {
-                    $("#save").removeClass("btn-success")
-                    $("#save").addClass("btn-primary")
-                }
-            }
-            function send_book_data(title, author, count) {
-                    $.post(
-                        "http://localhost:1303/api/book/change",
-                        {title: title, author: author, count: count, barcode: editBook},
-                        function(data) {
-                            if(data.answer == "ok") {
-                                $("#save").removeClass("btn-primary")
-                                $("#save").addClass("btn-success")
-                            } else {
-                                $("#save").removeClass("btn-success")
-                                $("#save").addClass("btn-primary")
-                            }
-                        },
-                        "json"
-                    )
-                }
-            </script>
-            <script>
-            function change(title, author, count, barcode) {
-                editBook = barcode
-                $("#title").removeClass("default")
-                $("#title").addClass("green")
-                $("#author").removeClass("default")
-                $("#author").addClass("green")
-                $("#count").removeClass("default")
-                $("#count").addClass("green")
-                $("#inputTitle")[0].value = title
-                $("#inputAuthor")[0].value = author
-                $("#inputCount")[0].value = count
-                $("#cover")[0].src = 'http://localhost:1303/static/images/book/large-covers/' + barcode + '.jpg'
-                $("#save").removeClass("btn-success")
-                $("#save").addClass("btn-primary")
-            }
-            </script>
-            <script>
-            $('#inputTitle').on('input', function() {
-                if($("#inputTitle")[0].value != "") {
-                    $("#title").removeClass("default")
-                    $("#title").addClass("green")
-                } else {
-                    $("#title").removeClass("green")
-                    $("#title").addClass("default")
-                }
-            });
-            $('#inputAuthor').on('input', function() {
-                if($("#inputAuthor")[0].value != "") {
-                    $("#author").removeClass("default")
-                    $("#author").addClass("green")
-                } else {
-                    $("#author").removeClass("green")
-                    $("#author").addClass("default")
-                }
-            });
-            $('#inputCount').on('input', function() {
-                if($("#inputCount")[0].value != "" &&
-                    ~~Number($("#inputCount")[0].value) > 0
-                    ) {
-                    $("#count").removeClass("default")
-                    $("#count").addClass("green")
-                } else {
-                    $("#count").removeClass("green")
-                    $("#count").addClass("default")
-                }
-            });
-            $('#inputCode').on('input', function() {
-                if($("#inputCode")[0].value != "" &&
-                    $("#inputCode")[0].value.length == 13 &&
-                    ~~Number($("#inputCode")[0].value) > 0
-                    ) {
-                    $("#code").removeClass("default")
-                    $("#code").addClass("green")
-                } else {
-                    $("#code").removeClass("green")
-                    $("#code").addClass("default")
-                }
-            });
-            $('#inputUrl').on('input', function() {
-                if($("#inputUrl")[0].value != "" &&
-                    $("#inputCode")[0].value.length == 13 &&
-                    ~~Number($("#inputCode")[0].value) > 0
-                    ) {
-                    $("#lableUrl").removeClass("default");
-                    $("#labelUrl").addClass("green");
-                } else {
-                    $("#labelUrl").removeClass("green");
-                    $("#labelUrl").addClass("default");
-                }
-            });
-            </script>
-    {% endif %}
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="save" onclick="check()">Сохранить изменеия</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script src="/static/js/jquery.js"></script>
+<script>
+    var editBook = ""
+    var sure = "no"
+</script>
+<script>
+    function deleteBook(barcode) {
+        if(sure != barcode) {
+          $("#delete" + barcode)[0].firstChild.data = "Вы уверены?";
+          if(sure != "no") {
+            $("#delete" + sure)[0].firstChild.data = "Удалить книгу";
+            sure = barcode;
+          } else {
+            sure = barcode;
+          }
+        } else {
+          $.post(
+              "http://localhost:1303/api/book/delete",
+              {barcode: barcode},
+              function(data) {
+                  if(data.answer == "ok") {
+                      $("#" + barcode)[0].style.display = "none";
+                    }
+                  },
+                  "json"
+                )
+          sure = "no"
+        }
+    }
+</script>
+<script>
+    function check() {
+        if (
+            $("#title")[0].className == "input-group-addon green" &&
+            $("#author")[0].className == "input-group-addon green" &&
+            $("#count")[0].className == "input-group-addon green"
+        ) {
+            send_book_data(
+                $("#inputTitle")[0].value,
+                $("#inputAuthor")[0].value,
+                $("#inputCount")[0].value
+            )
+        } else {
+            $("#save").removeClass("btn-success")
+            $("#save").addClass("btn-primary")
+        }
+    }
+    function send_book_data(title, author, count) {
+            $.post(
+                "http://localhost:1303/api/book/change",
+                {title: title, author: author, count: count, barcode: editBook},
+                function(data) {
+                    if(data.answer == "ok") {
+                        $("#save").removeClass("btn-primary")
+                        $("#save").addClass("btn-success")
+                    } else {
+                        $("#save").removeClass("btn-success")
+                        $("#save").addClass("btn-primary")
+                    }
+                },
+                "json"
+            )
+        }
+</script>
+<script>
+    function change(title, author, count, barcode) {
+        editBook = barcode
+        $("#title").removeClass("default")
+        $("#title").addClass("green")
+        $("#author").removeClass("default")
+        $("#author").addClass("green")
+        $("#count").removeClass("default")
+        $("#count").addClass("green")
+        $("#inputTitle")[0].value = title
+        $("#inputAuthor")[0].value = author
+        $("#inputCount")[0].value = count
+        $("#cover")[0].src = 'http://localhost:1303/static/images/book/large-covers/' + barcode + '.jpg'
+        $("#save").removeClass("btn-success")
+        $("#save").addClass("btn-primary")
+    }
+</script>
+<script>
+    $('#inputTitle').on('input', function() {
+        if($("#inputTitle")[0].value != "") {
+            $("#title").removeClass("default")
+            $("#title").addClass("green")
+        } else {
+            $("#title").removeClass("green")
+            $("#title").addClass("default")
+        }
+    });
+    $('#inputAuthor').on('input', function() {
+        if($("#inputAuthor")[0].value != "") {
+            $("#author").removeClass("default")
+            $("#author").addClass("green")
+        } else {
+            $("#author").removeClass("green")
+            $("#author").addClass("default")
+        }
+    });
+    $('#inputCount').on('input', function() {
+        if($("#inputCount")[0].value != "" &&
+            ~~Number($("#inputCount")[0].value) > 0
+            ) {
+            $("#count").removeClass("default")
+            $("#count").addClass("green")
+        } else {
+            $("#count").removeClass("green")
+            $("#count").addClass("default")
+        }
+    });
+    $('#inputCode').on('input', function() {
+        if($("#inputCode")[0].value != "" &&
+            $("#inputCode")[0].value.length == 13 &&
+            ~~Number($("#inputCode")[0].value) > 0
+            ) {
+            $("#code").removeClass("default")
+            $("#code").addClass("green")
+        } else {
+            $("#code").removeClass("green")
+            $("#code").addClass("default")
+        }
+    });
+    $('#inputUrl').on('input', function() {
+        if($("#inputUrl")[0].value != "" &&
+            $("#inputCode")[0].value.length == 13 &&
+            ~~Number($("#inputCode")[0].value) > 0
+            ) {
+            $("#lableUrl").removeClass("default");
+            $("#labelUrl").addClass("green");
+        } else {
+            $("#labelUrl").removeClass("green");
+            $("#labelUrl").addClass("default");
+        }
+    });
+</script>
+{% endif %}
 {% endblock %}

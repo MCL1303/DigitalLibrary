@@ -1,61 +1,61 @@
 {% extends "layout.html" %}
-
 {% block title %}Каталог книг{% endblock %}
-
 {% block content %}
-        <style>
-          .hider {
-            display: none;
-          }
-        </style>
-        <script src="/static/js/jquery.js"></script>
-        <script>
-        function new_request() {
-            $.post(
-                "http://localhost:1303/api/book/get",
-                {request: $("#input")[0].value},
-                function(data) {
-                  for(var i = 0; i < 9; i++) {
-                    $("#user_" + i.toString()).addClass("hider");
+<style>
+    .hider {
+    display: none;
+    }
+</style>
+<script src="/static/js/jquery.js"></script>
+<script>
+    function new_request() {
+        $.post(
+            "http://localhost:1303/api/book/get",
+            {request: $("#input")[0].value},
+            function(data) {
+              for(var i = 0; i < 9; i++) {
+                $("#user_" + i.toString()).addClass("hider");
+              }
+                if(data.results.length == 0) {
+                  $("#fail")[0].innerHTML = "Поиск не дал результатов";
+                } else {
+                  $("#fail")[0].innerHTML = "";
+                  for(var i = 0; i < 9 && i < data.results.length; i++) {
+                    $("#book_" + i.toString()).removeClass("hider");
+                    $("#book_image_" + i.toString())[0].src = data.results[i].image;
+                    $("#book_title_" + i.toString())[0].innerHTML = data.results[i].title;
+                    $("#book_author_" + i.toString())[0].innerHTML = data.results[i].author;
+                    $("#book_profile_" + i.toString())[0].href = "http://localhost:1303/books/" + data.results[i].barcode;
+                    $("#book_image_a_" + i.toString())[0].href = "http://localhost:1303/books/" + data.results[i].barcode;
                   }
-                    if(data.results.length == 0) {
-                      $("#fail")[0].innerHTML = "Поиск не дал результатов";
-                    } else {
-                      $("#fail")[0].innerHTML = "";
-                      for(var i = 0; i < 9 && i < data.results.length; i++) {
-                        $("#book_" + i.toString()).removeClass("hider");
-                        $("#book_image_" + i.toString())[0].src = data.results[i].image;
-                        $("#book_title_" + i.toString())[0].innerHTML = data.results[i].title;
-                        $("#book_author_" + i.toString())[0].innerHTML = data.results[i].author;
-                        $("#book_profile_" + i.toString())[0].href = "http://localhost:1303/books/" + data.results[i].barcode;
-                        $("#book_image_a_" + i.toString())[0].href = "http://localhost:1303/books/" + data.results[i].barcode;
-                      }
-                    }
-                },
-                "json"
-            )
-        }
-        </script>
-        <div class="row">
-            <div class="input-group" style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px;">
-                <input id="input" type="text" class="form-control" placeholder="Введите запрос">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" onclick="new_request()">Поиск</button>
-                </span>
+                }
+            },
+            "json"
+        )
+    }
+</script>
+<div class="row">
+    <div class="input-group" style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px;">
+        <input id="input" type="text" class="form-control" placeholder="Введите запрос">
+        <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="new_request()">Поиск</button>
+        </span>
+    </div>
+    <div style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px; text-align: center;">
+        <h4 id="fail"></h4>
+    </div>
+    {% for i in range(9) %}
+    <div class="col-sm-6 col-md-4 hider" id="book_{{i}}" style="cursor: pointer;">
+        <div class="thumbnail" style="height: 500px;">
+            <a id="book_image_a_{{i}}" href=""><img id="book_image_{{i}}" src="" alt="" style="margin-top: 10%; width: 80%; height: 70%;" class="img-thumbnail"></a>
+            <div class="caption" style="padding: 1em 0; text-align: center;">
+                <a id="book_profile_{{i}}">
+                    <h3 id="book_title_{{i}}"></h3>
+                </a>
+                <h4 id="book_author_{{i}}"></h4>
             </div>
-            <div style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px; text-align: center;">
-                <h4 id="fail"></h4>
-            </div>
-            {% for i in range(9) %}
-            <div class="col-sm-6 col-md-4 hider" id="book_{{i}}" style="cursor: pointer;">
-                <div class="thumbnail" style="height: 500px;">
-                    <a id="book_image_a_{{i}}" href=""><img id="book_image_{{i}}" src="" alt="" style="margin-top: 10%; width: 80%; height: 70%;" class="img-thumbnail"></a>
-                    <div class="caption" style="padding: 1em 0; text-align: center;">
-                        <a id="book_profile_{{i}}"><h3 id="book_title_{{i}}"></h3></a>
-                        <h4 id="book_author_{{i}}"></h4>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
         </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

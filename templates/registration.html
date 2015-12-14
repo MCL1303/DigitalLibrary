@@ -8,123 +8,123 @@
         <link rel="icon" type="image/ico" href="/static/images/favicon.ico">
     </head>
     <body>
-		<div class="row">
-		    <div class="form-signin text-center">
-		        <h2 class="form-signin-heading">Регистрация</h2>
-		        <input id="inviteCode" type="text" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
-		        <input id="email" type="email" class="form-control text-center" placeholder="Почта" required="">
-		        <input id="login" type="text" class="form-control text-center" placeholder="Логин" required="">
-            <input id="name" type="text" class="form-control text-center" placeholder="Имя" required="">
-            <input id="s_name" type="text" class="form-control text-center" placeholder="Фамилия" required="">
-		        <input id="password" type="password" class="form-control text-center" placeholder="Пароль" required="">
-		        <button class="btn btn-lg btn-success btn-block" onclick="send_data()">Зарегистрироваться</button>
-            <div>
-    		      <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_invite">
-    		          <h4>Неправильно указан пригласительный код</h4>
-    		          <p>Проверьте не пепрепутали ли вы 0 и O</p>
-    		      </div>
-                <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_password">
-    		            <h4>Пароль не соответствует требованиям</h4>
-    		            <p>
-                        Длинна пароля должна быть не менн 8 символов<br>
-                        Пароль должен включать в себя хотя бы одну цифру и хотя бы одну букву
-                    </p>
-    		        </div>
-                <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_bad_login">
+        <div class="row">
+            <div class="form-signin text-center">
+                <h2 class="form-signin-heading">Регистрация</h2>
+                <input id="inviteCode" type="text" class="form-control text-center" placeholder="Пригласительный код" required="" autofocus="">
+                <input id="email" type="email" class="form-control text-center" placeholder="Почта" required="">
+                <input id="login" type="text" class="form-control text-center" placeholder="Логин" required="">
+                <input id="name" type="text" class="form-control text-center" placeholder="Имя" required="">
+                <input id="s_name" type="text" class="form-control text-center" placeholder="Фамилия" required="">
+                <input id="password" type="password" class="form-control text-center" placeholder="Пароль" required="">
+                <button class="btn btn-lg btn-success btn-block" onclick="send_data()">Зарегистрироваться</button>
+                <div>
+                    <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_invite">
+                        <h4>Неправильно указан пригласительный код</h4>
+                        <p>Проверьте не пепрепутали ли вы 0 и O</p>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_password">
+                        <h4>Пароль не соответствует требованиям</h4>
+                        <p>
+                            Длинна пароля должна быть не менн 8 символов<br>
+                            Пароль должен включать в себя хотя бы одну цифру и хотя бы одну букву
+                        </p>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_bad_login">
                         <h4>Ваш логин не соответствует требованиям</h4>
                         <p>
-                        Логин должен состоять из латинских букв или цифр. Также разрешены символы - _
-                    </p>
+                            Логин должен состоять из латинских букв или цифр. Также разрешены символы - _
+                        </p>
                     </div>
-                <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_email">
-    		            <h4>Указанный email уже привязан к аккаунту</h4>
-    		        </div>
-                <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_bad_email">
+                    <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_email">
+                        <h4>Указанный email уже привязан к аккаунту</h4>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_bad_email">
                         <h4>Указанный email не действителен</h4>
                     </div>
-                <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_login">
-    		            <h4>Указанный login уже занят</h4>
-    		        </div>
+                    <div class="alert alert-danger alert-dismissible fade" style="margin-top: 20px; position: absolute; width: 300px;" id="alert_login">
+                        <h4>Указанный login уже занят</h4>
+                    </div>
+                </div>
+                <script src="/static/js/jquery.js"></script>
+                <script>
+                    function send_data() {
+                          $("#alert_invite").removeClass("in");
+                          $("#alert_login").removeClass("in");
+                          $("#alert_password").removeClass("in");
+                          $("#alert_email").removeClass("in");
+                        $.post(
+                            "http://localhost:1303/api/user/registration",
+                            {
+                                inviteCode: $("#inviteCode")[0].value,
+                                email: $("#email")[0].value,
+                                login: $("#login")[0].value,
+                                password: $("#password")[0].value,
+                                name: $("#name")[0].value,
+                                s_name: $("#s_name")[0].value
+                       },
+                            function(data) {
+                                if (data.answer == "invite_not_found") {
+                                      $("#alert_invite").addClass("in");
+                                      $("#alert_login").removeClass("in");
+                                      $("#alert_password").removeClass("in");
+                                      $("#alert_email").removeClass("in");
+                                      $("#alert_bad_login").removeClass("in");
+                                      $("#alert_bad_email").removeClass("in");
+                                      return;
+                                }
+                                  if (data.answer == "bad_password") {
+                                      $("#alert_invite").removeClass("in");
+                                      $("#alert_login").removeClass("in");
+                                      $("#alert_password").addClass("in");
+                                      $("#alert_email").removeClass("in");
+                                      $("#alert_bad_login").removeClass("in");
+                                      $("#alert_bad_email").removeClass("in");
+                                      return;
+                                }
+                                  if (data.answer == "login_taken") {
+                                      $("#alert_invite").removeClass("in");
+                                      $("#alert_login").addClass("in");
+                                      $("#alert_password").removeClass("in");
+                                      $("#alert_email").removeClass("in");
+                                      $("#alert_bad_login").removeClass("in");
+                                      $("#alert_bad_email").removeClass("in");
+                                      return;
+                                }
+                                  if (data.answer == "email_taken") {
+                                      $("#alert_invite").removeClass("in");
+                                      $("#alert_login").removeClass("in");
+                                      $("#alert_password").removeClass("in");
+                                      $("#alert_email").addClass("in");
+                                      $("#alert_bad_login").removeClass("in");
+                                      $("#alert_bad_email").removeClass("in");
+                                      return;
+                                }
+                                  if (data.answer == "bad_login") {
+                                      $("#alert_invite").removeClass("in");
+                                      $("#alert_login").removeClass("in");
+                                      $("#alert_password").removeClass("in");
+                                      $("#alert_email").removeClass("in");
+                                      $("#alert_bad_login").addClass("in");
+                                      $("#alert_bad_email").removeClass("in");
+                                      return;
+                                      }
+                                  if (data.answer == "bad_email") {
+                                      $("#alert_invite").removeClass("in");
+                                      $("#alert_login").removeClass("in");
+                                      $("#alert_password").removeClass("in");
+                                      $("#alert_email").removeClass("in");
+                                      $("#alert_bad_login").removeClass("in");
+                                      $("#alert_bad_email").addClass("in");
+                                      return;
+                                      }
+                                  window.location.replace("http://localhost:1303");
+                            },
+                            "json"
+                        )
+                    }
+                </script>
             </div>
-		        <script src="/static/js/jquery.js"></script>
-		        <script>
-		            function send_data() {
-                    $("#alert_invite").removeClass("in");
-                    $("#alert_login").removeClass("in");
-                    $("#alert_password").removeClass("in");
-                    $("#alert_email").removeClass("in");
-		                $.post(
-		                    "http://localhost:1303/api/user/registration",
-		                    {
-		                    	inviteCode: $("#inviteCode")[0].value,
-		                    	email: $("#email")[0].value,
-		                    	login: $("#login")[0].value,
-		                    	password: $("#password")[0].value,
-                          name: $("#name")[0].value,
-                          s_name: $("#s_name")[0].value
-							          },
-		                    function(data) {
-		                        if (data.answer == "invite_not_found") {
-                                $("#alert_invite").addClass("in");
-                                $("#alert_login").removeClass("in");
-                                $("#alert_password").removeClass("in");
-                                $("#alert_email").removeClass("in");
-                                $("#alert_bad_login").removeClass("in");
-                                $("#alert_bad_email").removeClass("in");
-                                return;
-		                        }
-                            if (data.answer == "bad_password") {
-                                $("#alert_invite").removeClass("in");
-                                $("#alert_login").removeClass("in");
-                                $("#alert_password").addClass("in");
-                                $("#alert_email").removeClass("in");
-                                $("#alert_bad_login").removeClass("in");
-                                $("#alert_bad_email").removeClass("in");
-                                return;
-		                        }
-                            if (data.answer == "login_taken") {
-                                $("#alert_invite").removeClass("in");
-                                $("#alert_login").addClass("in");
-                                $("#alert_password").removeClass("in");
-                                $("#alert_email").removeClass("in");
-                                $("#alert_bad_login").removeClass("in");
-                                $("#alert_bad_email").removeClass("in");
-                                return;
-		                        }
-                            if (data.answer == "email_taken") {
-                                $("#alert_invite").removeClass("in");
-                                $("#alert_login").removeClass("in");
-                                $("#alert_password").removeClass("in");
-                                $("#alert_email").addClass("in");
-                                $("#alert_bad_login").removeClass("in");
-                                $("#alert_bad_email").removeClass("in");
-                                return;
-		                        }
-                            if (data.answer == "bad_login") {
-                                $("#alert_invite").removeClass("in");
-                                $("#alert_login").removeClass("in");
-                                $("#alert_password").removeClass("in");
-                                $("#alert_email").removeClass("in");
-                                $("#alert_bad_login").addClass("in");
-                                $("#alert_bad_email").removeClass("in");
-                                return;
-                                }
-                            if (data.answer == "bad_email") {
-                                $("#alert_invite").removeClass("in");
-                                $("#alert_login").removeClass("in");
-                                $("#alert_password").removeClass("in");
-                                $("#alert_email").removeClass("in");
-                                $("#alert_bad_login").removeClass("in");
-                                $("#alert_bad_email").addClass("in");
-                                return;
-                                }
-                            window.location.replace("http://localhost:1303");
-		                    },
-		                    "json"
-		                )
-		            }
-		        </script>
-	        </div>
-		</div>
-	</body>
+        </div>
+    </body>
 </html>

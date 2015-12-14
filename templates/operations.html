@@ -7,7 +7,6 @@
     <script src="/static/js/bootstrap.js"></script>
     <link rel="icon" type="image/ico" href="/static/images/favicon.ico">
 </head>
-
 <body>
     <div class="row">
         <div class="content" style="text-align: center;">
@@ -16,19 +15,21 @@
             <h2 id="status">Статус операции</h2>
         </div>
         <div class="modal fade" id="InviteModal" tabindex="-1" role="dialog" aria-labelledby="InviteModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header" style="text-align: center;">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-        <h4 class="modal-title" id="InviteModalLabel" style="margin: auto;">Ура, новый пользователь!</h4>
-      </div>
-      <div class="modal-body" style="text-align: center;">
-        <p>Ваш пригласительный код: <h2 id="inviteCode">asd</h2></p>
-        <p>Запишите его и приложите карточку еще раз, чтобы никто не украл ваш пригласительный код</p>
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="text-align: center;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                        <h4 class="modal-title" id="InviteModalLabel" style="margin: auto;">Ура, новый пользователь!</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <p>Ваш пригласительный код: 
+                        <h2 id="inviteCode">asd</h2>
+                        </p>
+                        <p>Запишите его и приложите карточку еще раз, чтобы никто не украл ваш пригласительный код</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
             function send(user, book) {
                 $.post(
