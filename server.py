@@ -203,11 +203,15 @@ def api_book_add():
     return jsonify(answer="ok")
 
 
-def render_template(page_name, user):
+def render_template(page_name, user: 'Optional[User]'):
     config = load_config()
     db = DigitalLibraryDatabase()
     page_context = {}
-    if user["accesslevel"] == AccessLevel.Student.name:
+    if user is None:
+        page_context = {
+            'user': None,
+        }
+    elif user["accesslevel"] == AccessLevel.Student.name:
         if page_name not in config["student_pages"]:
             return redirect("/handed")
         else:
@@ -218,7 +222,7 @@ def render_template(page_name, user):
                 "len": len(handed),
                 "page_name": page_name,
             }
-    if user["accesslevel"] == AccessLevel.Librarian.name:
+    elif user["accesslevel"] == AccessLevel.Librarian.name:
         if page_name not in config["librarian_pages"]:
             return redirect("/handed")
         else:
@@ -292,7 +296,7 @@ def cookie_check(page_name):
         if page_name == "registration":
             return flask.render_template("registration.html")
         if page_name == "login":
-            return flask.render_template("login.html")
+            return render_template("login", None)
         return redirect("/login")
     else:
         # db.sessions.remove(session)  # TODO WHYYYYYYYYYYYY???????????
