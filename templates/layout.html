@@ -51,7 +51,7 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="/handed">Библиотека МХЛ</a>
                 </div>
-                    {% if user.accesslevel == "Student" %}
+                    {% if user.accessLevel == "Student" %}
                         <div id="navbar" class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 <li class="{{active_if('handed')}}"><a href="/handed">Мои книги</a></li>
@@ -68,7 +68,7 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if user.accesslevel == "Librarian" %}
+                    {% if user.accessLevel == "Librarian" %}
                         <div id="navbar" class="navbar-collapse collapse">
                             <ul class="nav navbar-nav">
                                 <li>

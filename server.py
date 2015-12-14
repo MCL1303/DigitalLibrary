@@ -77,6 +77,17 @@ def hash2(password):
     return h
 
 
+def check_permitions(session_id):
+    db = DigitalLibraryDatabase()
+    session = db.sessions.get({"id": session_id})
+    if session is None:
+        return True
+    user = db.users.get({"login": session["user_login"]})
+    if user is None:
+        return True
+    return not user["accessLevel"] == "Librarian"
+
+
 @app.route("/")
 def home():
     return redirect("/handed")
@@ -140,7 +151,11 @@ def api_registration():
             user["password"] = hash(form["password"], salt)
             user["status"] = "on"
             user["salt"] = salt
-            user["name"] = form["name"]
+            user["name"] = form["name"].replace(" ", "").title() + " " + form["s_name"].replace(" ", "").title()
+            user["search_full_name"] = (form["name"].lower() + form["s_name"].lower()).replace(" ", "")
+            user["search_r_full_name"] = (form["s_name"].lower() + form["name"].lower()).replace(" ", "")
+            user["search_name"] = form["name"].lower().replace(" ", "")
+            user["search_s_name"] = form["s_name"].lower().replace(" ", "")
             flag = True
             while flag:
                 n_id = id_generator(16)
@@ -226,7 +241,7 @@ def api_user_add():
             "login": "asd",
             "password": "asd",
             "name": "asd",
-            "accesslevel": "Student",
+            "accessLevel": "Student",
             "nfc": form["user"],
             "inviteCode": inviteCode,
             "status": "off",
@@ -274,14 +289,59 @@ def api_book_add():
     db = DigitalLibraryDatabase()
     if int_checker(form["count"]):
         return jsonify(answer="fail")
-    db.books.insert({
+    first = form["author"].split(" ")
+    second = []
+    for word in first:
+        print(second)
+        second += word.split(".")
+    second = sorted(second, key=lambda s: len(s), reverse=True)
+    
+    third = form["title"].split(" ")
+    fourth = []
+    for word in third:
+        print(fourth)
+        fourth += word.split(".")
+    fourth = sorted(fourth, key=lambda s: len(s), reverse=True)
+
+    book = {
         "title": form["title"],
         "author": form["author"],
         "count": int(form["count"]),
         "barcode": form["code"],
-    })
+        "search_title": form["title"].replace(" ", "").lower(),
+    }
+    for i in range(4):
+        if len(second) == i:
+            break
+        if len(second[i]) != 1 and len(second[i]) != 0:
+            book[str(i) + "_author"] = second[i].lower()
+    for i in range(4):
+        if len(fourth) == i:
+            break
+        if len(fourth[i]) != 1 and len(fourth[i]) != 0:
+            book[str(i) + "_title"] = fourth[i].lower()
+    print(book)
+    db.books.insert(book)
     local_filename, _ = urllib.request.urlretrieve(form["url"])
     Resize(local_filename, "book", form["code"], "jpg")
+    return jsonify(answer="ok")
+
+
+@app.route('/api/user/photo', methods=['POST'])
+def api_user_photo():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    if check_permitions(session_id = request.cookies.get('session_id')):
+        return jsonify(answer="fail")
+    user = db.users.get({"id": form["id"]})
+    if user is None:
+        return jsonify(answer="ok") 
+    try:
+        local_filename, _ = urllib.request.urlretrieve(form["url"])
+    except ValueError:
+        return jsonify(answer="fail")
+    Resize(local_filename, "user", form["id"], "jpg")
+    db.users.update({"id": form["id"]}, {"image": "http://localhost:1303/static/images/user/$-covers/" + form["id"] + ".jpg"})
     return jsonify(answer="ok")
 
 
@@ -301,12 +361,14 @@ def api_book_action():
         "user_nfc": form["user"],
         "book_barcode": book["barcode"],
     }) is not None:
+        db.users.update({"nfc": form["user"]}, {"handed": db.users.get({"nfc": form["user"]})["handed"] - 1})
         db.hands.remove({
             "user_nfc": form["user"],
             "book_barcode": book["barcode"],
         })
         action = Action.Return
     else:
+        db.users.update({"nfc": form["user"]}, {"handed": db.users.get({"nfc": form["user"]})["handed"] + 1})
         db.hands.insert({
             "user_nfc": form["user"],
             "user_id": user["id"],
@@ -336,6 +398,96 @@ def api_book_action():
     return jsonify(action=action.name, book=book)
 
 
+@app.route('/api/user/get', methods=['POST'])
+def api_user_get():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    results = []
+    for word in form["request"].lower().split(" "):
+        results += db.users.find({"search_name": word})
+        results += db.users.find({"search_s_name": word})
+        results += db.users.find({"search_full_name": word})
+        results += db.users.find({"search_r_full_name": word})
+    results += db.users.find({"search_full_name": form["request"].lower().replace(" ", "")})
+    results += db.users.find({"search_r_full_name": form["request"].lower().replace(" ", "")})
+    public_results = []
+    for i in results:
+        new_reqult = {
+            "handed": i["handed"],
+            "name": i["name"],
+            "id": i["id"],
+        }
+        if i.get("image") is None:
+            new_reqult["image"] = "https://en.opensuse.org/images/0/0b/Icon-user.png"
+        else:
+            new_reqult["image"] = i["image"].replace("$", "small")
+        if not (new_reqult in public_results):
+            public_results += [new_reqult]
+    return jsonify(results=public_results)
+
+
+@app.route('/api/user/up', methods=['POST'])
+def api_user_up():
+    if check_permitions(session_id = request.cookies.get('session_id')):
+        return jsonify(answer="fail")
+    form = request.form
+    db = DigitalLibraryDatabase()
+    user = db.users.get({"id": form["id"]})
+    if user is None:
+        return jsonify(answer="fail")
+    else:
+        db.users.update({"id": form["id"]}, {"accessLevel": "Librarian"})
+        return jsonify(answer="ok")
+
+
+@app.route('/api/user/down', methods=['POST'])
+def api_user_down():
+    if check_permitions(session_id = request.cookies.get('session_id')):
+        return jsonify(answer="fail")
+    form = request.form
+    db = DigitalLibraryDatabase()
+    user = db.users.get({"id": form["id"]})
+    if user is None:
+        return jsonify(answer="fail")
+    else:
+        db.users.update({"id": form["id"]}, {"accessLevel": "Student"})
+        return jsonify(answer="ok")
+
+
+@app.route('/api/book/get', methods=['POST'])
+def api_book_get():
+    form = request.form
+    db = DigitalLibraryDatabase()
+    results = []
+    print(form["request"])
+    for word in form["request"].lower().split(" "):
+        results += db.books.find({"search_title": word})
+        results += db.books.find({"title": word})
+        results += db.books.find({"author": word})
+        results += db.books.find({"0_title": word})
+        results += db.books.find({"1_title": word})
+        results += db.books.find({"2_title": word})
+        results += db.books.find({"3_title": word})
+        results += db.books.find({"0_author": word})
+        results += db.books.find({"1_author": word})
+        results += db.books.find({"2_author": word})
+        results += db.books.find({"3_author": word})
+        results += db.books.find({"search_r_full_name": word})
+    results += db.books.find({"search_title": form["request"].lower().replace(" ", "")})
+    results += db.books.find({"title": form["request"].lower().replace(" ", "")})
+    public_results = []
+    for i in results:
+        new_reqult = {
+            "title": i["title"],
+            "author": i["author"],
+            "barcode": i["barcode"],
+        }
+        new_reqult["image"] = "http://localhost:1303/static/images/book/small-covers/" + i["barcode"] + ".jpg"
+        if not (new_reqult in public_results):
+            public_results += [new_reqult]
+    return jsonify(results=public_results)
+
+
 def render_template(page_name, user):
     if page_name in ["login", "registration"]:
         return flask.render_template(page_name + ".html")
@@ -344,7 +496,7 @@ def render_template(page_name, user):
     config = load_config()
     db = DigitalLibraryDatabase()
     page_context = {"user": user}
-    if user["accesslevel"] == AccessLevel.Student.name:
+    if user["accessLevel"] == AccessLevel.Student.name:
         if page_name not in config["student_pages"]:
             return redirect("/handed")
         else:
@@ -355,7 +507,7 @@ def render_template(page_name, user):
                 "len": len(handed),
                 "page_name": page_name,
             }
-    if user["accesslevel"] == AccessLevel.Librarian.name:
+    if user["accessLevel"] == AccessLevel.Librarian.name:
         if page_name not in config["librarian_pages"]:
             return redirect("/handed")
         else:
@@ -408,8 +560,8 @@ def render_template(page_name, user):
                 page_context = {
                     "user": user,
                     "page_name": page_name,
-                    "len": len(books),
-                    "books": books,
+                    "len": len(books[:10]),
+                    "books": books[:10],
                 }
     return flask.render_template(page_name + '.html', **dict(**page_context))
 
@@ -418,13 +570,93 @@ class Session:
     __slots__ = []
 
 
+
+@app.route("/books/<barcode>")
+def book_barcode(barcode):
+    db = DigitalLibraryDatabase()
+    session_id = request.cookies.get('session_id')
+    session = db.sessions.get({"id": session_id})
+    if session is None:
+        return redirect("/login")
+    else:
+        if (datetime.utcnow() - session["datetime"]).days > 7:
+            db.sessions.remove(session)
+            return redirect("/login")
+        if fields_are(session, {
+            "ip" : str(request.remote_addr),
+            "browser" : request.user_agent.browser,
+            "version" : (
+                request.user_agent.version
+                and int(request.user_agent.version.split('.')[0])
+            ),
+            "platform" : request.user_agent.platform,
+            "uas" : request.user_agent.string,
+        }):
+            # start
+            book = db.books.get({"barcode": barcode})
+            if book is None:
+                return redirect("/handed")
+            s_book = {
+                "title" : book["title"],
+                "author": book["author"],
+                "count": book["count"],
+                "barcode": book["barcode"],
+            }
+            hands = db.hands.find({"book_barcode": barcode})
+            n_users = []
+            for hand in hands:
+                c_user = db.users.get({"nfc": hand["user_nfc"]})
+                if c_user is None:
+                    continue
+                n_user = {
+                    "name": c_user["name"],
+                    "id": c_user["id"],
+                    "time": (datetime.utcnow() - hand["datetime"]).days,
+                }
+                n_users += [n_user]
+            if hands is None:
+                s_book["handed"] = 0
+            else:
+                s_book["handed"] = len(hands)
+            # end
+            resp = make_response(flask.render_template(
+                "book.html",
+                user=db.users.get({"login": session["user_login"]}),
+                book=s_book,
+                users=n_users,
+            ))
+            resp.set_cookie(
+                "session_id",
+                session_id,
+                max_age = (
+                    COOKIE_AGE_REMEMBER
+                    if session["remember"] == "true"
+                    else COOKIE_AGE_NOT_REMEMBER
+                ),
+            )
+            return resp
+        else:
+            return redirect("/login")
+
+
+
 @app.route("/users/<user_id>")
 def user_page(user_id):
     db = DigitalLibraryDatabase()
     s_user = db.users.get({"id": user_id})
+    if check_permitions(request.cookies.get('session_id')):
+        return redirect('/login')
     if s_user is None:
         return flask.render_template("404.html")
-    s_user["handed"] = len(db.hands.find({"user_id": user_id}))
+    ss_user = {}
+    ss_user["handed"] = len(db.hands.find({"user_id": user_id}))
+    ss_user["name"] = s_user["name"]
+    ss_user["id"] = s_user["id"]
+    ss_user["accessLevel"] = s_user["accessLevel"]
+    if s_user.get("image") is None:
+        ss_user["image"] = "https://en.opensuse.org/images/0/0b/Icon-user.png"
+    else:
+        ss_user["image"] = s_user["image"].replace("$", "large")
     session_id = request.cookies.get('session_id')
     session = db.sessions.get({"id": session_id})
     if session is None:
@@ -445,10 +677,20 @@ def user_page(user_id):
         }):
             user = db.users.get({"login": session["user_login"]})
             db.sessions.update(session, {"@set": {"datetime": datetime.utcnow()}})
+            s_user_hands = db.hands.find({"user_nfc": s_user["nfc"]})
+            s_user_books = []
+            for hand in s_user_hands:
+                n_book = {}
+                n_book["title"] = hand["book_title"]
+                n_book["author"] = hand["book_author"]
+                n_book["barcode"] = hand["book_barcode"]
+                n_book["days"] = (datetime.utcnow() - hand["datetime"]).days
+                s_user_books += [n_book]
+            ss_user["books"] = s_user_books
             resp = make_response(flask.render_template(
                 "user.html",
                 user=user,
-                s_user=s_user
+                s_user=ss_user
             ))
             resp.set_cookie(
                 "session_id",
@@ -519,7 +761,7 @@ if __name__ == '__main__':
 #     "login": "str",
 #     "password": "str",
 #     "name": "str",
-#     "accesslevel": "str",
+#     "accessLevel": "str",
 #     "nfc": "str",
 #     "invitecode": "str",
 #     "status": "str",

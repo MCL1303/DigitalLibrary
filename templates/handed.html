@@ -14,7 +14,7 @@
             color: #555555;
         }
     </style>
-    {% if user.accesslevel == "Student" %}
+    {% if user.accessLevel == "Student" %}
             {% if len == 0 %}
             <h3 class="text-center">У вас на руках нет книг</h3>
             {% else %}
@@ -33,7 +33,7 @@
             {% endfor %}
         </div>
     {% endif %}
-    {% if user.accesslevel == "Librarian" %}
+    {% if user.accessLevel == "Librarian" %}
         <div class="row">
             {% if len == 0 %}
             <h3 class="text-center">На руках нет книг</h3>

@@ -1,9 +1,9 @@
 [Server]
 host = ::
 port = 1303
-pages = ["login", "registration", "handed", "journal", "add", "operations"]
-librarian_pages = ["handed", "journal", "add", "operations"]
-student_pages = ["handed"]
+pages = ["login", "registration", "handed", "journal", "add", "operations", "users", "books"]
+librarian_pages = ["handed", "journal", "add", "operations", "users", "books"]
+student_pages = ["handed", "books"]
 [Client]
 user_scanner = ""
 book_scanner = "/dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd"
