@@ -18,7 +18,7 @@
 import PIL.Image
 
 
-def resize(path, folder, name, ext):
+def Resize(path, folder, name, ext):
     img = PIL.Image.open(path)
     width = int(img.size[0] * (480 / img.size[1]))
     img = img.resize((width, 480), PIL.Image.ANTIALIAS)

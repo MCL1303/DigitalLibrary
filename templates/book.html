@@ -1,0 +1,51 @@
+{% macro c_class(type) -%}
+  {% if type == "student" %}
+      {% if s_user.accessLevel == "Student" %}
+          {{'btn-primary'}}
+      {% else %}
+          {{'btn-default'}}
+      {% endif %}
+  {% else %}
+    {% if s_user.accessLevel == "Librarian" %}
+        {{'btn-primary'}}
+    {% else %}
+        {{'btn-default'}}
+    {% endif %}
+  {% endif %}
+{%- endmacro %}
+
+{% extends "layout.html" %}
+
+{% block title %}{{book.title}}{% endblock %}
+
+{% block content %}
+
+<style>
+  .error{
+    background-color: #c9302c;
+    color: #fff;
+  }
+</style>
+
+<div class="content" style="text-align: center;">
+    <h2>{{book.title}}</h2>
+    <img id="cover" src="http://localhost:1303/static/images/book/small-covers/{{book.barcode}}.jpg" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px; margin-bottom: 30px;">
+    <div style="width: 400px; heigth: 200px; margin: auto;">
+      <h4>{{book.author}}</h4>
+    </div>
+      <h3>Выдано: {{book.handed}}</h3>
+        <div class="row">
+        {% for c_user in users %}
+            <div class="col-sm-6 col-md-4" id="{{c_user.id}}">
+                    <div class="thumbnail" style="height: 520px;">
+                        <img src="http://localhost:1303/static/images/user/small-covers/{{c_user.id}}.jpg" alt="https://en.opensuse.org/images/0/0b/Icon-user.png">
+                        <div class="caption" style="text-align: center; padding: 3em 0;">
+                            <a href="http://localhost:1303/users/{{c_user.id}}"><h2>{{c_user.name}}</h2></a>
+                                <h4>На руках уже {{c_user.time}} {{inflect(c_user.time, "день", "дня", "дней")}}</h4>
+                        </div>
+                    </div>
+                </div>
+        {% endfor %}
+      </div>
+</div>
+{% endblock %}
