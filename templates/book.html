@@ -1,3 +1,19 @@
+{% macro c_class(type) -%}
+  {% if type == "student" %}
+      {% if s_user.accessLevel == "Student" %}
+          {{'btn-primary'}}
+      {% else %}
+          {{'btn-default'}}
+      {% endif %}
+  {% else %}
+    {% if s_user.accessLevel == "Librarian" %}
+        {{'btn-primary'}}
+    {% else %}
+        {{'btn-default'}}
+    {% endif %}
+  {% endif %}
+{%- endmacro %}
+
 {% extends "layout.html" %}
 
 {% block title %}{{book.title}}{% endblock %}
