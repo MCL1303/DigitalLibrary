@@ -753,6 +753,20 @@ def cookie_check(page_name):
 def main():
     config = load_config()
     app.run(host=config["host"], debug=True, port=int(config["port"]))
+    db = DigitalLibraryDatabase()
+    if db.users.find({}) == []:
+        db.users.insert({
+            "login": "",
+            "password": "",
+            "name": "",
+            "accessLevel": "Librarian",
+            "nfc": "ADMIN",
+            "inviteCode": "invite_code_for_admin",
+            "status": "off",
+            "email": "",
+            "salt": "",
+            "handed": 0,
+        })
 
 
 if __name__ == '__main__':
