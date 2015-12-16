@@ -6,5 +6,5 @@ librarian_pages = ["handed", "journal", "add"]
 student_pages = ["handed"]
 
 [Terminal]
-url_start = http://yandex.ru/
+url_start = http://localhost:1303/
 user_scanner = /dev/null
