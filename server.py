@@ -28,12 +28,15 @@ from datetime import datetime, timedelta
 from flask import Flask, jsonify, request, redirect, make_response
 import flask
 from hashlib import sha512
+import logging
 import random
 import string
 import urllib.request
 
 
 app = Flask('DigitalLibraryApplication')
+
+LOG = logging.getLogger(__name__)
 
 
 def load_config():
@@ -332,6 +335,7 @@ def cookie_check(page_name):
 
 def main():
     config = load_config()
+    logging.basicConfig(level=logging.DEBUG)
     app.run(host=config["host"], debug=True, port=int(config["port"]))
 
 
