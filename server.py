@@ -38,13 +38,6 @@ app = Flask('DigitalLibraryApplication')
 
 LOG = logging.getLogger(__name__)
 
-
-def load_config():
-    config = configparser.ConfigParser()
-    config.read('config')
-    return config['Server']
-
-
 Hash = sha512
 HASH_SIZE = Hash().digest_size  # pylint: disable=no-member
 
@@ -205,7 +198,6 @@ def api_book_add():
 
 
 def render_template(page_name, user: 'Optional[User]'):
-    config = load_config()
     db = DigitalLibraryDatabase()
     page_context = {}
     if user is None:
@@ -213,7 +205,7 @@ def render_template(page_name, user: 'Optional[User]'):
             'user': None,
         }
     elif user["accesslevel"] == AccessLevel.Student.name:
-        if page_name not in config["student_pages"]:
+        if page_name not in app.appconfig["student_pages"]:
             return redirect("/handed")
         else:
             handed = db.hands.find({"user_id": user["id"]})
@@ -224,7 +216,7 @@ def render_template(page_name, user: 'Optional[User]'):
                 "page_name": page_name,
             }
     elif user["accesslevel"] == AccessLevel.Librarian.name:
-        if page_name not in config["librarian_pages"]:
+        if page_name not in app.appconfig["librarian_pages"]:
             return redirect("/handed")
         else:
             if page_name == "add":
@@ -287,8 +279,7 @@ class Session:
 
 @app.route("/<page_name>")
 def cookie_check(page_name):
-    config = load_config()
-    if page_name not in config["pages"]:
+    if page_name not in app.appconfig["pages"]:
         return flask.render_template("404.html")
     db = DigitalLibraryDatabase()
     session_id = request.cookies.get('session_id')
@@ -332,9 +323,15 @@ def cookie_check(page_name):
 
 
 def main():
-    config = load_config()
-    logging.basicConfig(level=logging.DEBUG)
-    app.run(host=config["host"], debug=True, port=int(config["port"]))
+    def load_config():
+        config = configparser.ConfigParser()
+        config.read('config')
+        return config['Server']
+
+    app.appconfig = load_config()
+    app.run(
+        host=app.appconfig["host"], debug=True, port=int(app.appconfig["port"])
+    )
 
 
 if __name__ == '__main__':
