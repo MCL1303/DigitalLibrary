@@ -38,37 +38,12 @@ def load_config():
     return config['Client']
 
 
-def send_scanner_data(package, driver):
-    driver.execute_script(
-        "send('" + package["user"] + "', '" + package["book"] + "')"
-    )
-
-
-def new_package(data, dtype, driver, package):
-    if package == {"user": "", "book": ""}:
-        package[dtype] = data
-        return
-    else:
-        if package[dtype] == "":
-            package[dtype] = data
-            send_scanner_data(package, driver)
-            package = {"user": "", "book": ""}
-        else:
-            package[dtype] = data
-
-
 def user_scanner(driver, package):
     config = load_config()
     scanner = open(config["user_scanner"])
     while True:
         new_user = scanner.read().strip("\2\3\r\n")
-        driver.execute_script("new_user(" + new_user + ")")
-        new_package(
-            new_user,
-            "user",
-            driver,
-            package,
-        )
+        driver.execute_script("user(" + new_user + ")")
 
 
 def book_scanner(driver, package):
@@ -76,7 +51,7 @@ def book_scanner(driver, package):
     while True:
         scanner = open(config["book_scanner"], "rb")
         i = 0
-        bar_code = ""
+        barcode = ""
         while True:
             i += 1
             scanner.read(12)
@@ -89,13 +64,8 @@ def book_scanner(driver, package):
             if number == 11:
                 break
             print(number % 10)
-            bar_code += str(number % 10)
-        new_package(
-            bar_code,
-            "book",
-            driver,
-            package,
-        )
+            barcode += str(number % 10)
+        driver.execute_script("barcode(" + barcode + ")")
 
 
 def main():

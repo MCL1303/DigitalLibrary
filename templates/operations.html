@@ -31,28 +31,47 @@
             </div>
         </div>
         <script>
-            function send(user, book) {
+            var current_book = "", waiting = 0
+            function timer() {
+                flag = false
+                time = 5
+                for (var i = 5; i >= 0; i--) {
+                    setTimeout(function() {
+                        console.log(time, waiting);
+                        if(waiting == time and ) {
+                            $("#status")[0].innerHTML = "Ожидание карты(Осталось " + time.toString() + " сек)";
+                            if(time == 0) {
+                                $("#status")[0].innerHTML = "Ожидание штрих кода";
+                                current_book = ""
+                            }
+                            waiting--;
+                        }
+                        time--;
+                    }, 1000 * (5 - i))
+                }
+            }
+            function run_timer() {
                 $.post(
-                    "http://localhost:1303/api/book/action",
-                    {user: user, book: book},
+                    "http://localhost:1303/api/book/check",
+                    {book: current_book},
                     function(data) {
-                        $("#cover").attr(
-                            'src',
-                            "http://localhost:1303/static/images/book/large-covers/" +
-                                book + ".jpg"
-                        );
-                        if (data.action == "Take") {
-                            $("#status").text("Вы взяли книгу");
-                        } else if (data.action == "Return") {
-                            $("#status").text("Вы вернули книгу");
-                        } else if (data.action == "Fail") {
-                            $("#status").text("Ошибка. Попробуйте еще раз");
+                        if (data.answer == "ok") {
+                            $("#cover")[0].src = "http://localhost:1303/static/images/book/large-covers/" + current_book + ".jpg"
+                            timer()
+                        } else {
+                          $("#status")[0].innerHTML = "Книга не найдена"
+                          waiting = 0
                         }
                     },
                     "json"
                 )
             }
-            function new_user(user) {
+            function barcode(barcode) {
+                current_book = barcode
+                waiting = 5
+                run_timer()
+            }
+            function user(user) {
                 $.post(
                     "http://localhost:1303/api/user/add",
                     {user: user},
@@ -62,6 +81,7 @@
                             $("#InviteModal").modal();
                         } else {
                           $("#InviteModal").modal("hide");
+
                         }
                     },
                     "json"

@@ -85,6 +85,14 @@ def bad_permitions(session_id):
     return not user["accessLevel"] == "Librarian"
 
 
+def bad_terminal_permitions(session_id):
+    db = DigitalLibraryDatabase()
+    session = db.sessions.get({"id": session_id})
+    if session is None:
+        return True
+    return not session["clienttype"] == "Terminal"
+
+
 @app.route("/")
 def home():
     return redirect("/handed")
@@ -207,6 +215,31 @@ COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=10).total_seconds())
 def api_login():
     db = DigitalLibraryDatabase()
     form = request.form
+    if (
+        form["login"] == "terminal" and
+        hash(form["password"], "SATL_FOR_TERMINAL") == b'I\x0ce\xccR\xd2\xb4m\x82\xad\x14:\xd4(\x99\x7f\xc8\xf0\xe9g\x828\x8c\xd4\x16\x99P\xa7\xacDH=U0\x02(\xfe\x86\xddY\x10[,]\xa6\x88S|\xa0_\x15P\x83\xbe\xd5\xc4\xc3\xcft\xa0#e\x9c['
+    ):
+        session_id = str(uuid4())
+        db.sessions.insert({
+            "user_login": form["login"],
+            "datetime": datetime.utcnow(),
+            "clienttype": ClientType.Terminal.name,
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": request.user_agent.version and
+            int(request.user_agent.version.split('.')[0]),
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
+            "remember": form["remember"],
+            "id": session_id,
+        })
+        resp = make_response(jsonify(answer="ok"))
+        resp.set_cookie(
+            "session_id",
+            session_id,
+            max_age=COOKIE_AGE_REMEMBER,
+        )
+        return resp
     salt = db.users.get({"login": form["login"], "status": "on"})
     if salt is None:
         return jsonify(answer="error")
@@ -399,7 +432,7 @@ def api_user_photo():
 
 @app.route('/api/book/action', methods=['POST'])
 def api_book_action():
-    if bad_permitions(session_id = request.cookies.get('session_id')):
+    if bad_terminal_permitions(session_id = request.cookies.get('session_id')):
         return jsonify(answer="fail")
     form = request.form
     db = DigitalLibraryDatabase()
@@ -812,10 +845,32 @@ def user_page(user_id):
 
 @app.route("/<page_name>")
 def cookie_check(page_name):
+    db = DigitalLibraryDatabase()
+    if bad_terminal_permitions(request.cookies.get('session_id')):
+        pass
+    else:
+        session_id = request.cookies.get('session_id')
+        session = db.sessions.get({"id": session_id})
+        if fields_are(session, {
+            "ip": str(request.remote_addr),
+            "browser": request.user_agent.browser,
+            "version": (
+                request.user_agent.version
+                and int(request.user_agent.version.split('.')[0])
+            ),
+            "platform": request.user_agent.platform,
+            "uas": request.user_agent.string,
+        }):
+            resp = make_response(flask.render_template("operations.html"))
+            resp.set_cookie(
+                "session_id",
+                session_id,
+                max_age = COOKIE_AGE_REMEMBER,
+            )
+            return resp
     config = load_config()
     if page_name not in config["pages"]:
         return flask.render_template("404.html")
-    db = DigitalLibraryDatabase()
     session_id = request.cookies.get('session_id')
     session = db.sessions.get({"id": session_id})
     if session is None:
