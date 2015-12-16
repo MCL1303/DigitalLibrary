@@ -1,6 +1,8 @@
 # Digital Library — a digital book management system
 # Copyright (C) 2015  Igor Tarakanov <igortarakanov144999usa@gmail.com>,
 #                     Yuriy Syrovetskiy <cblp@cblp.su>
+#                     Pavel Fedorov <pfedorovs18@gmail.com>
+#                     Danila Starostin <starostindanila@yandex.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,7 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from bson import ObjectId
 from pymongo import MongoClient
 
 
@@ -33,8 +34,8 @@ class Collection:
     def __init__(self, db: Database, name: str):
         self._collection = db[name]
 
-    def insert(self, query) -> ObjectId:
-        return self._collection.insert(query)
+    def insert(self, query):
+        self._collection.insert(query)
 
     def get(self, query):
         return self._collection.find_one(query)
