@@ -27,7 +27,7 @@
         <script>
             function send_data() {
                 $.post(
-                    "http://localhost:1303/api/login",
+                    "/api/user/login",
                     {
                         login: $("#login")[0].value,
                         password: $("#password")[0].value,
