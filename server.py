@@ -112,15 +112,11 @@ COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=2).total_seconds())
 def api_login():
     db = DigitalLibraryDatabase()
     form = request.form
-    salt = db.users.get({"login": form["login"]})
-    if salt is None:
-        return jsonify(answer="error")
-    salt = salt["salt"]
-    user = db.users.get({
-        "login": form["login"],
-        "password": hash(form["password"], salt)
-    })
+    user = db.users.get({"login": form["login"]})
     if user is None:
+        return jsonify(answer="error")
+    salt = user.get('salt', '')
+    if user['password'] != hash(form["password"], salt):
         return jsonify(answer="error")
     session_id = db.sessions.insert({
         "user": form["login"],
