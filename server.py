@@ -132,10 +132,12 @@ def api_login():
     })
     resp = make_response(jsonify(answer="ok"))
     if form["remember"] == "true":
-        resp.set_cookie("session_id", session_id, max_age=COOKIE_AGE_REMEMBER)
+        resp.set_cookie(
+            "session_id", str(session_id), max_age=COOKIE_AGE_REMEMBER
+        )
     else:
         resp.set_cookie(
-            "session_id", session_id, max_age=COOKIE_AGE_NOT_REMEMBER
+            "session_id", str(session_id), max_age=COOKIE_AGE_NOT_REMEMBER
         )
     return resp
 
