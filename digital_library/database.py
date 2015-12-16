@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from bson import ObjectId
 from pymongo import MongoClient
 
 
@@ -32,8 +33,8 @@ class Collection:
     def __init__(self, db: Database, name: str):
         self._collection = db[name]
 
-    def insert(self, query):
-        self._collection.insert(query)
+    def insert(self, query) -> ObjectId:
+        return self._collection.insert(query)
 
     def get(self, query):
         return self._collection.find_one(query)
