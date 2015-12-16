@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
 # Digital Library — a digital book management system
 # Copyright (C) 2015  Igor Tarakanov <igortarakanov144999usa@gmail.com>,
 #                     Yuriy Syrovetskiy <cblp@cblp.su>
+#                     Pavel Fedorov <pfedorovs18@gmail.com>
+#                     Danila Starostin <starostindanila@yandex.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,86 +21,65 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+import time
+from threading import Thread
+import configparser
 
-from configparser import ConfigParser
-import errno
-import logging
-import os
-from PySide.QtCore import QUrl, Signal
-from PySide.QtGui import QApplication
-from PySide.QtWebKit import QWebView
-from sys import argv
-from time import sleep
+sys.path.append("./selenium.egg")
+
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import Firefox
 
 
 def load_config():
-    config = ConfigParser()
-    config.read("config")
-    return config['Terminal']
+    config = configparser.ConfigParser()
+    config.read('config')
+    return config['Client']
 
 
-def opener_nonblock(path, mode):
-    return os.open(path, mode | os.O_NONBLOCK)
+def user_scanner(driver, package):
+    config = load_config()
+    scanner = open(config["user_scanner"])
+    while True:
+        new_user = scanner.read().strip("\2\3\r\n")
+        driver.execute_script("user(" + new_user + ")")
 
 
-def readline_nonblock(fileobject) -> 'Optional[str]':
-    try:
-        return fileobject.readline() or None
-    except OSError as err:
-        if err.errno == errno.EAGAIN or err.errno == errno.EWOULDBLOCK:
-            return None
-        else:
-            raise
-
-
-def scanner_read(device_file):
-    with open(device_file, opener=opener_nonblock) as device:
-        data = readline_nonblock(device)
-        if data is None:
-            return None
-        return data.strip("\2\3\r\n")
-
-
-def send_scanner_data(user, webview):
-    webview.page().mainFrame().evaluateJavaScript(
-        "send_scanner_data({!r});".format(user)
-    )
-
-
-class BrowserWindow(QWebView):
-    closed = Signal()
-
-    def __init__(self, url):
-        super().__init__()
-        self.setWindowTitle("Библиотека Московского Химического Лицея")
-        self.load(QUrl(url))
-
-    def closeEvent(self, _event):
-        self.closed.emit()
+def book_scanner(driver, package):
+    config = load_config()
+    while True:
+        scanner = open(config["book_scanner"], "rb")
+        i = 0
+        barcode = ""
+        while True:
+            i += 1
+            scanner.read(12)
+            number = int.from_bytes(scanner.read(1), byteorder='big') - 29
+            scanner.read(3)
+            if i % 2 == 0:
+                continue
+            if number < 0:
+                continue
+            if number == 11:
+                break
+            print(number % 10)
+            barcode += str(number % 10)
+        driver.execute_script("barcode(" + barcode + ")")
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
-
     config = load_config()
-
-    app = QApplication(argv)
-    browser = BrowserWindow(config['url_start'])
-    browser.show()
-
-    app_state = {'running': True}
-    browser.closed.connect(lambda: app_state.__setitem__('running', False))
-
-    while app_state['running']:
-        user = scanner_read(config["user_scanner"])
-        if user is not None:
-            # book = scanner_read(config["book_scanner"])
-            # logging.debug('user = %r', book)
-            # if book is not None:
-            logging.debug('send_scanner_data%r', (user, browser))
-            send_scanner_data(user, browser)
-        app.processEvents()
-        sleep(0.001)
+    driver = Firefox()
+    driver.get("http://yandex.ru/")
+    package = {
+        "user": "",
+        "book": "",
+    }
+    user = Thread(target=user_scanner, args=(driver, package))
+    book = Thread(target=book_scanner, args=(driver, package))
+    user.start()
+    book.start()
 
 
 if __name__ == '__main__':
