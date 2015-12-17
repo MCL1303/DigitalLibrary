@@ -21,7 +21,7 @@
 from ast import literal_eval
 from os import listdir
 from subprocess import CalledProcessError, check_call, check_output
-from sys import exit, stderr
+from sys import stderr
 
 
 PEP8_OPTIONS = [
