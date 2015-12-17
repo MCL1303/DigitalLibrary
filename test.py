@@ -85,8 +85,8 @@ def main():
             pylint = 'pylint3'
             pytest = 'py.test-3'
 
-        run('pep8', PEP8_OPTIONS + ['.'])
-        run(pyflakes, ['.'])
+        run('pep8', PEP8_OPTIONS + srcs)
+        run(pyflakes, srcs)
         run(
             pylint,
             PYLINT_OPTIONS + srcs,
