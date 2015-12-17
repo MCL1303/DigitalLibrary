@@ -21,7 +21,7 @@
 from ast import literal_eval
 from os import listdir
 from subprocess import CalledProcessError, check_call, check_output
-from sys import stderr
+from sys import exit, stderr
 
 
 PEP8_OPTIONS = [
@@ -97,6 +97,7 @@ def main():
         run(pytest)
     except CalledProcessError as e:
         print(e, file=stderr)
+        exit(e.returncode)
     else:
         print("OK")
 
