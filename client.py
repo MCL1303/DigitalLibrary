@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 # Digital Library — a digital book management system
 # Copyright (C) 2015  Igor Tarakanov <igortarakanov144999usa@gmail.com>,
 #                     Yuriy Syrovetskiy <cblp@cblp.su>
@@ -19,14 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import sys
-import time
 from threading import Thread
 import configparser
 
 sys.path.append("./selenium.egg")
 
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import Firefox
 
 
@@ -67,7 +65,6 @@ def book_scanner(driver, package):
 
 
 def main():
-    config = load_config()
     driver = Firefox()
     driver.get("http://yandex.ru/")
     package = {
