@@ -20,6 +20,7 @@
 
 
 import configparser
+import errno
 import os
 from PySide.QtCore import QObject, Qt, Signal
 from PySide.QtGui import QApplication
