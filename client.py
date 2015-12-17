@@ -20,14 +20,22 @@
 
 
 import configparser
-from PySide.QtCore import QObject, Qt
+import os
+from PySide.QtCore import QObject, Qt, Signal
 from PySide.QtGui import QApplication
 from PySide.QtWebKit import QWebView
-from threading import Thread
+from threading import current_thread, main_thread, Thread
+from time import sleep
+
+
+def current_thread_is_main():
+    return current_thread() is main_thread()
 
 
 class Browser(QObject):
     # pylint: disable=too-many-public-methods
+
+    __execute_script_called = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -38,18 +46,46 @@ class Browser(QObject):
         self.webview.setAttribute(Qt.WA_DeleteOnClose)
         self.webview.destroyed.connect(self.app.quit)
 
+        self.__execute_script_called.connect(self.__execute_script)
+
+    def __execute_script(self, javascript_code: str):
+        assert current_thread_is_main()
+        self.webview.page().mainFrame().evaluateJavaScript(javascript_code)
+
+    def execute_script(self, javascript_code: str):
+        if current_thread_is_main():
+            self.__execute_script(javascript_code)
+        else:
+            self.__execute_script_called.emit(javascript_code)
+
     def run(self, url):
-        """ MUST be called in main thread """
+        assert current_thread_is_main()
         self.webview.show()
         self.webview.load(url)
         self.app.exec_()
 
 
+def opener_nonblock(path, mode):
+    return os.open(path, mode | os.O_NONBLOCK)
+
+
+def readline_nonblock(fileobject) -> 'Optional[str]':
+    try:
+        return fileobject.readline() or None
+    except OSError as err:
+        if err.errno == errno.EAGAIN or err.errno == errno.EWOULDBLOCK:
+            return None
+
+
 def user_scanner(config, browser):
-    scanner = open(config["user_scanner"])
+    scanner = open(config["user_scanner"], opener=opener_nonblock)
     while True:
-        new_user = scanner.read().strip("\2\3\r\n")
-        browser.execute_script("user(" + new_user + ")")
+        data = readline_nonblock(scanner)
+        if data is not None:
+            new_user = data.strip("\2\3\r\n")
+            browser.execute_script("user(" + new_user + ")")
+        else:
+            sleep(0.1)
 
 
 def book_scanner(config, browser):
