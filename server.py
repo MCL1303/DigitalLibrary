@@ -208,14 +208,23 @@ COOKIE_AGE_REMEMBER = int(timedelta(days=4).total_seconds())
 
 COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=10).total_seconds())
 
+TERMINAL_PASSWORDS_SALT = "SATL_FOR_TERMINAL"
+TERMINAL_PASSWORDS_HASH = (
+    b'I\x0ce\xccR\xd2\xb4m\x82\xad\x14:\xd4(\x99\x7f'
+    b'\xc8\xf0\xe9g\x828\x8c\xd4\x16\x99P\xa7\xacDH='
+    b'U0\x02(\xfe\x86\xddY\x10[,]\xa6\x88S|'
+    b'\xa0_\x15P\x83\xbe\xd5\xc4\xc3\xcft\xa0#e\x9c['
+)
+
 
 @app.route('/api/user/login', methods=['POST'])
 def api_login():
     db = DigitalLibraryDatabase()
     form = request.form
     if (
-        form["login"] == "terminal" and
-        hash(form["password"], "SATL_FOR_TERMINAL") == b'I\x0ce\xccR\xd2\xb4m\x82\xad\x14:\xd4(\x99\x7f\xc8\xf0\xe9g\x828\x8c\xd4\x16\x99P\xa7\xacDH=U0\x02(\xfe\x86\xddY\x10[,]\xa6\x88S|\xa0_\x15P\x83\xbe\xd5\xc4\xc3\xcft\xa0#e\x9c['
+        form["login"] == "terminal"
+        and hash(form["password"], TERMINAL_PASSWORDS_SALT)
+            == TERMINAL_PASSWORDS_HASH
     ):
         session_id = str(uuid4())
         db.sessions.insert({

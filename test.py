@@ -26,9 +26,12 @@ from sys import stderr
 
 PEP8_OPTIONS = [
     "--show-source",
-    "--ignore=E251,W503",
-    # E251: unexpected spaces around keyword / parameter equals
-    # W503: line break before binary operator
+    "--ignore=" + ','.join([
+        'E251',   # unexpected spaces around keyword / parameter equals
+        'E402',   # module level import not at top of file
+                  # for import selenium.egg
+        'W503',   # line break before binary operator
+    ]),
 ]
 
 PYLINT_OPTIONS = [
