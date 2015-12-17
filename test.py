@@ -28,8 +28,6 @@ PEP8_OPTIONS = [
     "--show-source",
     "--ignore=" + ','.join([
         'E251',   # unexpected spaces around keyword / parameter equals
-        'E402',   # module level import not at top of file
-                  # for import selenium.egg
         'W503',   # line break before binary operator
     ]),
 ]

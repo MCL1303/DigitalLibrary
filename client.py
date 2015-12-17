@@ -19,31 +19,40 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import sys
-from threading import Thread
 import configparser
-
-sys.path.append("./selenium.egg")
-
-from selenium.webdriver import Firefox
-
-
-def load_config():
-    config = configparser.ConfigParser()
-    config.read('config')
-    return config['Terminal']
+from PySide.QtCore import QObject, Qt
+from PySide.QtGui import QApplication
+from PySide.QtWebKit import QWebView
+from threading import Thread
 
 
-def user_scanner(driver, package):
-    config = load_config()
+class Browser(QObject):
+    # pylint: disable=too-many-public-methods
+
+    def __init__(self):
+        super().__init__()
+
+        self.app = QApplication([])
+
+        self.webview = QWebView()
+        self.webview.setAttribute(Qt.WA_DeleteOnClose)
+        self.webview.destroyed.connect(self.app.quit)
+
+    def run(self, url):
+        """ MUST be called in main thread """
+        self.webview.show()
+        self.webview.load(url)
+        self.app.exec_()
+
+
+def user_scanner(config, browser):
     scanner = open(config["user_scanner"])
     while True:
         new_user = scanner.read().strip("\2\3\r\n")
-        driver.execute_script("user(" + new_user + ")")
+        browser.execute_script("user(" + new_user + ")")
 
 
-def book_scanner(driver, package):
-    config = load_config()
+def book_scanner(config, browser):
     while True:
         scanner = open(config["book_scanner"], "rb")
         i = 0
@@ -61,20 +70,25 @@ def book_scanner(driver, package):
                 break
             print(number % 10)
             barcode += str(number % 10)
-        driver.execute_script("barcode(" + barcode + ")")
+        browser.execute_script("barcode(" + barcode + ")")
 
 
 def main():
-    driver = Firefox()
-    driver.get("http://yandex.ru/")
-    package = {
-        "user": "",
-        "book": "",
-    }
-    user = Thread(target=user_scanner, args=(driver, package))
-    book = Thread(target=book_scanner, args=(driver, package))
+    def load_config():
+        config = configparser.ConfigParser()
+        config.read('config')
+        return config['Terminal']
+
+    config = load_config()
+
+    browser = Browser()
+
+    user = Thread(target=user_scanner, args=(config, browser), daemon=True)
+    book = Thread(target=book_scanner, args=(config, browser), daemon=True)
     user.start()
     book.start()
+
+    browser.run(config['operations_url'])
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 [MASTER]
+extension-pkg-whitelist = PySide
 init-hook = import sys; sys.path.append('./selenium.egg')
 
 [MESSAGES CONTROL]
