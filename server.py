@@ -208,8 +208,8 @@ COOKIE_AGE_REMEMBER = int(timedelta(days=4).total_seconds())
 
 COOKIE_AGE_NOT_REMEMBER = int(timedelta(minutes=10).total_seconds())
 
-TERMINAL_PASSWORDS_SALT = "SATL_FOR_TERMINAL"
-TERMINAL_PASSWORDS_HASH = (
+TERMINAL_PASSWORD_SALT = "SATL_FOR_TERMINAL"
+TERMINAL_PASSWORD_HASH = (
     b'I\x0ce\xccR\xd2\xb4m\x82\xad\x14:\xd4(\x99\x7f'
     b'\xc8\xf0\xe9g\x828\x8c\xd4\x16\x99P\xa7\xacDH='
     b'U0\x02(\xfe\x86\xddY\x10[,]\xa6\x88S|'
@@ -223,8 +223,8 @@ def api_login():
     form = request.form
     if (
         form["login"] == "terminal"
-        and hash(form["password"], TERMINAL_PASSWORDS_SALT)
-            == TERMINAL_PASSWORDS_HASH
+        and hash(form["password"], TERMINAL_PASSWORD_SALT)
+            == TERMINAL_PASSWORD_HASH
     ):
         session_id = str(uuid4())
         db.sessions.insert({
