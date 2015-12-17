@@ -31,7 +31,7 @@ from selenium.webdriver import Firefox
 def load_config():
     config = configparser.ConfigParser()
     config.read('config')
-    return config['Client']
+    return config['Terminal']
 
 
 def user_scanner(driver, package):
