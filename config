@@ -6,6 +6,6 @@ librarian_pages = ["handed", "journal", "add", "operations", "users", "books"]
 student_pages = ["handed", "books"]
 
 [Terminal]
-user_scanner = ""
-book_scanner = "/dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd"
-operations_url = "http://localhost"
+user_scanner = user_scanner
+book_scanner = /dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd
+operations_url = http://localhost:1303
