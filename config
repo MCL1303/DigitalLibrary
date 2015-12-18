@@ -4,11 +4,8 @@ port = 1303
 pages = ["login", "registration", "handed", "journal", "add", "operations", "users", "books"]
 librarian_pages = ["handed", "journal", "add", "operations", "users", "books"]
 student_pages = ["handed", "books"]
-[Client]
-user_scanner = ""
-book_scanner = "/dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd"
-operations_url = "http://localhost"
 
 [Terminal]
-url_start = http://yandex.ru/
-user_scanner = /dev/null
+user_scanner = /dev/serial/by-id/pci-1a86_USB2.0-Ser_-if00-port0
+book_scanner = /dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd
+operations_url = http://localhost:1303/login

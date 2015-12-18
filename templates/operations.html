@@ -14,61 +14,41 @@
             <img id="cover" src="" alt="" class="img-thumbnail", style="width: 370px; height: 500px; margin-top: 30px;">
             <h2 id="status">Статус операции</h2>
         </div>
-        <div class="modal fade" id="InviteModal" tabindex="-1" role="dialog" aria-labelledby="InviteModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header" style="text-align: center;">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-                        <h4 class="modal-title" id="InviteModalLabel" style="margin: auto;">Ура, новый пользователь!</h4>
-                    </div>
-                    <div class="modal-body" style="text-align: center;">
-                        <p>Ваш пригласительный код: 
-                        <h2 id="inviteCode">asd</h2>
-                        </p>
-                        <p>Запишите его и приложите карточку еще раз, чтобы никто не украл ваш пригласительный код</p>
-                    </div>
-                </div>
+        <div style="text-align: center;">
+            <div class="alert alert-info alert-dismissible fade" style="margin: 0px 20px 0px 20px;" id="alert_invite">
+                <h4>Ура, новый пользователь</h4>
+                <p>Ваш пригласительный код</p>
+                <h3 id="inviteCode">ФЫВФЫВ</h3>
+                <p>Запишите его и никому не показывайте. Приложите карточку повторно для того, чтобы скрыть это сообщение</p>
             </div>
         </div>
         <script>
-            var current_book = "", waiting = 0
-            function timer() {
-                flag = false
-                time = 5
-                for (var i = 5; i >= 0; i--) {
-                    setTimeout(function() {
-                        if(waiting == time) {
-                            $("#status")[0].innerHTML = "Ожидание карты(Осталось " + time.toString() + " сек)";
-                            if(time == 0) {
-                                $("#status")[0].innerHTML = "Ожидание штрих кода";
-                                current_book = ""
+            var last_new_user = "", current_user = ""
+            function book(barcode) {
+                if(current_user != "") {
+                    $.post(
+                        "http://localhost:1303/api/book/action",
+                        {user: current_user, book: barcode},
+                        function(data) {
+                            if(data.action == "Fail") {
+                                $("#status").text("Книга не найдена");
+                                return;
                             }
-                            waiting--;
-                        }
-                        time--;
-                    }, 1000 * (5 - i))
+                            $("#cover").attr(
+                                'src',
+                                "http://localhost:1303/static/images/book/large-covers/" +
+                                    data.book.barcode + ".jpg"
+                            );
+                            if (data.action == "Take") {
+                                $("#status").text("Вы взяли книгу");
+                            } else {
+                                $("#status").text("Вы вернули книгу");
+                            }
+                        },
+                        "json"
+                    )
+                    current_user = ""
                 }
-            }
-            function run_timer() {
-                $.post(
-                    "http://localhost:1303/api/book/check",
-                    {book: current_book},
-                    function(data) {
-                        if (data.answer == "ok") {
-                            $("#cover")[0].src = "http://localhost:1303/static/images/book/large-covers/" + current_book + ".jpg"
-                            timer()
-                        } else {
-                          $("#status")[0].innerHTML = "Книга не найдена"
-                          waiting = 0
-                        }
-                    },
-                    "json"
-                )
-            }
-            function barcode(barcode) {
-                current_book = barcode
-                waiting = 5
-                run_timer()
             }
             function user(user) {
                 $.post(
@@ -77,9 +57,16 @@
                     function(data) {
                         if (data.answer == "Done") {
                             $("#inviteCode")[0].innerHTML = data.code;
-                            $("#InviteModal").modal();
+                            $("#alert_invite").addClass("in");
+                            last_new_user = user;
+                            current_user = "";
                         } else {
-                          $("#InviteModal").modal("hide");
+                          $("#alert_invite").removeClass("in");
+                          if(user == last_new_user){
+                            last_new_user = "";
+                          } else {
+                            current_user = user;
+                          }
 
                         }
                     },

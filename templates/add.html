@@ -101,8 +101,7 @@
     });
     $('#inputCode').on('input', function() {
         if($("#inputCode")[0].value != "" &&
-            $("#inputCode")[0].value.length == 13 &&
-            ~~Number($("#inputCode")[0].value) > 0
+            $("#inputCode")[0].value.length == 13
             ) {
             $("#code").removeClass("default")
             $("#code").addClass("green")

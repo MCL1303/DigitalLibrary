@@ -98,9 +98,9 @@ def home():
     return redirect("/handed")
 
 
-def validate_password(password):
+def validate_password(password): #False ///////////////////////
     a = [0, 0]
-    if len(password) < 8:
+    if len(password) < 8 or len(password) > 20:
         return True
     for i in password:
         if i.isalpha():
@@ -138,10 +138,10 @@ def api_registration():
     db = DigitalLibraryDatabase()
     form = request.form
 
-    if validate_login(form["login"]):
+    if validate_login(form["login"]) or form["login"] == "":
         return jsonify(answer="bad_login")
 
-    if validate_password(form["password"]):
+    if validate_password(form["password"]): #False
         return jsonify(answer="bad_password")
 
     if validate_email(form["email"]):
@@ -152,6 +152,9 @@ def api_registration():
 
     if db.users.get({"email": form["email"], "status": "on"}) is not None:
         return jsonify(answer="email_taken")
+
+    if form["name"] == "" or form["s_name"] == "":
+        return jsonify(answer="bad_login")
 
     user = db.users.get({"inviteCode": form["inviteCode"], "status": "off"})
     if user is None:
@@ -249,7 +252,6 @@ def api_login():
         "password": hash(form["password"], salt),
         "status": "on",
     })
-    form["password"] = ""
     if user is None:
         return jsonify(answer="error")
     session_id = str(uuid4())
@@ -342,7 +344,6 @@ def api_book_change():
         "author": form["author"],
         "count": int(form["count"]),
     })
-    print(db.books.get({"barcode": form["barcode"]}))
     return jsonify(answer="ok")
 
 
@@ -353,7 +354,6 @@ def api_book_delete():
     form = request.form
     db = DigitalLibraryDatabase()
     if db.books.get({"barcode": form["barcode"]}) is None:
-        print("asd")
         return jsonify(answer="fail")
     db.books.remove({"barcode": form["barcode"]})
     db.handlog.remove({"book": form["barcode"]})
@@ -372,7 +372,6 @@ def api_book_add():
     first = form["author"].split(" ")
     second = []
     for word in first:
-        print(second)
         second += word.split(".")
     second = sorted(second, key=lambda s: len(s), reverse=True)
 
@@ -937,3 +936,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
