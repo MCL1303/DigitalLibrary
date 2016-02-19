@@ -11,23 +11,23 @@ DigitalLibraryApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/handed', {
-        templateUrl: 'templates/handed.html',
+        templateUrl: 'librarian/templates/handed.html',
         controller: 'HandedCtrl'
       }).
       when('/books', {
-        templateUrl: 'templates/books.html',
+        templateUrl: 'librarian/templates/books.html',
         controller: 'BooksCtrl'
       }).
       when('/add', {
-        templateUrl: 'templates/add.html',
+        templateUrl: 'librarian/templates/add.html',
         controller: 'AddCtrl'
       }).
       when('/students', {
-        templateUrl: 'templates/students.html',
+        templateUrl: 'librarian/templates/students.html',
         controller: 'StudentsCtrl'
       }).
       when('/handlog', {
-        templateUrl: 'templates/handlog.html',
+        templateUrl: 'librarian/templates/handlog.html',
         controller: 'HandlogCtrl'
       }).
       otherwise({

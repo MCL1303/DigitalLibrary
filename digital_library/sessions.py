@@ -1,4 +1,4 @@
-from database import Database
+from digital_library.database import Database
 from bson.objectid import ObjectId
 import configparser
 
@@ -24,7 +24,7 @@ def add_session(request, remember, user):
 			"remember": remember,
 		}
 	db.sessions.insert(session)
-	return db.sessions.get(session)['_id']
+	return str(db.sessions.get(session)['_id'])
 
 
 def remove_session(id):
@@ -33,7 +33,7 @@ def remove_session(id):
 	db.sessions.remove({'_id': ObjectId('id')})
 
 
-def active_session(id):
+def session_user(id):
 	config = load_config('Authorization')
 	db = Database(config['database_name'], ['sessions'])
 	session = db.sessions.get({'_id': ObjectId('id')})
