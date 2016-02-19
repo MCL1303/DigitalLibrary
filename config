@@ -1,0 +1,8 @@
+[Authorization]
+database_name = 'digital_library'
+remember = 604800
+no_remember = 300
+
+[Server]
+host = 127.0.0.1
+port = 8081

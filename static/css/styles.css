@@ -1,0 +1,21 @@
+.pointer {
+	cursor: pointer;
+}
+
+.c_title {
+	text-align: center; 
+}
+
+.borderer {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+}
+
+.hider {
+	display: none;
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+}
