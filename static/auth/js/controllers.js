@@ -36,19 +36,31 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 			var i;
 			for(i = 0; i < 10; i++) {
 				if(password.search(i.toString()) != -1) {
-					$scope.progress += 20;
+					$scope.progress += 15;
 					break;
 				}
 			}
 			for(i = 0; i < 25; i++) {
 				if(password.search(String.fromCharCode(65 + i)) != -1) {
-					$scope.progress += 20;
+					$scope.progress += 15;
 					break;
 				}
 			}
 			for(i = 0; i < 25; i++) {
 				if(password.search(String.fromCharCode(97 + i)) != -1) {
-					$scope.progress += 20;
+					$scope.progress += 15;
+					break;
+				}
+			}
+			for(i = 0; i < 33; i++) {
+				if(password.search(String.fromCharCode(1072 + i)) != -1) {
+					$scope.progress += 15;
+					break;
+				}
+			}
+			for(i = 0; i < 33; i++) {
+				if(password.search(String.fromCharCode(1040 + i)) != -1) {
+					$scope.progress += 15;
 					break;
 				}
 			}
@@ -63,8 +75,14 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 			for(i = 0; i < 25; i++) {
 				password = password.replaceAll(String.fromCharCode(97 + i), '')
 			}
+			for(i = 0; i < 33; i++) {
+				password = password.replaceAll(String.fromCharCode(1072 + i), '')
+			}
+			for(i = 0; i < 33; i++) {
+				password = password.replaceAll(String.fromCharCode(1040 + i), '')
+			}
 			if(password != '') {
-				$scope.progress = 100;
+				$scope.progress += 15;
 				console.log(password);
 			}
 		});
