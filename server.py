@@ -53,7 +53,7 @@ def root():
 
 @app.route('/login')
 def login():
-	return send_from_directory('static', 'librarian.html')
+	return send_from_directory('static', 'auth.html')
 
 
 def main():

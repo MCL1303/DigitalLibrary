@@ -1,0 +1,27 @@
+<!doctype html>
+<html ng-app='DigitalLibraryApp' ng-controller="MainCtrl">
+	<head>
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<link href="css/styles.css" rel="stylesheet">
+		<link href="css/signin.css" rel="stylesheet">
+		<script src="auth/js/angular.js"></script>
+		<script src="auth/js/angular-route.js"></script>
+		<script src="auth/js/app.js"></script>
+		<script src="auth/js/controllers.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>{{title}}</title>
+	</head>
+
+	<body cz-shortcut-listen="true">
+		<div class="container ">
+			<div ng-view>
+				<div class='c_title'>
+					<h1>Загрузка</h1>
+					<img src="loading.gif">
+				</div>
+			</div>
+		</div>
+		<script src="js/jquery.js"></script>
+		<script src="js/bootstrap.js"></script>
+	</body>
+</html>
