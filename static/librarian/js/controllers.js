@@ -9,7 +9,6 @@ DigitalLibraryControllers.controller('MainCtrl', ['$scope', '$http', '$cookies',
 		document.title = 'Библиотека МХЛ';
 		$scope.user = {'name': 'Загрузка'};
 		$http.post('/api/info/user', {}).then(function(data) {
-			console.log(data.data);
 			if(data.data.answer == 'ok') {
 				$scope.user = data.data.user;
 			} else {
@@ -56,4 +55,13 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope',
 	function($scope, $rootScope) {
 		document.title = 'Журнал';
 		$rootScope.page = 4;
+		$scope.rootScope = angular.element(document.body).scope().$root;  
+		$scope.rootScope.handlog = [
+			{
+				'datetime': 'Загрузка...',
+				'student': 'Загрузка...',
+				'book': 'Загрузка...',
+				'action': 'Загрузка...'
+			}
+		]
 }]);
