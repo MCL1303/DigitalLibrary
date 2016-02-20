@@ -24,6 +24,7 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 		$scope.inputLogin = '#ffffff';
 		$scope.inputPassword = '#ffffff';
 		$scope.inputEmail = '#ffffff';
+		$scope.f = function() {alert('asdasd')};
 		String.prototype.replaceAll = function(search, replacement) {
 			var target = this;
 			return target.replace(new RegExp(search, 'g'), replacement);
@@ -32,16 +33,13 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 			var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			return re.test(email);
 		}
-		$('#password').on('input', function() {
-
-		});
 		$(document).keypress(function(e) {
 			if(e.which == 13) {
 				alert('You pressed enter!');
 			}
 		});
-		$('#password').on('input', function() {
-			var password = $("#password")[0].value;
+		$scope.check_password = function() {
+			var password = $scope.password;
 			$scope.progress = 0;
 			if(password.length < 8) {
 				$scope.progress = password.length * 4;
@@ -109,5 +107,5 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 			} else {
 				$scope.inputPassword = '#ffffff';
 			}
-		});
+		};
 }]);
