@@ -20,15 +20,32 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 	function($scope) {
 		document.title = 'Регистрация';
 		$scope.progress = 0;
+		$scope.inputInvite = '#ffffff';
+		$scope.inputLogin = '#ffffff';
+		$scope.inputPassword = '#ffffff';
+		$scope.inputEmail = '#ffffff';
 		String.prototype.replaceAll = function(search, replacement) {
 			var target = this;
 			return target.replace(new RegExp(search, 'g'), replacement);
 		};
+		function validateEmail(email) {
+			var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			return re.test(email);
+		}
 		$('#password').on('input', function() {
-			var password = $("#password")[0].value
+
+		});
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				alert('You pressed enter!');
+			}
+		});
+		$('#password').on('input', function() {
+			var password = $("#password")[0].value;
 			$scope.progress = 0;
 			if(password.length < 8) {
 				$scope.progress = password.length * 4;
+				$scope.inputPassword = '#ffffff';
 				return;
 			} else {
 				$scope.progress = 10;
@@ -83,7 +100,14 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 			}
 			if(password != '') {
 				$scope.progress += 15;
-				console.log(password);
+			}
+			if($scope.progress > 100) {
+				$scope.progress = 100;
+			}
+			if($scope.progress >= 40) {
+				$scope.inputPassword = '#dff0d8';
+			} else {
+				$scope.inputPassword = '#ffffff';
 			}
 		});
 }]);
