@@ -15,7 +15,7 @@ class Collection:
         self._collection = db[name]
 
     def insert(self, query):
-        self._collection.insert(query)
+        return self._collection.insert(query)
 
     def get(self, query):
         return self._collection.find_one(query)

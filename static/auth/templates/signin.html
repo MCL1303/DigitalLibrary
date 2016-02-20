@@ -1,12 +1,16 @@
 <form class="form-signin c_title">
 	<h2 class="form-signin-heading">Авторизация</h2>
-	<input type="login" class="form-control" placeholder="Логин" autofocus="">
-	<input type="password" class="form-control" placeholder="Пароль">
+	<input type="login" class="form-control" placeholder="Логин" autofocus="" ng-model="login">
+	<input type="password" class="form-control" placeholder="Пароль" ng-model="password">
 	<div class="checkbox">
 		<label>
-			<input type="checkbox" value="remember-me"> Запомнить меня
+			<input type="checkbox" value="remember-me" ng-model="remember"> Запомнить меня
 		</label>
 	</div>
-	<a class="btn btn-lg btn-success btn-block" type="submit">Войти</a>
+	<a class="btn btn-lg btn-success btn-block" type="submit" ng-click="signin()">Войти</a>
 	<a class="btn btn-lg btn-primary btn-block" href="#/signup">Зарегистрироваться</a>
+	<br>
+	<div class="alert alert-danger" role="alert" ng-class="{hider: !error}">
+		<h4>Неправильно введен логин или пароль</h4>
+	</div>
 </form>

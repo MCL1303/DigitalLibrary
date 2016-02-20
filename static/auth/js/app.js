@@ -3,7 +3,8 @@
 
 var DigitalLibraryApp = angular.module('DigitalLibraryApp', [
   'DigitalLibraryControllers',
-  'ngRoute'
+  'ngRoute',
+  'ngCookies'
 ]);
 
 

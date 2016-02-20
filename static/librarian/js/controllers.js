@@ -4,9 +4,23 @@
 var DigitalLibraryControllers = angular.module('DigitalLibraryControllers', []);
 
 
-DigitalLibraryControllers.controller('MainCtrl', ['$scope',
-	function($scope) {
+DigitalLibraryControllers.controller('MainCtrl', ['$scope', '$http', '$cookies',
+	function($scope, $http, $cookies) {
 		document.title = 'Библиотека МХЛ';
+		$scope.user = {'name': 'Загрузка'};
+		$http.post('/api/info/user', {}).then(function(data) {
+			console.log(data.data);
+			if(data.data.answer == 'ok') {
+				$scope.user = data.data.user;
+			} else {
+				$cookies.put('session_id', '');
+				location.reload();
+			}
+		});
+		$scope.signout = function() {
+			$cookies.put('session_id', '');
+			location.reload();
+		};
 }]);
 
 

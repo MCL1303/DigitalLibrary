@@ -5,6 +5,7 @@
 		<link href="css/styles.css" rel="stylesheet">
 		<script src="librarian/js/angular.js"></script>
 		<script src="librarian/js/angular-route.js"></script>
+		<script src="auth/js/angular-cookie.js"></script>
 		<script src="librarian/js/app.js"></script>
 		<script src="librarian/js/controllers.js"></script>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -38,11 +39,11 @@
 					</ul>
 					<ul class='nav navbar-nav navbar-right'>
 						<li>
-							<a id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">SetSplin</a>
+							<a id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="pointer">{{user.name}}</a>
 							<ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
-							    <li><a class='pointer'>На руках: {{handed}}</a></li>
+							    <li><a class='pointer'>Книг на руках: {{user.handed}}</a></li>
 							    <li role="separator" class="divider"></li>
-							    <li><a class='pointer'>Выход</a></li>
+							    <li><a class='pointer' ng-click="signout()">Выход</a></li>
 							</ul>
 						</li>
 					</ul>
