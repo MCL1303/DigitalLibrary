@@ -24,6 +24,7 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 		$scope.inputLogin = '#ffffff';
 		$scope.inputPassword = '#ffffff';
 		$scope.inputEmail = '#ffffff';
+		$scope.email = '';
 		$scope.f = function() {alert('asdasd')};
 		String.prototype.replaceAll = function(search, replacement) {
 			var target = this;
@@ -38,8 +39,17 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope',
 				alert('You pressed enter!');
 			}
 		});
+		$scope.check_email = function() {
+			if(validateEmail($scope.email)) {
+				console.log($scope.email);
+				$scope.inputEmail = '#dff0d8';
+			} else {
+				$scope.inputEmail = '#ffffff';								
+			}
+		};
 		$scope.check_password = function() {
 			var password = $scope.password;
+			// console.log($scope.password);
 			$scope.progress = 0;
 			if(password.length < 8) {
 				$scope.progress = password.length * 4;

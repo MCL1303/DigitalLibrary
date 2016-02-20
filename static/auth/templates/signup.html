@@ -1,7 +1,7 @@
 <form class="form-signin c_title">
 	<h2 class="form-signin-heading">Регистрация</h2>
 	<input type="invite" class="form-control" placeholder="Пригласительный код" autofocus="" ng-style="{'background-color': inputInvite}">
-	<input type="text" class="form-control" placeholder="Почта" ng-style="{'background-color': inputEmail}">
+	<input type="text" class="form-control" placeholder="Почта" ng-style="{'background-color': inputEmail}" ng-change="check_email()" ng-model="email">
 	<input type="text" class="form-control" placeholder="Логин" ng-style="{'background-color': inputLogin}">
 	<input type="password" class="form-control" placeholder="Пароль" ng-model="password" id="password" ng-style="{'background-color': inputPassword}" ng-change="check_password()">
 	<h4>Сложность пароля:</h4>
@@ -10,4 +10,5 @@
 	</div>
 	<a class="btn btn-lg btn-success btn-block" type="submit">Зарегистрироваться</a>
 	<a class="btn btn-lg btn-primary btn-block" href="#/signin">Авторизироваться</a>
+	{{check_email()}}
 </form>
