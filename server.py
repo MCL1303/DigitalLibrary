@@ -150,10 +150,10 @@ def api_info_user():
 	return jsonify(answer='ok', user=public_user)
 
 
-@app.route('/api/handlog/get', methods=['POST'])
-def api_handlog_get():
+@app.route('/api/info/handlog', methods=['POST'])
+def api_info_handlog():
 	config = load_config('Server')
-	db = Database(config['database_name'], ['handlog', 'users'])
+	db = Database(config['database_name'], ['handlog'])
 	if session_priority(request.cookies.get('session_id')) != 'librarian':
 		return jsonify(answer='fail')
 	form = request.get_json()
@@ -164,6 +164,28 @@ def api_handlog_get():
 		return jsonify(answer='ok', page=page, more=(len(page) == 30))
 	except:
 		return jsonify(answer='fail') 
+
+
+
+@app.route('/api/info/book', methods=['POST'])
+def api_info_book():
+	config = load_config('Server')
+	db = Database(config['database_name'], ['books'])
+	if session_priority(request.cookies.get('session_id')) is None:
+		return jsonify(answer='fail')
+	form = request.get_json()
+	try:
+		book = db.books.get({
+			'_id': ObjectId(form['book'])
+		})
+		if book is None:
+			jsonify(answer='not_found')
+		book['_id'] = ''
+		print(book)
+		return jsonify(answer='ok', book=book)
+	except:
+		return jsonify(answer='fail')
+
 
 
 
@@ -191,16 +213,17 @@ def root():
 	if user['priority'] == 'librarian':
 		return send_from_directory('static', 'librarian.html')
 	else:
-		return send_from_directory('static', 'student.html') 
+		return send_from_directory('static', 'user.html') 
 
 
 @app.route('/login')
 def login():
+	if session_user(request.cookies.get('session_id')) is not None:
+		return redirect('/')
 	return send_from_directory('static', 'auth.html')
 
 
 def main():
-	config = load_config('Server')
 	config = load_config('Server')
 	db = Database(config['database_name'], ['handlog'])
 	if len(db.handlog.get_page({}, 1)) == 0:

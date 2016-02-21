@@ -21,19 +21,16 @@
 				<div class='navbar-collapse collapse'>
 					<ul class='nav navbar-nav'>
 						<li ng-class="{'active': page == 1}">
-							<a href='#/handed'>На руках</a>
-						</li>
-						<li ng-class="{'active': page == 2}">
 							<a class='pointer' id="DropdownGame" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="float: left;">Книги</a>
 							<ul class="dropdown-menu" aria-labelledby="DropdownGame">
 								<li><a href="#/add">Добавить</a></li>
 								<li><a href="#/books">Каталог</a></li>
 							</ul>
 						</li>
-						<li ng-class="{'active': page == 3}">
-							<a href="#/students">Ученики</a>
+						<li ng-class="{'active': page == 2}">
+							<a href="#/users">Ученики</a>
 						</li>
-						<li ng-class="{'active': page == 4}">
+						<li ng-class="{'active': page == 3}">
 							<a href="#/handlog">Журнал</a>
 						</li>
 					</ul>
@@ -50,7 +47,7 @@
 				</div>
 			</div>
 		</nav>
-		<div class="container ">
+		<div class="container">
 			<div ng-view>
 				<div class='c_title'>
 					<h1>Загрузка</h1>

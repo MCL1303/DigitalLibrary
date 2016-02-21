@@ -24,7 +24,7 @@ class Collection:
         return list(self._collection.find(query))
 
     def get_page(self, query, page):
-        return list(self._collection.find(query).skip((int(page) - 1) * 30).limit(30))
+        return list(self._collection.find(query).sort([('datetime', -1)]).skip((int(page) - 1) * 30).limit(30))
 
     def remove(self, query):
         self._collection.remove(query)

@@ -13,21 +13,19 @@
 			</th>
 		</thead>
 		<tbody>
-			<tr ng-repeat="log in rootScope.handlog | filter:request | orderBy:'-datetime' | limitTo:100">
+			<tr ng-repeat="log in (handlog = (rootScope.handlog | filter:request | limitTo:(rootScope.handlog_page * 30)))">
 				<th>{{log.datetime}}</th>
-				<th><a href="#/students/{{log.student_id}}">{{log.student_name}}</a></th>
+				<th><a href="#/users/{{log.user_id}}">{{log.user_name}}</a></th>
 				<th>{{log.action}}</th>
 				<th><a href="#/books/{{log.book_id}}">{{log.book_title}}</tr>
 			</th>
 		</tbody>
 	</table>
 	<div class='c_title'>
-	<a class="btn btn-primary" ng-click="get_older()" ng-class="{'hider': !rootScope.handlog_more}">Показать еще</a>
-		
+		<a class="btn btn-primary" ng-click="get_older()" ng-class="{'hider': !rootScope.handlog_more}">Показать еще</a>	
 	</div>
 	<br>
 	<br>
 	<br>
 	<br>
-	{{rootScope.handlog_page}}
 </div>

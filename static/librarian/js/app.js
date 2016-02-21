@@ -11,10 +11,6 @@ var DigitalLibraryApp = angular.module('DigitalLibraryApp', [
 DigitalLibraryApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-      when('/handed', {
-        templateUrl: 'librarian/templates/handed.html',
-        controller: 'HandedCtrl'
-      }).
       when('/books', {
         templateUrl: 'librarian/templates/books.html',
         controller: 'BooksCtrl'
@@ -23,15 +19,19 @@ DigitalLibraryApp.config(['$routeProvider',
         templateUrl: 'librarian/templates/add.html',
         controller: 'AddCtrl'
       }).
-      when('/students', {
-        templateUrl: 'librarian/templates/students.html',
-        controller: 'StudentsCtrl'
+      when('/users', {
+        templateUrl: 'librarian/templates/users.html',
+        controller: 'UsersCtrl'
       }).
       when('/handlog', {
         templateUrl: 'librarian/templates/handlog.html',
         controller: 'HandlogCtrl'
       }).
+      when('/books/:book_id', {
+        templateUrl: 'librarian/templates/book.html',
+        controller: 'BookCtrl'
+      }).
       otherwise({
-        redirectTo: '/handed'
+        redirectTo: '/books'
       });
   }]);

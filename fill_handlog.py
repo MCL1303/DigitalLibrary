@@ -55,12 +55,12 @@ def fill():
 	actions = ['Взял', 'Вернул']
 	config = load_config('Server')
 	db = Database(config['database_name'], ['handlog'])
-	for i in range(100):
+	for i in range(1000):
 		db.handlog.insert({
-			'student_name': user_names[int(random() * 200) % len(user_names)] + ' ' + user_s_names[int(random() * 200) % len(user_s_names)],
+			'user_name': user_names[int(random() * 200) % len(user_names)] + ' ' + user_s_names[int(random() * 200) % len(user_s_names)],
 			'book_title': books[int(random() * 200) % len(books)],
 			'datetime': (datetime.utcnow() + timedelta(minutes=int(random() * 200))),
-			'student_id': 'asdasd',
-			'book_id': 'asdasdasd',
+			'user_id': 'asdasd',
+			'book_id': '56c9c7dfdd9781715c95866b',
 			'action': actions[int((random() * 10) % 2)]
 		})
