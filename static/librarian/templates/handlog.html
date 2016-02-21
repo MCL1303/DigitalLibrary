@@ -15,10 +15,18 @@
 		<tbody>
 			<tr ng-repeat="log in rootScope.handlog | filter:request">
 				<th>{{log.datetime}}</th>
-				<th>{{log.student}}</th>
+				<th>{{log.student_name}}</th>
 				<th>{{log.action}}</th>
-				<th>{{log.book}}</tr>
+				<th>{{log.book_title}}</tr>
 			</th>
 		</tbody>
 	</table>
+	<div class='c_title'>
+	<a class="btn btn-primary" ng-click="get_older()" ng-class="{'hider': !rootScope.handlog_more}">Показать еще</a>
+		
+	</div>
+	<br>
+	<br>
+	<br>
+	<br>
 </div>

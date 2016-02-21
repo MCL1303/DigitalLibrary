@@ -51,8 +51,8 @@ DigitalLibraryControllers.controller('StudentsCtrl', ['$scope', '$rootScope',
 }]);
 
 
-DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope',
-	function($scope, $rootScope) {
+DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$http',
+	function($scope, $rootScope, $http) {
 		document.title = 'Журнал';
 		$rootScope.page = 4;
 		$scope.rootScope = angular.element(document.body).scope().$root;  
@@ -63,5 +63,33 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope',
 				'book': 'Загрузка...',
 				'action': 'Загрузка...'
 			}
-		]
+		];
+		$scope.rootScope.handlog_page = 0;
+		$scope.rootScope.handlog_more = true;
+		$scope.get_older = function() {
+			if($scope.rootScope.handlog_page == -1) {
+				$scope.rootScope.handlog_more = false;
+				return;
+			}
+			$scope.rootScope.handlog_page++;
+			$http.post('/api/handlog/get', {'page': $scope.rootScope.handlog_page}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					console.log(data.data.page);
+					if($scope.rootScope.handlog[0]['student'] == 'Загрузка...') {
+						$scope.rootScope.handlog = [];
+					}
+					for(var i = 0; i < data.data.page.length; i++) {
+						$scope.rootScope.handlog.push(data.data.page[i])
+					}
+					if(!data.data.more) {
+						$scope.rootScope.handlog_page = -1;
+						$scope.rootScope.handlog_more = false;
+					}
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+		};
+		$scope.get_older();
 }]);

@@ -50,18 +50,35 @@ def remove_session(id):
 def session_user(id):
 	config = load_config('Authorization')
 	db = Database(config['database_name'], ['sessions'])
-	session = db.sessions.get({'_id': ObjectId('id')})
+	try:
+		session = db.sessions.get({'_id': ObjectId(id)})
+	except:
+		return None
 	if session is None:
 		return None
 	if session['remember']:
-		if (datetime.utcnow() - session['datetime']).seconds > config['remember']:
+		if (datetime.utcnow() - session['datetime']).seconds > int(config['remember']):
 			session = db.sessions.remove({'_id': ObjectId('id')})
 			return None
 		else:
 			return session['user']
 	else:
-		if (datetime.utcnow() - session['datetime']).seconds > config['no_remember']:
+		if (datetime.utcnow() - session['datetime']).seconds > int(config['no_remember']):
 			session = db.sessions.remove({'_id': ObjectId('id')})
 			return None
 		else:
 			return session['user']
+
+
+def session_priority(id):
+	config = load_config('Authorization')
+	db = Database(config['database_name'], ['users'])
+	user_id = session_user(id)
+	try:
+		user = db.users.get({'_id': ObjectId(user_id)})
+	except:
+		return None
+	if user is None:
+		return None
+	return user.get('priority')
+

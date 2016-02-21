@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
+from digital_library.sessions import add_session, remove_session, session_user, session_priority
 from flask import Flask, jsonify, request, redirect, make_response, send_from_directory
-from digital_library.sessions import add_session, remove_session, session_user
 from digital_library.database import Database
 from digital_library import validators
 from bson.objectid import ObjectId
@@ -11,6 +11,7 @@ from hashlib import sha512
 import configparser
 import random
 import string
+import fill_handlog
 
 
 app = Flask(__name__, static_url_path='')
@@ -110,12 +111,9 @@ def api_user_signin():
 		'login': form['login']
 	})
 	if user is None:
-		print('1')
 		return jsonify(answer='fail')
 	if user['password'] != hash(form['password'], user['salt']):
-		print('2')
 		return jsonify(answer='fail')
-	print(form['password'], user['salt'])
 	if form['remember']:
 		remember = 'remember'
 	else:
@@ -126,6 +124,8 @@ def api_user_signin():
 
 @app.route('/api/info/user', methods=['POST'])
 def api_info_user():
+	if session_priority(request.cookies.get('session_id')) is None:
+		return jsonify(answer='fail')
 	config = load_config('Server')
 	db = Database(config['database_name'], ['users', 'sessions'])
 	try:
@@ -148,6 +148,24 @@ def api_info_user():
 	}
 	# print(jsonify(answer='ok', user=public_user))
 	return jsonify(answer='ok', user=public_user)
+
+
+@app.route('/api/handlog/get', methods=['POST'])
+def api_handlog_get():
+	config = load_config('Server')
+	db = Database(config['database_name'], ['handlog', 'users'])
+	if session_priority(request.cookies.get('session_id')) != 'librarian':
+		return jsonify(answer='fail')
+	form = request.get_json()
+	try:
+		page = db.handlog.get_page({}, int(form['page']))
+		for line in page:
+			line['_id'] = ''
+		return jsonify(answer='ok', page=page, more=(len(page) == 30))
+	except:
+		return jsonify(answer='fail') 
+
+
 
 
 @app.route('/')
@@ -183,7 +201,11 @@ def login():
 
 def main():
 	config = load_config('Server')
-	app.run(host=config['host'], port=int(config['port']))
+	config = load_config('Server')
+	db = Database(config['database_name'], ['handlog'])
+	if len(db.handlog.get_page({}, 1)) == 0:
+		fill_handlog.fill()
+	app.run(host=config['host'], port=int(config['port']), debug=True)
 
 
 if __name__ == '__main__':

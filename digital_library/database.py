@@ -23,8 +23,8 @@ class Collection:
     def find(self, query):
         return list(self._collection.find(query))
 
-    def exists(self, query):
-        return self._collection.find_one(query) is not None
+    def get_page(self, query, page):
+        return list(self._collection.find(query).skip((int(page) - 1) * 30).limit(30))
 
     def remove(self, query):
         self._collection.remove(query)
