@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block title %}Пользователи{% endblock %}
+{% block content %}
+<style>
+    .hider {
+        display: none;
+    }
+</style>
+<script src="/static/js/jquery.js"></script>
+<script>
+    function new_request() {
+        $.post(
+            "http://localhost:1303/api/user/get",
+            {request: $("#input")[0].value},
+            function(data) {
+              for(var i = 0; i < 9; i++) {
+                $("#user_" + i.toString()).addClass("hider");
+              }
+                if(data.results.length == 0) {
+                  $("#fail")[0].innerHTML = "Поиск не дал результатов";
+                } else {
+                  $("#fail")[0].innerHTML = "";
+                  for(var i = 0; i < 9 && i < data.results.length; i++) {
+                    $("#user_" + i.toString()).removeClass("hider");
+                    $("#user_image_" + i.toString())[0].src = data.results[i].image;
+                    $("#user_name_" + i.toString())[0].innerHTML = data.results[i].name;
+                    $("#user_handed_" + i.toString())[0].innerHTML = "Книг на руках: " + data.results[i].handed;
+                    $("#user_profile_" + i.toString())[0].href = "http://localhost:1303/users/" + data.results[i].id;
+                    $("#user_image_a_" + i.toString())[0].href = "http://localhost:1303/users/" + data.results[i].id;
+                  }
+                }
+            },
+            "json"
+        )
+    }
+</script>
+<div class="row">
+    <div class="input-group" style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px;">
+        <input id="input" type="text" class="form-control" placeholder="Введите запрос">
+        <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="new_request()">Поиск</button>
+        </span>
+    </div>
+    <div style="width: 50%; margin-left: 25%; margin-right: 25%; margin-bottom: 20px; text-align: center;">
+        <h4 id="fail"></h4>
+    </div>
+    {% for i in range(9) %}
+    <div class="col-sm-6 col-md-4 hider" id="user_{{i}}" style="cursor: pointer;">
+        <div class="thumbnail" style="height: 500px;">
+            <a id="user_image_a_{{i}}" href=""><img id="user_image_{{i}}" src="" alt="" style="margin-top: 10%; width: 80%; height: 70%;" class="img-thumbnail"></a>
+            <div class="caption" style="padding: 1em 0; text-align: center;">
+                <a id="user_profile_{{i}}">
+                    <h3 id="user_name_{{i}}"></h3>
+                </a>
+                <h4 id="user_handed_{{i}}">На руках</h4>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+[MASTER]
+init-hook = import sys; sys.path.append('./selenium.egg')
+
+[MESSAGES CONTROL]
+disable = bad-continuation, bad-whitespace, locally-disabled, missing-docstring,
+        star-args
+
+[BASIC]
+good-names = app, closeEvent, db
+variable-rgx = [a-z_][a-z0-9_]{,30}$
+
+[VARIABLES]
+dummy-variables-rgx = _.*
