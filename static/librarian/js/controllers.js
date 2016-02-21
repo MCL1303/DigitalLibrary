@@ -20,6 +20,7 @@ DigitalLibraryControllers.controller('MainCtrl', ['$scope', '$http', '$cookies',
 			$cookies.put('session_id', '');
 			location.reload();
 		};
+		$scope.handlog_loaded = false;
 }]);
 
 
@@ -55,7 +56,7 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$h
 	function($scope, $rootScope, $http) {
 		document.title = 'Журнал';
 		$rootScope.page = 4;
-		$scope.rootScope = angular.element(document.body).scope().$root;  
+		$scope.rootScope = angular.element(document.body).scope().$root;
 		$scope.rootScope.handlog = [
 			{
 				'datetime': 'Загрузка...',
@@ -91,5 +92,7 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$h
 				}
 			});
 		};
-		$scope.get_older();
+		if($scope.rootScope.handlog[0]['student'] == 'Загрузка...'){
+			$scope.get_older();
+		}
 }]);

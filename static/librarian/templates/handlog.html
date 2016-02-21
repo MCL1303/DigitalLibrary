@@ -15,9 +15,9 @@
 		<tbody>
 			<tr ng-repeat="log in rootScope.handlog | filter:request | orderBy:'-datetime' | limitTo:100">
 				<th>{{log.datetime}}</th>
-				<th>{{log.student_name}}</th>
+				<th><a href="#/students/{{log.student_id}}">{{log.student_name}}</a></th>
 				<th>{{log.action}}</th>
-				<th>{{log.book_title}}</tr>
+				<th><a href="#/books/{{log.book_id}}">{{log.book_title}}</tr>
 			</th>
 		</tbody>
 	</table>
@@ -29,4 +29,5 @@
 	<br>
 	<br>
 	<br>
+	{{rootScope.handlog_page}}
 </div>
