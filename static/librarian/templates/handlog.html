@@ -13,7 +13,7 @@
 			</th>
 		</thead>
 		<tbody>
-			<tr ng-repeat="log in rootScope.handlog | filter:request | orderBy:'-datetime'">
+			<tr ng-repeat="log in rootScope.handlog | filter:request | orderBy:'-datetime' | limitTo:100">
 				<th>{{log.datetime}}</th>
 				<th>{{log.student_name}}</th>
 				<th>{{log.action}}</th>
