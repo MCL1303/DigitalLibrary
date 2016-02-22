@@ -1,0 +1,9 @@
+<div id="operate" ng-controller="OperateCtrl" style="margin-top: 15%;">
+	<div class="col-md-4">
+		<img style="width: 100%" ng-src="{{rootScope.operation.book.image}}">
+	</div>
+	<div class="col-md-8 c_title" style="margin-top: 15%;">
+		<h2 ng-class="{'hider': rootScope.operation.answer == 'book_not_found'}">Вы {{rootScope.operation.action}} книгу</h2>
+		<h2>{{rootScope.operation.book.title}}</h2>
+	</div>
+</div>

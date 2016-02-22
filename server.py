@@ -7,11 +7,13 @@ from flask import Flask, jsonify, request, redirect, make_response, send_from_di
 from digital_library.database import Database
 from digital_library import validators
 from bson.objectid import ObjectId
+from datetime import datetime
 from hashlib import sha512
+import fill_handlog
 import configparser
+import fill_books
 import random
 import string
-import fill_handlog
 
 
 app = Flask(__name__, static_url_path='')
@@ -25,7 +27,7 @@ def load_config(header):
 
 
 def remove_cookie():
-	resp = make_response(redirect('/login'))
+	resp = make_response(redirect('/signin'))
 	resp.set_cookie('session_id', '',)
 	return resp
 
@@ -122,7 +124,7 @@ def api_user_signin():
 	return jsonify(answer='ok', session_id=session_id)
 
 
-@app.route('/api/info/user', methods=['POST'])
+@app.route('/api/info/init_user', methods=['POST'])
 def api_info_user():
 	if session_priority(request.cookies.get('session_id')) is None:
 		return jsonify(answer='fail')
@@ -188,6 +190,91 @@ def api_info_book():
 
 
 
+@app.route('/api/operations', methods=['POST'])
+def api_operations():
+	config = load_config('Server')
+	db = Database(config['database_name'], ['books', 'hands', 'users', 'handlog'])
+	if session_priority(request.cookies.get('session_id')) != 'terminal':
+		return jsonify(answer='fail')
+	form = request.get_json()
+	book = db.books.get({'code': form['book']})
+	if book is None:
+		book = {
+			'image': '/book_not_found.jpg',
+			'title': 'Книга не найдена',
+		}
+		return jsonify(answer='book_not_found', book=book)
+	try:
+		user = db.users.get({'_id': ObjectId(form['user'])})
+	except:
+		return jsonify(answer='user_not_found')
+	print(user, form)
+	if user is None:
+		return jsonify(answer='user_not_found')
+	print({'book_code': book['code'], 'user_id': str(user['_id'])})
+	old_hand = db.hands.get({'book_code': book['code'], 'user_id': str(user['_id'])})
+	if old_hand is None:
+		db.handlog.insert({
+			'user_name': user['name'],
+			'book_title': book['title'],
+			'action': 'Взял',
+			'datetime': datetime.utcnow(),
+		})
+		db.hands.insert({
+			'book_id': str(book['_id']),
+			'user_id': str(user['_id']),
+			'book_id': str(book['_id']),
+			'book_code': book['code'],
+			'user_nfc': user['nfc'],
+			'datetime': datetime.utcnow(),
+		})
+		db.users.update(user, {'handed': user['handed'] + 1})
+		db.books.update(book, {'handed': book['handed'] + 1})
+		librarian = db.users.get({'priority': 'librarian'})
+		try:
+			db.users.update({'priority': 'librarian'}, {'handed': librarian['handed'] + 1})
+		except:
+			pass
+		book['_id'] = ''
+		return jsonify(answer='ok', action='взяли', book=book)
+	else:
+		db.handlog.insert({
+			'book_id': str(book['_id']),
+			'user_name': user['name'],
+			'book_title': book['title'],
+			'action': 'Вернул',
+			'datetime': datetime.utcnow(),
+		})
+		db.hands.remove({'user_id': str(user['_id']), 'book_id': str(book['_id'])})
+		db.users.update(user, {'handed': user['handed'] - 1})
+		db.books.update(book, {'handed': book['handed'] - 1})
+		librarian = db.users.get({'priority': 'librarian'})
+		try:
+			db.users.update({'priority': 'librarian'}, {'handed': librarian['handed'] - 1})
+		except:
+			pass
+		book['_id'] = ''
+		return jsonify(answer='ok', action='вернули', book=book)
+
+
+@app.route('/api/terminal/user', methods=['POST'])
+def api_terminal_user():
+	config = load_config('Server')
+	db = Database(config['database_name'], ['users'])
+	if session_priority(request.cookies.get('session_id')) != 'terminal':
+		return jsonify(answer='fail')
+	form = request.get_json()
+	user = db.users.get({'nfc': form['user']})
+	if user is None:
+		return jsonify(answer='not_found')
+	user['_id'] = str(user['_id'])
+	user['password'] = ''
+	user['salt'] = ''
+	user['login'] = ''
+	if user['status'] == 'on':
+		return jsonify(answer='active', user=user)
+	else:
+		return jsonify(answer='inactive', invite=user['invite'], user=user)
 
 
 @app.route('/')
@@ -207,17 +294,19 @@ def root():
 		user_object_id = ObjectId(user_id)
 	except:
 		return remove_session()
-	user = db.users.get({'_id': ObjectId(user_id)})
+	user = db.users.get({'_id': user_object_id})
 	if user is None:
 		return remove_cookie()
 	if user['priority'] == 'librarian':
 		return send_from_directory('static', 'librarian.html')
-	else:
-		return send_from_directory('static', 'user.html') 
+	elif user['priority'] == 'student':
+		return send_from_directory('static', 'student.html')
+	elif user['priority'] == 'terminal':
+		return send_from_directory('static', 'terminal.html')
 
 
-@app.route('/login')
-def login():
+@app.route('/signin')
+def signin():
 	if session_user(request.cookies.get('session_id')) is not None:
 		return redirect('/')
 	return send_from_directory('static', 'auth.html')
@@ -225,7 +314,9 @@ def login():
 
 def main():
 	config = load_config('Server')
-	db = Database(config['database_name'], ['handlog'])
+	db = Database(config['database_name'], ['handlog', 'books'])
+	if len(db.books.get_page({}, 1)) == 0:
+		fill_books.fill()
 	if len(db.handlog.get_page({}, 1)) == 0:
 		fill_handlog.fill()
 	app.run(host=config['host'], port=int(config['port']), debug=True)

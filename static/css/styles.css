@@ -16,6 +16,13 @@
 	display: none;
 }
 
-::-webkit-scrollbar { 
-    display: none; 
+body {
+	overflow-y: scroll; 
+}
+
+.Xscrollable {
+	overflow: auto;
+	overflow-y: hidden;
+	margin: 0 auto;
+	white-space: nowrap;
 }

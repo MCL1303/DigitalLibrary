@@ -3,8 +3,9 @@
 
 from digital_library.database import Database
 from datetime import datetime, timedelta
-import configparser
+from bson.objectid import ObjectId
 from random import random
+import configparser
 
 
 def load_config(header):
@@ -54,13 +55,16 @@ def fill():
 	]
 	actions = ['Взял', 'Вернул']
 	config = load_config('Server')
-	db = Database(config['database_name'], ['handlog'])
+	db = Database(config['database_name'], ['handlog', 'books'])
+	books = db.books.find({})
+	len_books = len(books)
 	for i in range(1000):
+		book = books[int(random() * len_books * 10) % len_books]
 		db.handlog.insert({
 			'user_name': user_names[int(random() * 200) % len(user_names)] + ' ' + user_s_names[int(random() * 200) % len(user_s_names)],
-			'book_title': books[int(random() * 200) % len(books)],
+			'book_title': book['title'],
 			'datetime': (datetime.utcnow() + timedelta(minutes=int(random() * 200))),
 			'user_id': 'asdasd',
-			'book_id': '56c9c7dfdd9781715c95866b',
+			'book_id': str(book['_id']),
 			'action': actions[int((random() * 10) % 2)]
 		})

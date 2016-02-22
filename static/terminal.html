@@ -1,0 +1,35 @@
+<!doctype html>
+<html ng-app='DigitalLibraryApp' ng-controller="MainCtrl">
+	<head>
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<link href="css/styles.css" rel="stylesheet">
+		<script src="terminal/js/angular.js"></script>
+		<script src="terminal/js/angular-route.js"></script>
+		<script src="terminal/js/angular-cookie.js"></script>
+		<script src="terminal/js/app.js"></script>
+		<script src="terminal/js/controllers.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Библиотека МХЛ</title>
+	</head>
+
+	<body>
+		<div class="container">
+			<div ng-view >
+				<div class='c_title'>
+					<h1>Загрузка</h1>
+					<img src="loading.gif">
+				</div>
+			</div>
+		</div>
+		<script src="js/jquery.js"></script>
+		<script src="js/bootstrap.js"></script>
+		<script>
+			function user(user) {
+				angular.element(document.getElementById('start')).scope().send_user(user);
+			};
+			function book(book) {
+				angular.element(document.getElementById('user')).scope().send_book(book);
+			};
+		</script>
+	</body>
+</html>
