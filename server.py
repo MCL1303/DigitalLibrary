@@ -125,7 +125,7 @@ def api_user_signin():
 
 
 @app.route('/api/info/init_user', methods=['POST'])
-def api_info_user():
+def api_info_init_user():
 	if session_priority(request.cookies.get('session_id')) is None:
 		return jsonify(answer='fail')
 	config = load_config('Server')
@@ -152,6 +152,40 @@ def api_info_user():
 	return jsonify(answer='ok', user=public_user)
 
 
+@app.route('/api/info/user', methods=['POST'])
+def api_info_user():
+	if session_priority(request.cookies.get('session_id')) != 'librarian':
+		return jsonify(answer='fail')
+	config = load_config('Server')
+	db = Database(config['database_name'], ['users', 'sessions', 'hands'])
+	try:
+		session = db.sessions.get({
+			'_id': ObjectId(request.cookies.get('session_id'))
+		})
+	except:
+		return jsonify(answer='fail')
+	if session is None:
+		return jsonify(answer='fail')
+	try:
+		user = db.users.get({
+			'_id': ObjectId(session['user'])
+		})
+	except:
+		return jsonify(answer='fail')
+	hands = db.hands.find({'user_id': str(user['_id'])})
+	print(hands)
+	for hand in hands:
+		hand['_id'] = ''
+	public_user = {
+		'name': user['name'],
+		'handed': user['handed'],
+		'books': hands,
+		'image': user['image']
+	}
+	# print(jsonify(answer='ok', user=public_user))
+	return jsonify(answer='ok', user=public_user)
+
+
 @app.route('/api/info/handlog', methods=['POST'])
 def api_info_handlog():
 	config = load_config('Server')
@@ -162,6 +196,7 @@ def api_info_handlog():
 	try:
 		page = db.handlog.get_page({}, int(form['page']))
 		for line in page:
+			line['book_id'] = str(line['book_id'])
 			line['_id'] = ''
 		return jsonify(answer='ok', page=page, more=(len(page) == 30))
 	except:
@@ -172,21 +207,26 @@ def api_info_handlog():
 @app.route('/api/info/book', methods=['POST'])
 def api_info_book():
 	config = load_config('Server')
-	db = Database(config['database_name'], ['books'])
+	db = Database(config['database_name'], ['books', 'hands'])
 	if session_priority(request.cookies.get('session_id')) is None:
 		return jsonify(answer='fail')
 	form = request.get_json()
-	try:
-		book = db.books.get({
-			'_id': ObjectId(form['book'])
-		})
-		if book is None:
-			jsonify(answer='not_found')
-		book['_id'] = ''
-		print(book)
-		return jsonify(answer='ok', book=book)
-	except:
-		return jsonify(answer='fail')
+	# try:
+	print(form)
+	book = db.books.get({
+		'_id': ObjectId(form['book'])
+	})
+	if book is None:
+		return jsonify(answer='not_found')
+	handers = db.hands.find({'book_id': str(book['_id'])})
+	book['_id'] = ''
+	for hander in handers:
+		hander['_id'] = ''
+	book['handers'] = handers
+	print(book)
+	return jsonify(answer='ok', book=book)
+	# except:
+	# 	return jsonify(answer='fail')
 
 
 
@@ -208,25 +248,29 @@ def api_operations():
 		user = db.users.get({'_id': ObjectId(form['user'])})
 	except:
 		return jsonify(answer='user_not_found')
-	print(user, form)
 	if user is None:
 		return jsonify(answer='user_not_found')
-	print({'book_code': book['code'], 'user_id': str(user['_id'])})
 	old_hand = db.hands.get({'book_code': book['code'], 'user_id': str(user['_id'])})
 	if old_hand is None:
 		db.handlog.insert({
+			'book_id': str(book['_id']),
 			'user_name': user['name'],
+			'user_id': str(user['_id']),
 			'book_title': book['title'],
 			'action': 'Взял',
 			'datetime': datetime.utcnow(),
 		})
 		db.hands.insert({
+			'user_image': user['image'],
+			'user_name': user['name'],
 			'book_id': str(book['_id']),
 			'user_id': str(user['_id']),
 			'book_id': str(book['_id']),
 			'book_code': book['code'],
 			'user_nfc': user['nfc'],
 			'datetime': datetime.utcnow(),
+			'book_image': book['image'],
+			'book_title': book['title'],
 		})
 		db.users.update(user, {'handed': user['handed'] + 1})
 		db.books.update(book, {'handed': book['handed'] + 1})
@@ -241,6 +285,7 @@ def api_operations():
 		db.handlog.insert({
 			'book_id': str(book['_id']),
 			'user_name': user['name'],
+			'user_id': str(user['_id']),
 			'book_title': book['title'],
 			'action': 'Вернул',
 			'datetime': datetime.utcnow(),
@@ -317,8 +362,8 @@ def main():
 	db = Database(config['database_name'], ['handlog', 'books'])
 	if len(db.books.get_page({}, 1)) == 0:
 		fill_books.fill()
-	if len(db.handlog.get_page({}, 1)) == 0:
-		fill_handlog.fill()
+	# if len(db.handlog.get_page({}, 1)) == 0:
+	# 	fill_handlog.fill()
 	app.run(host=config['host'], port=int(config['port']), debug=True)
 
 

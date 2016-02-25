@@ -15,14 +15,17 @@
 		<h2 ng-class="{'hider': book.handed == 0}">На руках у:</h2>
 		<br>
 		<div class="c_title Xscrollable row">
-			<div style="display: inline-block;">
-				<img src="http://www.salesound.ru/images/user_def.jpg" alt="" style="background-size: 100%;">
+			<div style="display: inline-block;" ng-repeat="user in book.handers">
+				<img ng-src="{{user.user_image}}" alt="" style="background-size: 100%;">
 				<br>
-				<h1>asdasd</h1>
+				<h1><a href="#/users/{{user.user_id}}">{{user.user_name}}</a></h1>
 			</div>
 			<div ng-class="{'hider': book.handed != 0}">
 				<h1>Все экземпляры в библиотеке</h1>
 			</div>
 		</div>
 	</div>
+	<!-- <pre>
+		{{book | json}}
+	</pre> -->
 </div>

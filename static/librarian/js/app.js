@@ -31,6 +31,10 @@ DigitalLibraryApp.config(['$routeProvider',
         templateUrl: 'librarian/templates/book.html',
         controller: 'BookCtrl'
       }).
+      when('/users/:user_id', {
+        templateUrl: 'librarian/templates/user.html',
+        controller: 'UserCtrl'
+      }).
       otherwise({
         redirectTo: '/books'
       });

@@ -16,7 +16,7 @@ def load_config(header):
 def fill():
 	data = [
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Четырехмерная геометрия", 
 		"author" : "Смирнова И.М., Смирнов В.А.", 
 		"count" : "1", 
@@ -27,7 +27,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Энциклопедия аналитических поверхностей", 
 		"author" : "Кривошапко С.Н., Иванов В.Н.", 
 		"count" : "1", 
@@ -38,7 +38,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Геометрия радиолярий", 
 		"author" : "Мордухай-Болтовской Д.Д.", 
 		"count" : "1", 
@@ -49,7 +49,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Геометрия в картинках", 
 		"author" : "Акопян А.", 
 		"count" : "1", 
@@ -60,7 +60,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Классические средние в арифметике и геометрии", 
 		"author" : "Блинков А.Д.", 
 		"count" : "2", 
@@ -71,7 +71,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Вещественная алгебраическая геометрия", 
 		"author" : "Арнольд В.И.", 
 		"count" : "1", 
@@ -82,7 +82,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Афинная и проективная геометрия", 
 		"author" : "Понарин Я.П.", 
 		"count" : "1", 
@@ -93,7 +93,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Задачи с изюминкой", 
 		"author" : "Тригг Ч.", 
 		"count" : "1", 
@@ -104,7 +104,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Как решать задачу", 
 		"author" : "Пойа Д.", 
 		"count" : "1", 
@@ -115,7 +115,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Как решают нестандартные", 
 		"author" : "Канель-Белов А.Я., Ковальджи А.К.", 
 		"count" : "1", 
@@ -126,7 +126,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Лингвистические задачи", 
 		"author" : "Зализняк А.А.", 
 		"count" : "1", 
@@ -137,7 +137,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Сборник задача по математике", 
 		"author" : "Арлазаров В.В., Татаринцев А.В.", 
 		"count" : "1", 
@@ -148,7 +148,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Задачи Санкт-Петербургской олимпиады школьников по математике 2002", 
 		"author" : "Кохась К.П., Иванов С.В.", 
 		"count" : "1", 
@@ -159,7 +159,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Задачи Санкт-Петербургской олимпиады школьников по математике 2003", 
 		"author" : "Кохась К.П., Иванов С.В.", 
 		"count" : "1", 
@@ -170,7 +170,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Простая одержимость", 
 		"author" : "Дербишир Дж.", 
 		"count" : "1", 
@@ -181,7 +181,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математика выборов", 
 		"author" : "Клима Р., Ходж Дж.", 
 		"count" : "1", 
@@ -192,7 +192,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математический дивертисмент", 
 		"author" : "Фукс Д.В., Табачников С.Л.", 
 		"count" : "1", 
@@ -203,7 +203,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математический аквариум", 
 		"author" : "Уфнаровский В.А.", 
 		"count" : "1", 
@@ -214,7 +214,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математическое понимание природы (второе издание)", 
 		"author" : "Арнольд В.И.", 
 		"count" : "1", 
@@ -225,7 +225,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математическое понимание природы (четвертое издание)", 
 		"author" : "Арнольд В.И.", 
 		"count" : "1", 
@@ -236,7 +236,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Занимательные задачи", 
 		"author" : "Гамов Г., Стерн М.", 
 		"count" : "1", 
@@ -247,7 +247,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Наглядная топология", 
 		"author" : "Прасолов В.В.", 
 		"count" : "1", 
@@ -258,7 +258,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Правильный, полуправильные звездчатые многогранники", 
 		"author" : "Смирнов В.А., Смирнова И.М.", 
 		"count" : "1", 
@@ -269,7 +269,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Задачи по информатика (Туймаада 1994 - 2012)", 
 		"author" : "Павлов А.В., Антонов Ю.С.", 
 		"count" : "1", 
@@ -280,7 +280,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Олимпиады по криптографии и математике", 
 		"author" : "Зубов А.Ю.", 
 		"count" : "2", 
@@ -291,7 +291,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Готовимся к олимпиадам по математике", 
 		"author" : "Фарков А.В.", 
 		"count" : "1", 
@@ -302,7 +302,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Теория графов в занимательных задачах", 
 		"author" : "Мельников О.И.", 
 		"count" : "1", 
@@ -313,7 +313,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математика : Всероссийские олимпиады", 
 		"author" : "Агаханов Н.Х.", 
 		"count" : "1", 
@@ -324,7 +324,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Олимпиада МГУ Ломоносов по математике", 
 		"author" : "Бегунц А.В., Бородин А.П.", 
 		"count" : "1", 
@@ -335,7 +335,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Графы и их применение", 
 		"author" : "Оре О.", 
 		"count" : "1", 
@@ -346,7 +346,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Взвешивания и алгоритмы: от головоломок к задачам", 
 		"author" : "Кноп К.А.", 
 		"count" : "1", 
@@ -357,7 +357,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Делимость и простые числа", 
 		"author" : "Сгибнев А.И.", 
 		"count" : "1", 
@@ -368,7 +368,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Введние в современную логику", 
 		"author" : "Гладкий А.В.", 
 		"count" : "1", 
@@ -379,7 +379,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Диаграммы Юнга, плоские разбиеия и знаочередующиеся матрицы", 
 		"author" : "Смирнов Е.Ю.", 
 		"count" : "1", 
@@ -390,7 +390,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Мифы об эволюции человека", 
 		"author" : "Соколов А.", 
 		"count" : "1", 
@@ -401,7 +401,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Бабочка и ураган", 
 		"author" : "Мадрид К.", 
 		"count" : "1", 
@@ -412,7 +412,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Женщины - математики", 
 		"author" : "Новарро Х.", 
 		"count" : "1", 
@@ -423,7 +423,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Существуют ли неразрешимые проблемы?", 
 		"author" : "Ареан Л.", 
 		"count" : "1", 
@@ -434,7 +434,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Пока алгебра не разлечит нас", 
 		"author" : "Фресан Х.", 
 		"count" : "1", 
@@ -445,7 +445,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Творчество в математике", 
 		"author" : "Альберти М.", 
 		"count" : "1", 
@@ -456,7 +456,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Экспериментальное наблюдение математических фактов", 
 		"author" : "Арнольд В.И.", 
 		"count" : "1", 
@@ -467,7 +467,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Рассказы о множествах", 
 		"author" : "Виленкин Н.Я.", 
 		"count" : "1", 
@@ -478,7 +478,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Элегантная математика", 
 		"author" : "Жуков А.В.", 
 		"count" : "1", 
@@ -489,7 +489,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Основы дискртеной математики", 
 		"author" : "Деза Е.И., Модель Д.Л.", 
 		"count" : "1", 
@@ -500,7 +500,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Великая физика", 
 		"author" : "Пиковер К.", 
 		"count" : "1", 
@@ -511,7 +511,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Великая медицина", 
 		"author" : "Пиковер К.", 
 		"count" : "1", 
@@ -522,7 +522,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Мечта об идеальной карте", 
 		"author" : "Ибаньес Р.", 
 		"count" : "1", 
@@ -533,7 +533,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Неуловимые идеи и вечные теоремы", 
 		"author" : "Наварро Х.", 
 		"count" : "1", 
@@ -544,7 +544,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Абсолютная точность и другие иллюзии", 
 		"author" : "Грима П.", 
 		"count" : "1", 
@@ -555,7 +555,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Новый взгляд на мир", 
 		"author" : "Бинимелис Басс М.", 
 		"count" : "1", 
@@ -566,7 +566,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математика, шпионы и хакеры", 
 		"author" : "Гомес Ж.", 
 		"count" : "1", 
@@ -577,7 +577,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Разум, машина и математика", 
 		"author" : "Белда И.", 
 		"count" : "1", 
@@ -588,7 +588,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Искусство подсчета", 
 		"author" : "Руэ Х.", 
 		"count" : "1", 
@@ -599,7 +599,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Бесконечная мозаика", 
 		"author" : "Альберти М.", 
 		"count" : "1", 
@@ -610,7 +610,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Загадка Ферма", 
 		"author" : "Виолант-и-Хольц А.", 
 		"count" : "1", 
@@ -621,7 +621,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Замечательные числа", 
 		"author" : "Гарсия дель Сид Л.", 
 		"count" : "1", 
@@ -632,7 +632,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математический клуб", 
 		"author" : "Курбера Г.", 
 		"count" : "1", 
@@ -643,7 +643,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Удивительная физика", 
 		"author" : "Асламазов Л.Г., Варламов А.А.", 
 		"count" : "1", 
@@ -654,7 +654,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Новый ум короля", 
 		"author" : "Пенроуз Р.", 
 		"count" : "1", 
@@ -665,7 +665,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Физика (школьный иллюстрированный справочник)", 
 		"author" : "Окслед К., Стокли К.", 
 		"count" : "1", 
@@ -676,7 +676,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Высший замысел", 
 		"author" : "Хокинг С., Млодинов Л.", 
 		"count" : "1", 
@@ -687,7 +687,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Задачи московских физический олимпиад", 
 		"author" : "Буздин А.И., Ильин В.А.", 
 		"count" : "1", 
@@ -698,7 +698,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Физика : всероссиские олимпиады", 
 		"author" : "Козел С.М., Слободянин В.П.", 
 		"count" : "1", 
@@ -709,7 +709,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Физика будущего", 
 		"author" : "Каку М.", 
 		"count" : "1", 
@@ -720,7 +720,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Физика невозможного", 
 		"author" : "Каку М.", 
 		"count" : "1", 
@@ -731,7 +731,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Памятникик науки и техники (1 выпуск)", 
 		"author" : "Григорян Г.Г.", 
 		"count" : "1", 
@@ -742,7 +742,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Памятникик науки и техники (2 выпуск)", 
 		"author" : "Григорян Г.Г.", 
 		"count" : "1", 
@@ -753,7 +753,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Сказки и подсказки", 
 		"author" : "Козлова Е.Г.", 
 		"count" : "1", 
@@ -764,7 +764,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Занимательная механика", 
 		"author" : "Перельман Я.И.", 
 		"count" : "1", 
@@ -775,7 +775,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Графы", 
 		"author" : "Гуровиц В.М., Ховрина В.В.", 
 		"count" : "1", 
@@ -786,7 +786,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Математический кружок", 
 		"author" : "Спивак А.В.", 
 		"count" : "1", 
@@ -797,7 +797,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Нужна ли в школе математика?", 
 		"author" : "Арнольд В.И.", 
 		"count" : "1", 
@@ -808,7 +808,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Средневековые головоломки", 
 		"author" : "Дьюдени Г.", 
 		"count" : "1", 
@@ -819,7 +819,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Приглашение на математический праздник", 
 		"author" : "Ященко И.В.", 
 		"count" : "1", 
@@ -830,7 +830,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Малыш и математика", 
 		"author" : "Звонкин А.К.", 
 		"count" : "1", 
@@ -841,7 +841,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Алгебра в комиксах", 
 		"author" : "Гоник Л.", 
 		"count" : "1", 
@@ -852,7 +852,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Страна математических чудес", 
 		"author" : "Акияма Д., Руис М.-Д.", 
 		"count" : "1", 
@@ -863,7 +863,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Задачи и головомки", 
 		"author" : "Перельман Я.", 
 		"count" : "1", 
@@ -874,7 +874,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Квантик альманах для любознательных выпуск 1", 
 		"author" : "Бердников А.С.", 
 		"count" : "1", 
@@ -885,7 +885,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Квантик альманах для любознательных выпуск 2", 
 		"author" : "Бердников А.С.", 
 		"count" : "1", 
@@ -896,7 +896,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Квантик альманах для любознательных выпуск 3", 
 		"author" : "Бердников А.С.", 
 		"count" : "1", 
@@ -907,7 +907,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Квантик альманах для любознательных выпуск 4", 
 		"author" : "Бердников А.С.", 
 		"count" : "2", 
@@ -918,7 +918,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Квантик альманах для любознательных выпуск 5", 
 		"author" : "Бердников А.С.", 
 		"count" : "1", 
@@ -929,7 +929,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Четность", 
 		"author" : "Медников Л.Э.", 
 		"count" : "1", 
@@ -940,7 +940,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Бабушкины сказки", 
 		"author" : "Козлова Е.Г.", 
 		"count" : "1", 
@@ -951,7 +951,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "ЕГЭ - 2014 по русскому языку", 
 		"author" : "Бисеров А.Ю.", 
 		"count" : "1", 
@@ -962,7 +962,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "ЕГЭ - 2015 по информатике и ИКТ", 
 		"author" : "Крылов С.С.", 
 		"count" : "1", 
@@ -973,7 +973,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "ЕГЭ - 2011 по математике", 
 		"author" : "Семенова А.Л.", 
 		"count" : "1", 
@@ -984,7 +984,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "C & C++", 
 		"author" : "Голуб А.", 
 		"count" : "1", 
@@ -995,7 +995,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Апология математики", 
 		"author" : "Успенский В.", 
 		"count" : "1", 
@@ -1006,7 +1006,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Ньютон и фальшивомонетчик", 
 		"author" : "Левенсон Т.", 
 		"count" : "1", 
@@ -1017,7 +1017,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Как написать математическую статью по-английски", 
 		"author" : "Сосинский А.Б.", 
 		"count" : "2", 
@@ -1028,7 +1028,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Краткая алгебра", 
 		"author" : "Киселев А.П.", 
 		"count" : "1", 
@@ -1039,7 +1039,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Собрание геометрических теорем и задач", 
 		"author" : "Пржевальский Е.М.", 
 		"count" : "1", 
@@ -1050,7 +1050,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Очерки по истории математики", 
 		"author" : "Бурбаки Н.", 
 		"count" : "1", 
@@ -1061,7 +1061,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Пути и лабиринты", 
 		"author" : "Пейффер Ж.", 
 		"count" : "1", 
@@ -1072,7 +1072,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Лекции по истории науки", 
 		"author" : "Смирнов С.Г.", 
 		"count" : "1", 
@@ -1083,7 +1083,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Сюрреальные числа", 
 		"author" : "Кнут Д.", 
 		"count" : "1", 
@@ -1094,7 +1094,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Знакомство с теорией вероятностей", 
 		"author" : "Мякишев А.Г.", 
 		"count" : "1", 
@@ -1105,7 +1105,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Corel Draw 10 учебный курс", 
 		"author" : "Миронов Д.", 
 		"count" : "1", 
@@ -1116,7 +1116,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Как программировать на C (седьмое издание)", 
 		"author" : "Дейтел П., Дейтел Х.", 
 		"count" : "1", 
@@ -1127,7 +1127,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Набор и верстка в Latex", 
 		"author" : "Львовский С.М.", 
 		"count" : "1", 
@@ -1138,7 +1138,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Введение в теорию алгоритмов и структур данных", 
 		"author" : "Бабенко М.А., Левин М.В.", 
 		"count" : "1", 
@@ -1149,7 +1149,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "E-maxx", 
 		"author" : "Иванов М.", 
 		"count" : "1", 
@@ -1160,7 +1160,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Лекции о сложности алгоритмов", 
 		"author" : "Абрамов С.А.", 
 		"count" : "1", 
@@ -1171,7 +1171,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Програмирование: теоремы и задачи", 
 		"author" : "Шень А.", 
 		"count" : "2", 
@@ -1182,7 +1182,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Алгоритмы: построение и анализ (второе издание)", 
 		"author" : "Кормен Т.", 
 		"count" : "1", 
@@ -1193,7 +1193,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Алгоритмы: построение и анализ (третье издание)", 
 		"author" : "Кормен Т.", 
 		"count" : "1", 
@@ -1204,7 +1204,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Прикладная криптография", 
 		"author" : "Шнайнер Б.", 
 		"count" : "1", 
@@ -1215,7 +1215,7 @@ def fill():
 		"annotation" : ""
 		}, 
 		{
-		"image": "http://book2.me/f/classic.jpg", 
+		"image": "/book.jpg", 
 		"title" : "Язык программирования С (ANSI C)", 
 		"author" : "Керниган Б., Ритчи Д.", 
 		"count" : "1", 
@@ -1229,5 +1229,5 @@ def fill():
 	config = load_config('Server')
 	db = Database(config['database_name'], ['books'])
 	for book in data:
-		book['handed'] = int(random() * 10 * int(book['count'])) % int(book['count']) + 1
+		book['handed'] = 0
 		db.books.insert(book)

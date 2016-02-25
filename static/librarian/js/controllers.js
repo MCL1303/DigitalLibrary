@@ -68,6 +68,7 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$h
 			$scope.rootScope.handlog_page++;
 			$http.post('/api/info/handlog', {'page': $scope.rootScope.handlog_page}).then(function(data) {
 				if(data.data.answer == 'ok') {
+					console.log(data.data.page);
 					if($scope.rootScope.handlog[0]['user'] == 'Загрузка...') {
 						$scope.rootScope.handlog = [];
 					}
@@ -104,6 +105,7 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 		$http.post('/api/info/book', {
 			'book': $routeParams.book_id
 		}).then(function(data) {
+			console.log(data.data);
 			if(data.data.answer == 'ok') {
 				$scope.book = data.data.book;
 				document.title = $scope.book.title;
@@ -115,4 +117,26 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 			}
 		});
 		$scope.image = 'http://book2.me/f/classic.jpg';
+}]);
+
+
+DigitalLibraryControllers.controller('UserCtrl', ['$scope', '$rootScope', '$routeParams', '$http', '$cookies',
+	function($scope, $rootScope, $routeParams, $http, $cookies) {
+		$rootScope.page = 1;
+		$scope.book = {'name': 'Ошибка'};
+		$http.post('/api/info/user', {
+			'user': $routeParams.user_id
+		}).then(function(data) {
+			console.log(data.data);
+			if(data.data.answer == 'ok') {
+				$scope.user = data.data.user;
+				document.title = $scope.user.name;
+			} else if(data.data.answer == 'not_found') {
+				window.location.replace("/404");
+			} else {
+				$cookies.put('session_id', '');
+				location.reload();
+			}
+		});
+		$scope.image = '/user.png';
 }]);
