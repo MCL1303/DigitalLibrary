@@ -29,8 +29,8 @@ def Resize(path, folder, name, ext):
         "static/images/{folder}/large-covers/{name}.{ext}"
         .format(folder=folder, name=name, ext=ext)
     )
-    width = int(img.size[0] * (280 / img.size[1]))
-    img = img.resize((width, 280), PIL.Image.ANTIALIAS)
+    width = int(img.size[0] * (300 / img.size[1]))
+    img = img.resize((width, 300), PIL.Image.ANTIALIAS)
     img.save(
         "static/images/{folder}/small-covers/{name}.{ext}"
         .format(folder=folder, name=name, ext=ext)

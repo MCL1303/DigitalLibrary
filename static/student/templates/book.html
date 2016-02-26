@@ -1,0 +1,31 @@
+<br>
+<br>
+<br>
+
+<div class="row">
+	<div class="col-md-4">
+		<img style="width: 100%" ng-src="{{book.image}}">
+	</div>
+	<div class="col-md-8 c_title">
+		<h2>{{book.title}}</h2>
+		<h3>{{book.author}}</h3>
+		<h4>Всего книг: {{book.count}}</h4>
+		<h4>Выдано: {{book.handed}}</h4>
+		<br>
+		<h2 ng-class="{'hider': book.handed == 0}">На руках у:</h2>
+		<br>
+		<div class="c_title Xscrollable row">
+			<div style="display: inline-block;" ng-repeat="user in book.handers">
+				<img ng-src="{{user.user_image}}" alt="" style="background-size: 100%;">
+				<br>
+				<h1><a href="#/users/{{user.user_id}}">{{user.user_name}}</a></h1>
+			</div>
+			<div ng-class="{'hider': book.handed != 0}">
+				<h1>Все экземпляры в библиотеке</h1>
+			</div>
+		</div>
+	</div>
+	<!-- <pre>
+		{{book | json}}
+	</pre> -->
+</div>

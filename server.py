@@ -92,7 +92,6 @@ def api_user_signup():
 	salt = "".join(
 		random.choice(string.printable) for _ in range(HASH().digest_size)
 	) 
-	print(form['password'], salt)
 	db.users.update(user, {
 		'salt': salt,
 		'status': 'on',
