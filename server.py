@@ -151,6 +151,27 @@ def api_info_init_user():
 	return jsonify(answer='ok', user=public_user)
 
 
+@app.route('/api/books/search', methods=['POST'])
+def api_books_search():
+	if session_priority(request.cookies.get('session_id')) is None:
+		return jsonify(answer='fail')
+	config = load_config('Server')
+	db = Database(config['database_name'], ['books'])
+	form = request.get_json()
+	user_request = form['request'].split(' ')
+	print(user_request)
+	results = []
+	used = set()
+	for word in user_request:
+		sub_results = db.books.search('personality', word.lower(), int(form['page']))
+		for result in sub_results:
+			if str(result['_id']) not in used:
+				used.add(str(result['_id']))
+				result['_id'] = str(result['_id'])
+				results += [result]
+	return jsonify(answer='ok', results=results)
+
+
 @app.route('/api/info/user', methods=['POST'])
 def api_info_user():
 	if session_priority(request.cookies.get('session_id')) != 'librarian':
@@ -309,6 +330,7 @@ def api_terminal_user():
 		return jsonify(answer='fail')
 	form = request.get_json()
 	user = db.users.get({'nfc': form['user']})
+	print(user)
 	if user is None:
 		return jsonify(answer='not_found')
 	user['_id'] = str(user['_id'])

@@ -1230,4 +1230,8 @@ def fill():
 	db = Database(config['database_name'], ['books'])
 	for book in data:
 		book['handed'] = 0
+		book['personality'] = book['title'].lower() + ' ' +  book['author'].lower() + ' ' + book['subject'].lower()
+		for tag in book['tags']:
+			book['personality'] += ' ' + tag.lower()
+		print(book['personality'])
 		db.books.insert(book)

@@ -31,10 +31,58 @@ DigitalLibraryControllers.controller('AddCtrl', ['$scope', '$rootScope',
 }]);
 
 
-DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope',
-	function($scope, $rootScope) {
+DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$http',
+	function($scope, $rootScope, $http) {
 		document.title = 'Каталог книг';
 		$rootScope.page = 1;
+		$scope.request = '';
+		$scope.page = 1;
+		$scope.more = false;
+		$http.post('/api/books/search', {'request': 'Математика', 'page': 1}).then(function(data) {
+			if(data.data.answer == 'ok') {
+				$scope.results = data.data.results;
+			} else {
+				$cookies.put('session_id', '');
+				location.reload();
+			}
+		});
+		$scope.search = function() {
+			$scope.page = 1;
+			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					$scope.results = data.data.results;
+					if(data.data.results.length == 30) {
+						$scope.more = true;
+					} else {
+						$scope.more = false;
+					}
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+		};
+		$scope.show_more = function() {
+			$scope.page = $scope.page + 1;
+			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					for(var i = 0; i < data.data.results.length; i++) {
+						$scope.results.push(data.data.results[i]);
+					}
+					if(data.data.results.length != 30) {
+						$scope.more = false;
+					}
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+		};
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				$scope.search();
+			}
+		});
 }]);
 
 
