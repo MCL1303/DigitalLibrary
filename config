@@ -11,4 +11,4 @@ database_name = digital_library
 [Terminal]
 user_scanner = /dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0
 book_scanner = /dev/input/by-id/usb-WIT_Electron_Company_WIT_122-UFS_V2.03-event-kbd
-operations_url = http://127.0.0.1:8081/login
+operations_url = http://127.0.0.1:8001/

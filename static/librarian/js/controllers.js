@@ -46,6 +46,10 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 				location.reload();
 			}
 		});
+		$scope.set_ex = function(ex) {
+			$scope.request = ex;
+			$scope.search();
+		}
 		$scope.search = function() {
 			$scope.page = 1;
 			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
@@ -86,10 +90,62 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 }]);
 
 
-DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope',
-	function($scope, $rootScope) {
-		document.title = 'Ученики';
+DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$http',
+	function($scope, $rootScope, $http) {
+		document.title = 'Пользователи';
 		$rootScope.page = 2;
+		$scope.request = '';
+		$scope.page = 1;
+		$scope.more = false;
+		$http.post('/api/users/search', {'request': '10', 'page': 1}).then(function(data) {
+			if(data.data.answer == 'ok') {
+				$scope.results = data.data.results;
+			} else {
+				$cookies.put('session_id', '');
+				location.reload();
+			}
+		});
+		$scope.set_ex = function(ex) {
+			$scope.request = ex;
+			$scope.search();
+		}
+		$scope.search = function() {
+			$scope.page = 1;
+			$http.post('/api/users/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					$scope.results = data.data.results;
+					if(data.data.results.length == 30) {
+						$scope.more = true;
+					} else {
+						$scope.more = false;
+					}
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+		};
+		$scope.show_more = function() {
+			$scope.page = $scope.page + 1;
+			$http.post('/api/users/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					for(var i = 0; i < data.data.results.length; i++) {
+						$scope.results.push(data.data.results[i]);
+					}
+					if(data.data.results.length != 30) {
+						$scope.more = false;
+					}
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+		};
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				$scope.search();
+			}
+		});
 }]);
 
 

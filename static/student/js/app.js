@@ -15,6 +15,10 @@ DigitalLibraryApp.config(['$routeProvider',
         templateUrl: 'student/templates/handed.html',
         controller: 'HandedCtrl'
       }).
+      when('/books', {
+        templateUrl: 'student/templates/books.html',
+        controller: 'BooksCtrl'
+      }).
       when('/books/:book_id', {
         templateUrl: 'student/templates/book.html',
         controller: 'BookCtrl'

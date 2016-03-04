@@ -172,23 +172,42 @@ def api_books_search():
 	return jsonify(answer='ok', results=results)
 
 
+@app.route('/api/users/search', methods=['POST'])
+def api_users_search():
+	if session_priority(request.cookies.get('session_id')) is None:
+		return jsonify(answer='fail')
+	config = load_config('Server')
+	db = Database(config['database_name'], ['users'])
+	form = request.get_json()
+	user_request = form['request'].split(' ')
+	print(user_request)
+	results = []
+	used = set()
+	for word in user_request:
+		sub_results = db.users.search('personality', word.lower(), int(form['page']))
+		for result in sub_results:
+			if str(result['_id']) not in used:
+				used.add(str(result['_id']))
+				print(result)
+				result['_id'] = str(result['_id'])
+				result['login'] = ''
+				result['password'] = ''
+				result['invite'] = ''
+				result['nfc'] = ''
+				results += [result]
+	return jsonify(answer='ok', results=results)
+
+
 @app.route('/api/info/user', methods=['POST'])
 def api_info_user():
 	if session_priority(request.cookies.get('session_id')) != 'librarian':
 		return jsonify(answer='fail')
 	config = load_config('Server')
-	db = Database(config['database_name'], ['users', 'sessions', 'hands'])
-	try:
-		session = db.sessions.get({
-			'_id': ObjectId(request.cookies.get('session_id'))
-		})
-	except:
-		return jsonify(answer='fail')
-	if session is None:
-		return jsonify(answer='fail')
+	db = Database(config['database_name'], ['users', 'hands'])
+	form = request.get_json()
 	try:
 		user = db.users.get({
-			'_id': ObjectId(session['user'])
+			'_id': ObjectId(form['user'])
 		})
 	except:
 		return jsonify(answer='fail')
@@ -248,6 +267,21 @@ def api_info_book():
 	# except:
 	# 	return jsonify(answer='fail')
 
+
+@app.route('/api/info/handed', methods=['POST'])
+def api_info_handed():
+	config = load_config('Server')
+	db = Database(config['database_name'], ['books', 'hands'])
+	if session_priority(request.cookies.get('session_id')) is None:
+		return jsonify(answer='fail')
+	form = request.get_json()
+	# try:
+	print(form)
+	hands = db.hands.find({'user_id': session_user(request.cookies.get('session_id'))})
+	print(hands)
+	for hand in hands:
+		hand['_id'] = ''
+	return jsonify(answer='ok', results=hands)
 
 
 @app.route('/api/operations', methods=['POST'])
@@ -363,12 +397,14 @@ def root():
 	user = db.users.get({'_id': user_object_id})
 	if user is None:
 		return remove_cookie()
+	print(user)
 	if user['priority'] == 'librarian':
 		return send_from_directory('static', 'librarian.html')
 	elif user['priority'] == 'student':
 		return send_from_directory('static', 'student.html')
 	elif user['priority'] == 'terminal':
 		return send_from_directory('static', 'terminal.html')
+	print('fail')
 
 
 @app.route('/signin')

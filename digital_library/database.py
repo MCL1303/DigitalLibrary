@@ -33,7 +33,7 @@ class Collection:
         self._collection.update(query, {"$set": update})
 
     def search(self, field, request, page):
-        return list(self._collection.find({field: {'$regex': request}}).skip((int(page) - 1) * 30).limit(30))
+        return list(self._collection.find({field: {'$regex': request}, 'visible': 'on'}).skip((int(page) - 1) * 30).limit(30))
 
 
 class Database(DB):

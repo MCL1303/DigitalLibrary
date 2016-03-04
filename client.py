@@ -70,23 +70,21 @@ def opener_nonblock(path, mode):
     return os.open(path, mode | os.O_NONBLOCK)
 
 
-def readline_nonblock(fileobject) -> 'Optional[str]':
-    try:
-        return fileobject.readline() or None
-    except OSError as err:
-        if err.errno == errno.EAGAIN or err.errno == errno.EWOULDBLOCK:
-            return None
+# def readline_nonblock(fileobject) -> 'Optional[str]':
+#     try:
+#         return fileobject.readline() or None
+#     except OSError as err:
+#         if err.errno == errno.EAGAIN or err.errno == errno.EWOULDBLOCK:
+#             return None
 
 
 def user_scanner(config, browser):
-    scanner = open(config["user_scanner"], opener=opener_nonblock)
+    scanner = open(config["user_scanner"])
     while True:
-        data = readline_nonblock(scanner)
-        if data is not None:
-            new_user = data.strip("\2\3\r\n")
-            browser.execute_script("user(" + new_user + ")")
-        else:
-            sleep(0.1)
+        data = scanner.readline()
+        new_user = data.strip("\2\3\r\n")
+        print("user('" + new_user + "')")
+        browser.execute_script("user('" + new_user + "')")
 
 
 def book_scanner(config, browser):
@@ -107,7 +105,9 @@ def book_scanner(config, browser):
                 break
             print(number % 10)
             barcode += str(number % 10)
-        browser.execute_script("barcode(" + barcode + ")")
+        print("book('" + barcode + "')")
+        if barcode != '':
+            browser.execute_script("book('" + barcode + "')")
 
 
 def main():
@@ -124,6 +124,8 @@ def main():
     book = Thread(target=book_scanner, args=(config, browser), daemon=True)
     user.start()
     book.start()
+
+    print(config['operations_url'])
 
     browser.run(config['operations_url'])
 

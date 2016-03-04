@@ -1,0 +1,27 @@
+<div class="row" style="text-align: center;">
+	<h2 ng-class="{'hider': user.handed == 0}">На руках:</h2>
+	<h2 ng-class="{'hider': user.handed != 0}">На руках нет книг</h2>
+	<br>
+	<br>
+	<div class="media" style="width: 70%; margin: auto;">
+		<div ng-repeat="book in books">
+			<div class="media-left">
+				<a href="#/books/{{book.book_id}}">
+					<img class="media-object" src="{{book.book_image}}">
+				</a>
+			</div>
+			<div class="media-body">
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<h3 class="media-heading"><a href="#/books/{{book.book_id}}">{{book.book_title}}</a></h3>
+				<h4>{{book.book_author}}</h4>
+			</div>
+			<br>
+			<br>
+			<br>
+		</div>
+	</div>
+</div>

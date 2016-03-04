@@ -1,0 +1,46 @@
+<div>
+	<div class="input-group" style="width: 50%; margin: auto;">
+		<input type="text" class="form-control" placeholder="Запрос" ng-model="request">
+		<a class="input-group-addon btn btn-default" ng-click="search()">Поиск</a>
+	</div>
+	<br>
+	<div style="margin: auto; width: 50%;">
+		<h4 style="float: left">Примеры: &nbsp&nbsp</h4>
+		<a class="btn btn-default" ng-click="set_ex('Математика')">Математика</a>
+		<a class="btn btn-default" ng-click="set_ex('Информатика')">Информатика</a>
+		<a class="btn btn-default" ng-click="set_ex('Акопян')">Акопян</a>
+		<a class="btn btn-default" ng-click="set_ex('Задачник')">Задачник</a>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div class="media" style="width: 70%; margin: auto;">
+		<div ng-repeat="book in results">
+			<div class="media-left">
+				<a href="#/books/{{book._id}}">
+					<img class="media-object" src="{{book.image}}">
+				</a>
+			</div>
+			<div class="media-body">
+				<br>
+				<h3 class="media-heading"><a href="#/books/{{book._id}}">{{book.title}}</a></h3>
+				<h4>{{book.author}}</h4>
+				<h4>Ключевые слова: <span ng-repeat="tag in book.tags"> {{tag}}</span></h4>
+				<h4>Предмет: {{book.subject}}</h4>
+				<h4>Выдано: {{book.handed}}</h4>
+			</div>
+			<br>
+			<br>
+			<br>
+		</div>
+
+	</div>
+	<div style="text-align: center;">
+		<h4 ng-class="{'hider': (results.length != 0)}" style="margin: auto;">Поиск не дал результатов</h4>
+		<br>
+		<br>
+		<a class="btn btn-primary" ng-click="show_more()" style="margin: auto;" ng-class="{'hider': !more}">Показать еще</a>
+		<br>
+		<br>
+	</div>
+</div>

@@ -6,10 +6,10 @@
 	<br>
 	<div style="margin: auto; width: 50%;">
 		<h4 style="float: left">Примеры: &nbsp&nbsp</h4>
-		<a class="btn btn-default" ng-click="request='Математика'">Математика</a>
-		<a class="btn btn-default" ng-click="request='Информатика'">Информатика</a>
-		<a class="btn btn-default" ng-click="request='Курант'">Курант</a>
-		<a class="btn btn-default" ng-click="request='Задачник'">Задачник</a>
+		<a class="btn btn-default" ng-click="set_ex('Математика')">Математика</a>
+		<a class="btn btn-default" ng-click="set_ex('Информатика')">Информатика</a>
+		<a class="btn btn-default" ng-click="set_ex('Акопян')">Акопян</a>
+		<a class="btn btn-default" ng-click="set_ex('Задачник')">Задачник</a>
 	</div>
 	<br>
 	<br>
@@ -18,17 +18,16 @@
 		<div ng-repeat="book in results">
 			<div class="media-left">
 				<a href="#/books/{{book._id}}">
-					<img class="media-object" src="book.jpg">
+					<img class="media-object" src="{{book.image}}">
 				</a>
 			</div>
 			<div class="media-body">
 				<br>
-				<br>
-				<h3 class="media-heading">&nbsp<a href="#/books/{{book._id}}">{{book.title}}</a></h3>
-				<h4>&nbsp{{book.author}}</h4>
-				<h4>&nbspКлючнвые слова: <span ng-repeat="tag in book.tags"> {{tag}}</span></h4>
-				<h4>&nbspПредмет: {{book.subject}}</h4>
-				<h4>&nbspВыдано: {{book.handed}}</h4>
+				<h3 class="media-heading"><a href="#/books/{{book._id}}">{{book.title}}</a></h3>
+				<h4>{{book.author}}</h4>
+				<h4>Ключевые слова: <span ng-repeat="tag in book.tags"> {{tag}}</span></h4>
+				<h4>Предмет: {{book.subject}}</h4>
+				<h4>Выдано: {{book.handed}}</h4>
 			</div>
 			<br>
 			<br>
