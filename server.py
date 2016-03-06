@@ -12,6 +12,7 @@ from hashlib import sha512
 import fill_handlog
 import configparser
 import fill_books
+import fill_users
 import random
 import string
 
@@ -147,7 +148,6 @@ def api_info_init_user():
 		'name': user['name'],
 		'handed': user['handed']
 	}
-	# print(jsonify(answer='ok', user=public_user))
 	return jsonify(answer='ok', user=public_user)
 
 
@@ -159,7 +159,6 @@ def api_books_search():
 	db = Database(config['database_name'], ['books'])
 	form = request.get_json()
 	user_request = form['request'].split(' ')
-	print(user_request)
 	results = []
 	used = set()
 	for word in user_request:
@@ -180,7 +179,6 @@ def api_users_search():
 	db = Database(config['database_name'], ['users'])
 	form = request.get_json()
 	user_request = form['request'].split(' ')
-	print(user_request)
 	results = []
 	used = set()
 	for word in user_request:
@@ -188,7 +186,6 @@ def api_users_search():
 		for result in sub_results:
 			if str(result['_id']) not in used:
 				used.add(str(result['_id']))
-				print(result)
 				result['_id'] = str(result['_id'])
 				result['login'] = ''
 				result['password'] = ''
@@ -212,7 +209,6 @@ def api_info_user():
 	except:
 		return jsonify(answer='fail')
 	hands = db.hands.find({'user_id': str(user['_id'])})
-	print(hands)
 	for hand in hands:
 		hand['_id'] = ''
 	public_user = {
@@ -221,7 +217,6 @@ def api_info_user():
 		'books': hands,
 		'image': user['image']
 	}
-	# print(jsonify(answer='ok', user=public_user))
 	return jsonify(answer='ok', user=public_user)
 
 
@@ -250,22 +245,20 @@ def api_info_book():
 	if session_priority(request.cookies.get('session_id')) is None:
 		return jsonify(answer='fail')
 	form = request.get_json()
-	# try:
-	print(form)
-	book = db.books.get({
-		'_id': ObjectId(form['book'])
-	})
-	if book is None:
-		return jsonify(answer='not_found')
-	handers = db.hands.find({'book_id': str(book['_id'])})
-	book['_id'] = ''
-	for hander in handers:
-		hander['_id'] = ''
-	book['handers'] = handers
-	print(book)
-	return jsonify(answer='ok', book=book)
-	# except:
-	# 	return jsonify(answer='fail')
+	try:
+		book = db.books.get({
+			'_id': ObjectId(form['book'])
+		})
+		if book is None:
+			return jsonify(answer='not_found')
+		handers = db.hands.find({'book_id': str(book['_id'])})
+		book['_id'] = ''
+		for hander in handers:
+			hander['_id'] = ''
+		book['handers'] = handers
+		return jsonify(answer='ok', book=book)
+	except:
+		return jsonify(answer='fail')
 
 
 @app.route('/api/info/handed', methods=['POST'])
@@ -275,13 +268,13 @@ def api_info_handed():
 	if session_priority(request.cookies.get('session_id')) is None:
 		return jsonify(answer='fail')
 	form = request.get_json()
-	# try:
-	print(form)
-	hands = db.hands.find({'user_id': session_user(request.cookies.get('session_id'))})
-	print(hands)
-	for hand in hands:
-		hand['_id'] = ''
-	return jsonify(answer='ok', results=hands)
+	try:
+		hands = db.hands.find({'user_id': session_user(request.cookies.get('session_id'))})
+		for hand in hands:
+			hand['_id'] = ''
+		return jsonify(answer='ok', results=hands)
+	except:
+		return jsonify(answer='fail')
 
 
 @app.route('/api/operations', methods=['POST'])
@@ -306,6 +299,12 @@ def api_operations():
 		return jsonify(answer='user_not_found')
 	old_hand = db.hands.get({'book_code': book['code'], 'user_id': str(user['_id'])})
 	if old_hand is None:
+		if book['handed'] >= book['count']:
+			book = {
+				'image': '/book_not_found.jpg',
+				'title': 'Книга не найдена',
+			}
+			return jsonify(answer='book_not_found', book=book) 
 		db.handlog.insert({
 			'book_id': str(book['_id']),
 			'user_name': user['name'],
@@ -364,7 +363,6 @@ def api_terminal_user():
 		return jsonify(answer='fail')
 	form = request.get_json()
 	user = db.users.get({'nfc': form['user']})
-	print(user)
 	if user is None:
 		return jsonify(answer='not_found')
 	user['_id'] = str(user['_id'])
@@ -397,14 +395,12 @@ def root():
 	user = db.users.get({'_id': user_object_id})
 	if user is None:
 		return remove_cookie()
-	print(user)
 	if user['priority'] == 'librarian':
 		return send_from_directory('static', 'librarian.html')
 	elif user['priority'] == 'student':
 		return send_from_directory('static', 'student.html')
 	elif user['priority'] == 'terminal':
 		return send_from_directory('static', 'terminal.html')
-	print('fail')
 
 
 @app.route('/signin')
@@ -416,9 +412,11 @@ def signin():
 
 def main():
 	config = load_config('Server')
-	db = Database(config['database_name'], ['handlog', 'books'])
+	db = Database(config['database_name'], ['users', 'books'])
 	if len(db.books.get_page({}, 1)) == 0:
 		fill_books.fill()
+	if len(db.users.get_page({}, 1)) == 0:
+		fill_users.fill()
 	# if len(db.handlog.get_page({}, 1)) == 0:
 	# 	fill_handlog.fill()
 	app.run(host=config['host'], port=int(config['port']), debug=True)

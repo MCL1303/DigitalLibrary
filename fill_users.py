@@ -2,7 +2,7 @@ from digital_library.database import Database
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
 
-def main():
+def fill():
 	users = [
 		{'nfc': '66D6A16140CE34', 'name': 'Егор Марков', 'priority': 'student', 'direction': 'Хим', 'personality': 'егор марков 10 хим', 'handed': 0, 'image': '/user.png', 'invite': 'LFLBGIFR', 'visible': 'on', 'number': 10, 'status': 'off'},
 		{'nfc': '76506B4155C434', 'name': 'Жанна Александрова', 'priority': 'student', 'direction': 'Физмат', 'personality': 'жанна александрова 10 физ мат', 'handed': 0, 'image': '/user.png', 'invite': 'ORIESMEI', 'visible': 'on', 'number': 10, 'status': 'off'},
@@ -42,7 +42,3 @@ def main():
 	db = Database('digital_library', ['users'])
 	for user in users:
 		db.users.insert(user)
-
-
-if __name__ == '__main__':
-	main()

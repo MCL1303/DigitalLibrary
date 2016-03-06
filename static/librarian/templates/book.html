@@ -18,7 +18,7 @@
 			<div style="display: inline-block;" ng-repeat="user in book.handers">
 				<img ng-src="{{user.user_image}}" alt="" style="background-size: 100%;">
 				<br>
-				<h1><a href="#/users/{{user.user_id}}">{{user.user_name}}</a></h1>
+				<h3 style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="#/users/{{user.user_id}}">{{user.user_name}}</a></h3>
 			</div>
 			<div ng-class="{'hider': book.handed != 0}">
 				<h1>Все экземпляры в библиотеке</h1>
