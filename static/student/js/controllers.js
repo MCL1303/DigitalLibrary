@@ -53,7 +53,12 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 		$scope.request = '';
 		$scope.page = 1;
 		$scope.more = false;
-		$http.post('/api/books/search', {'request': 'Математика', 'page': 1}).then(function(data) {
+		if ($rootScope.lastBookReq === undefined) {
+			$rootScope.lastBookReq = 'Математика';
+		} else {
+			$scope.request = $rootScope.lastBookReq;
+		}
+		$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
 			if(data.data.answer == 'ok') {
 				$scope.results = data.data.results;
 			} else {
@@ -66,6 +71,7 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 			$scope.search();
 		}
 		$scope.search = function() {
+			$rootScope.lastBookReq = $scope.request;
 			$scope.page = 1;
 			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {

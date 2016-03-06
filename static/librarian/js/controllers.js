@@ -38,7 +38,12 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 		$scope.request = '';
 		$scope.page = 1;
 		$scope.more = false;
-		$http.post('/api/books/search', {'request': 'Математика', 'page': 1}).then(function(data) {
+		if ($rootScope.lastBookReq === undefined) {
+			$rootScope.lastBookReq = 'Математика';
+		} else {
+			$scope.request = $rootScope.lastBookReq;
+		}
+		$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
 			if(data.data.answer == 'ok') {
 				$scope.results = data.data.results;
 			} else {
@@ -52,6 +57,7 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 		}
 		$scope.search = function() {
 			$scope.page = 1;
+			$rootScope.lastBookReq = $scope.request;
 			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {
 					$scope.results = data.data.results;
@@ -97,7 +103,12 @@ DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$htt
 		$scope.request = '';
 		$scope.page = 1;
 		$scope.more = false;
-		$http.post('/api/users/search', {'request': '10', 'page': 1}).then(function(data) {
+		if ($rootScope.lastUserReq === undefined) {
+			$rootScope.lastUserReq = '10';
+		} else {
+			$scope.request = $rootScope.lastUserReq;
+		}
+		$http.post('/api/users/search', {'request': $rootScope.lastUserReq, 'page': 1}).then(function(data) {
 			if(data.data.answer == 'ok') {
 				$scope.results = data.data.results;
 			} else {
@@ -110,6 +121,7 @@ DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$htt
 			$scope.search();
 		}
 		$scope.search = function() {
+			$rootScope.lastUserReq = $scope.request;
 			$scope.page = 1;
 			$http.post('/api/users/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {

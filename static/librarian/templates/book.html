@@ -11,6 +11,7 @@
 		<h3>{{book.author}}</h3>
 		<h4>Всего книг: {{book.count}}</h4>
 		<h4>Выдано: {{book.handed}}</h4>
+		<h4>Осталось: {{book.count - book.handed}}</h4>
 		<br>
 		<h2 ng-class="{'hider': book.handed == 0}">На руках у:</h2>
 		<br>

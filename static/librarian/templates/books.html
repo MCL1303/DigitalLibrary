@@ -30,6 +30,7 @@
 				<h4>Ключевые слова: <span ng-repeat="tag in book.tags"> {{tag}}</span></h4>
 				<h4>Предмет: {{book.subject}}</h4>
 				<h4>Выдано: {{book.handed}}</h4>
+				<h4>Осталось: {{book.count - book.handed}}</h4>
 			</div>
 			<br>
 			<br>

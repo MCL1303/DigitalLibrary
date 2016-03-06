@@ -18,6 +18,7 @@ DigitalLibraryControllers.controller('SigninCtrl', ['$scope', '$http', '$cookies
 		$scope.remember = false;
 		$scope.signin = function() {
 			if($scope.login.length < 4 || $scope.password.length < 8) {
+				$('[data-toggle="popover"]').popover('show');
 				$scope.error = true;
 				console.log('fail');
 				return;
