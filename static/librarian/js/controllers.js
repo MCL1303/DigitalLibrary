@@ -43,12 +43,12 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 			$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
 				if(data.data.answer == 'ok') {
 					$scope.results = data.data.results;
+					$rootScope.lastBookRes = $scope.results;
 				} else {
 					$cookies.put('session_id', '');
 					location.reload();
 				}
 			});
-			$rootScope.lastBookRes = $scope.results;
 		} else {
 			$scope.results = $rootScope.lastBookRes;
 			$scope.request = $rootScope.lastBookReq;
@@ -112,12 +112,12 @@ DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$htt
 			$http.post('/api/users/search', {'request': $rootScope.lastUserReq, 'page': 1}).then(function(data) {
 				if(data.data.answer == 'ok') {
 					$scope.results = data.data.results;
+					$rootScope.lastUserRes = $scope.results;
 				} else {
 					$cookies.put('session_id', '');
 					location.reload();
 				}
 			});
-			$scope.results = $rootScope.lastUserRes;
 		} else {
 			$scope.request = $rootScope.lastUserReq;
 			$scope.results = $rootScope.lastUserRes;
