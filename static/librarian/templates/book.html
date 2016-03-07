@@ -7,7 +7,10 @@
 		<img style="width: 100%" ng-src="{{book.image}}">
 	</div>
 	<div class="col-md-8 c_title">
-		<h2>{{book.title}}</h2>
+		<h2 ng-class="{'hider': titleEditing}">{{book.title}} <img src="edit.png" class="pointer" data-toggle="tooltip" data-placement="right" title="Редактировать" ng-click="editTitle()"></h2>
+		<div ng-class="{'hider': !titleEditing}" style="margin: 24px;" data-toggle="popover" data-placement="top" data-content="Название не может быть пустым" id="titleErr">
+			<input type="text" class="form-control" style="float: left;" ng-model="titleEdited"> <span style="margin-left: -35px;"><a class="pointer"><img src="save.png" style="margin-top: 4px;" ng-click="saveTitle()"></a></span>
+		</div>
 		<h3>{{book.author}}</h3>
 		<h4>Всего книг: {{book.count}}</h4>
 		<h4>Выдано: {{book.handed}}</h4>
@@ -26,7 +29,4 @@
 			</div>
 		</div>
 	</div>
-	<!-- <pre>
-		{{book | json}}
-	</pre> -->
 </div>

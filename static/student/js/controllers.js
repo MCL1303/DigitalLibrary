@@ -28,6 +28,7 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 	function($scope, $rootScope, $routeParams, $http, $cookies) {
 		$rootScope.page = 2;
 		$scope.book = {'title': 'Ошибка'};
+		$('[data-toggle="tooltip"]').tooltip()
 		$http.post('/api/info/book', {
 			'book': $routeParams.book_id
 		}).then(function(data) {
@@ -55,27 +56,30 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 		$scope.more = false;
 		if ($rootScope.lastBookReq === undefined) {
 			$rootScope.lastBookReq = 'Математика';
+			$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					$scope.results = data.data.results;
+					$rootScope.lastBookRes = $scope.results;
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
 		} else {
+			$scope.results = $rootScope.lastBookRes;
 			$scope.request = $rootScope.lastBookReq;
 		}
-		$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
-			if(data.data.answer == 'ok') {
-				$scope.results = data.data.results;
-			} else {
-				$cookies.put('session_id', '');
-				location.reload();
-			}
-		});
 		$scope.set_ex = function(ex) {
 			$scope.request = ex;
 			$scope.search();
 		}
 		$scope.search = function() {
-			$rootScope.lastBookReq = $scope.request;
 			$scope.page = 1;
+			$rootScope.lastBookReq = $scope.request;
 			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {
 					$scope.results = data.data.results;
+					$rootScope.lastBookRes = $scope.results;
 					if(data.data.results.length == 30) {
 						$scope.more = true;
 					} else {
@@ -94,6 +98,7 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 					for(var i = 0; i < data.data.results.length; i++) {
 						$scope.results.push(data.data.results[i]);
 					}
+					$rootScope.lastBookRes = $scope.results;
 					if(data.data.results.length != 30) {
 						$scope.more = false;
 					}

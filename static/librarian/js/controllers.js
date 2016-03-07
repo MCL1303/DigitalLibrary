@@ -62,6 +62,7 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 			$rootScope.lastBookReq = $scope.request;
 			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {
+					console.log(data.data.results);
 					$scope.results = data.data.results;
 					$rootScope.lastBookRes = $scope.results;
 					if(data.data.results.length == 30) {
@@ -192,7 +193,6 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$h
 			$scope.rootScope.handlog_page++;
 			$http.post('/api/info/handlog', {'page': $scope.rootScope.handlog_page}).then(function(data) {
 				if(data.data.answer == 'ok') {
-					console.log(data.data.page);
 					if($scope.rootScope.handlog[0]['user'] == 'Загрузка...') {
 						$scope.rootScope.handlog = [];
 					}
@@ -209,13 +209,6 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$h
 				}
 			});
 		};
-		// $scope.try_get_older = function() {
-		// 	var last = $scope.handlog.length, now = last;
-		// 	while(last == now) {
-		// 		$scope.get_older();
-		// 		now = $scope.handlog.length;
-		// 	}
-		// };
 		if($scope.rootScope.handlog[0]['user'] == 'Загрузка...'){
 			$scope.get_older();
 		}
@@ -226,12 +219,14 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 	function($scope, $rootScope, $routeParams, $http, $cookies) {
 		$rootScope.page = 1;
 		$scope.book = {'title': 'Ошибка'};
+		$scope.titleEditing = false;
+		$('[data-toggle="tooltip"]').tooltip()
 		$http.post('/api/info/book', {
 			'book': $routeParams.book_id
 		}).then(function(data) {
-			console.log(data.data);
 			if(data.data.answer == 'ok') {
 				$scope.book = data.data.book;
+				$scope.titleEdited = $scope.book.title;
 				document.title = $scope.book.title;
 			} else if(data.data.answer == 'not_found') {
 				window.location.replace("/404");
@@ -240,7 +235,17 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 				location.reload();
 			}
 		});
-		$scope.image = 'http://book2.me/f/classic.jpg';
+		// $('[data-toggle="popover"]').popover();
+		$scope.editTitle = function() {
+			$scope.titleEditing = !$scope.titleEditing;
+		};
+		$scope.saveTitle = function() {
+			if($scope.titleEdited == ''){
+				$('#titleErr[data-toggle="popover"]').popover('show');
+			} else {
+				$scope.titleEditing = !$scope.titleEditing;
+			}
+		};
 }]);
 
 
@@ -251,7 +256,6 @@ DigitalLibraryControllers.controller('UserCtrl', ['$scope', '$rootScope', '$rout
 		$http.post('/api/info/user', {
 			'user': $routeParams.user_id
 		}).then(function(data) {
-			console.log(data.data);
 			if(data.data.answer == 'ok') {
 				$scope.user = data.data.user;
 				document.title = $scope.user.name;

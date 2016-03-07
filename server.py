@@ -15,6 +15,7 @@ import fill_books
 import fill_users
 import random
 import string
+import json
 
 
 app = Flask(__name__, static_url_path='')
@@ -159,15 +160,55 @@ def api_books_search():
 	db = Database(config['database_name'], ['books'])
 	form = request.get_json()
 	user_request = form['request'].split(' ')
-	results = []
+	matches = {}
 	used = set()
+	keys = []
+	for word in user_request:
+		sub_results = db.books.search('title', word.lower(), int(form['page']))
+		sub_results += db.books.search('title', word.title(), int(form['page']))
+		sub_results += db.books.search('title', word.lower()[1:-1], int(form['page']))
+		for result in sub_results:
+			result['_id'] = str(result['_id'])
+			if result['_id'] not in used:
+				used.add(str(result['_id']))
+				matches[result['_id']] = [result, 1]
+				keys += [result['_id']]
+			else:
+				matches[result['_id']][1] += 1
+	sorted_results = []
+	for key in keys:
+		sorted_results += [matches[key]]
+	sorted_results.sort(key=lambda x: -x[1])
+	results = []
+	for result in sorted_results:
+		results += [result[0]]
+
+	new_used = set()
+
+	keys = []
+	matches = {}
+
 	for word in user_request:
 		sub_results = db.books.search('personality', word.lower(), int(form['page']))
+		sub_results += db.books.search('personality', word.title(), int(form['page']))
+		sub_results += db.books.search('personality', word.lower()[1:-1], int(form['page']))
 		for result in sub_results:
-			if str(result['_id']) not in used:
-				used.add(str(result['_id']))
-				result['_id'] = str(result['_id'])
-				results += [result]
+			result['_id'] = str(result['_id'])
+			if result['_id'] not in used:
+				if result['_id'] not in new_used:
+					new_used.add(str(result['_id']))
+					matches[result['_id']] = [result, 1]
+					keys += [result['_id']]
+				else:
+					matches[result['_id']][1] += 1
+	sorted_results = []
+	for key in keys:
+		sorted_results += [matches[key]]
+	sorted_results.sort(key=lambda x: -x[1])
+	for result in sorted_results:
+		results += [result[0]]
+
+	print(json.dumps((results), ensure_ascii=False, indent=2))
 	return jsonify(answer='ok', results=results)
 
 
