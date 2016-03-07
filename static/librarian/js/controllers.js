@@ -40,17 +40,19 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 		$scope.more = false;
 		if ($rootScope.lastBookReq === undefined) {
 			$rootScope.lastBookReq = 'Математика';
+			$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					$scope.results = data.data.results;
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+			$rootScope.lastBookRes = $scope.results;
 		} else {
+			$scope.results = $rootScope.lastBookRes;
 			$scope.request = $rootScope.lastBookReq;
 		}
-		$http.post('/api/books/search', {'request': $rootScope.lastBookReq, 'page': 1}).then(function(data) {
-			if(data.data.answer == 'ok') {
-				$scope.results = data.data.results;
-			} else {
-				$cookies.put('session_id', '');
-				location.reload();
-			}
-		});
 		$scope.set_ex = function(ex) {
 			$scope.request = ex;
 			$scope.search();
@@ -61,6 +63,7 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 			$http.post('/api/books/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {
 					$scope.results = data.data.results;
+					$rootScope.lastBookRes = $scope.results;
 					if(data.data.results.length == 30) {
 						$scope.more = true;
 					} else {
@@ -79,6 +82,7 @@ DigitalLibraryControllers.controller('BooksCtrl', ['$scope', '$rootScope', '$htt
 					for(var i = 0; i < data.data.results.length; i++) {
 						$scope.results.push(data.data.results[i]);
 					}
+					$rootScope.lastBookRes = $scope.results;
 					if(data.data.results.length != 30) {
 						$scope.more = false;
 					}
@@ -105,17 +109,19 @@ DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$htt
 		$scope.more = false;
 		if ($rootScope.lastUserReq === undefined) {
 			$rootScope.lastUserReq = '10';
+			$http.post('/api/users/search', {'request': $rootScope.lastUserReq, 'page': 1}).then(function(data) {
+				if(data.data.answer == 'ok') {
+					$scope.results = data.data.results;
+				} else {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+			$scope.results = $rootScope.lastUserRes;
 		} else {
 			$scope.request = $rootScope.lastUserReq;
+			$scope.results = $rootScope.lastUserRes;
 		}
-		$http.post('/api/users/search', {'request': $rootScope.lastUserReq, 'page': 1}).then(function(data) {
-			if(data.data.answer == 'ok') {
-				$scope.results = data.data.results;
-			} else {
-				$cookies.put('session_id', '');
-				location.reload();
-			}
-		});
 		$scope.set_ex = function(ex) {
 			$scope.request = ex;
 			$scope.search();
@@ -126,6 +132,7 @@ DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$htt
 			$http.post('/api/users/search', {'request': $scope.request, 'page': $scope.page}).then(function(data) {
 				if(data.data.answer == 'ok') {
 					$scope.results = data.data.results;
+					$rootScope.lastUserRes = $scope.results; 
 					if(data.data.results.length == 30) {
 						$scope.more = true;
 					} else {
@@ -144,6 +151,7 @@ DigitalLibraryControllers.controller('UsersCtrl', ['$scope', '$rootScope', '$htt
 					for(var i = 0; i < data.data.results.length; i++) {
 						$scope.results.push(data.data.results[i]);
 					}
+					$rootScope.lastUserRes = $scope.results; 
 					if(data.data.results.length != 30) {
 						$scope.more = false;
 					}

@@ -208,6 +208,8 @@ def api_info_user():
 		})
 	except:
 		return jsonify(answer='fail')
+	if user is None:
+		return jsonify(answer='fail')
 	hands = db.hands.find({'user_id': str(user['_id'])})
 	for hand in hands:
 		hand['_id'] = ''
