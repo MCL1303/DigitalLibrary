@@ -5,7 +5,7 @@ no_remember = 300
 
 [Server]
 host = 127.0.0.1
-port = 8001
+port = 80
 database_name = digital_library
 
 [Terminal]

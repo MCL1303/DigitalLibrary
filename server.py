@@ -208,7 +208,6 @@ def api_books_search():
 	for result in sorted_results:
 		results += [result[0]]
 
-	print(json.dumps((results), ensure_ascii=False, indent=2))
 	return jsonify(answer='ok', results=results)
 
 

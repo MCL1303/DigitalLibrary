@@ -74,6 +74,11 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 		$scope.notUsedLogin = false;
 		$scope.corrPassd = false;
 
+		$scope.login_timeout = setTimeout(function(){}, 100000);
+		$scope.email_timeout = setTimeout(function(){}, 100000);
+
+		$scope.cheking= true;
+
 		$(document).ready(function(){
 			$('[data-toggle="popover"]').popover();   
 		});
@@ -84,7 +89,7 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 			var target = this;
 			return target.replace(new RegExp(search, 'g'), replacement);
 		};
-		$scope.showIfNo = function() {
+		$scope.blink = function() {
 			if(!$scope.corrEmail && $scope.email != '') {
 				$('#emailBad[data-toggle="popover"]').popover('show');
 			} else {
@@ -112,6 +117,77 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 			}
 			if($scope.corrLogin && !$scope.notUsedLogin && $scope.login != '') {
 				$('#loginUsed[data-toggle="popover"]').popover('show');
+			} else {
+				$('#loginUsed[data-toggle="popover"]').popover('hide');
+			}
+		};
+		$scope.showIfNo = function() {
+			var showed = $('.popover-content')
+			var WCode = false;
+			var WEmail = false;
+			var WPass = false;
+			var WLogin = false;
+			var UEmail = false;
+			var ULogin = false;
+			for(var i = 0; i < showed.length; i++) {
+				if(showed[i].innerHTML == 'Введён неверный код') {
+					WCode = true;
+				}
+				if(showed[i].innerHTML == 'Неправильный адрес электронной почты') {
+					WEmail = true;
+				}
+				if(showed[i].innerHTML == 'Логин может состоять из цифр, латинских букв, знака подчеркивания и дефиса. А так же быть не короче 4 символов') {
+					WLogin = true;
+				}
+				if(showed[i].innerHTML == 'Пароль должен содержать хотя бы 8 символов, включать буквы и цифры') {
+					WPass = true;
+				}
+				if(showed[i].innerHTML == 'Логин занят') {
+					ULogin = true;
+				}
+				if(showed[i].innerHTML == 'Этот адрес занят') {
+					UEmail = true;
+				}
+			}
+			if(!$scope.corrEmail && $scope.email != '') {
+				if(!WEmail) {
+					$('#emailBad[data-toggle="popover"]').popover('show');
+				}
+			} else {
+				$('#emailBad[data-toggle="popover"]').popover('hide');
+			}
+			if(!$scope.corrCode && $scope.invite != '') {
+				if(!WCode) {
+					$('#invite[data-toggle="popover"]').popover('show');
+				}
+			} else {
+				$('#invite[data-toggle="popover"]').popover('hide');
+			}
+			if(!$scope.corrLogin && $scope.login != '') {
+				if(!WLogin) {
+					$('#loginBad[data-toggle="popover"]').popover('show');
+				}
+			} else {
+				$('#loginBad[data-toggle="popover"]').popover('hide');
+			}
+			if(!$scope.corrPassd && $scope.password != '') {
+				if(!WPass) {
+					$('#password[data-toggle="popover"]').popover('show');
+				}
+			} else {
+				$('#password[data-toggle="popover"]').popover('hide');
+			}
+			if($scope.corrEmail && !$scope.notUsedEmail && $scope.email != '') {
+				if(!UEmail) {
+					$('#emailUsed[data-toggle="popover"]').popover('show');
+				}
+			} else {
+				$('#emailUsed[data-toggle="popover"]').popover('hide');
+			}
+			if($scope.corrLogin && !$scope.notUsedLogin && $scope.login != '') {
+				if(!ULogin) {
+					$('#loginUsed[data-toggle="popover"]').popover('show');
+				}
 			} else {
 				$('#loginUsed[data-toggle="popover"]').popover('hide');
 			}
@@ -281,35 +357,49 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 				$scope.signup();
 			}
 		});
+		$scope.p_check_email = function() {
+			$http.post('/api/form/email', {'email': $scope.email}).then(function(data) {
+				console.log(data.data);
+				if(data.data.answer == 'unused') {
+					$scope.inputEmail = '#dff0d8';
+					$('#emailUsed[data-toggle="popover"]').popover('hide');
+					$scope.notUsedEmail = true;
+				} else {
+					$scope.inputEmail = '#f2dede';
+					$('#emailUsed[data-toggle="popover"]').popover('show');
+				}
+				$scope.cheking = false;
+			});
+		};
 		$scope.check_email = function() {
+			clearTimeout($scope.email_timeout);
+			$('#emailUsed[data-toggle="popover"]').popover('hide');
 			if(validateEmail()) {
-				$http.post('/api/form/email', {'email': $scope.email}).then(function(data) {
-					console.log(data.data);
-					if(data.data.answer == 'unused') {
-						$scope.inputEmail = '#dff0d8';
-						$('#emailUsed[data-toggle="popover"]').popover('hide');
-						$scope.corrEmail = true;
-					} else {
-						$scope.inputEmail = '#f2dede';
-						$('#emailUsed[data-toggle="popover"]').popover('show');
-					}
-				});
+				$scope.cheking = true;
+				email_timeout = setTimeout($scope.p_check_email, 1500);
 			}
 			$scope.showIfNo();
 		};
+		$scope.p_check_login = function () {
+			$http.post('/api/form/login', {'login': $scope.login}).then(function(data) {
+				console.log(data.data);
+				if(data.data.answer == 'unused') {
+					$('#loginUsed[data-toggle="popover"]').popover('hide');
+					$scope.inputLogin = '#dff0d8';
+					$scope.notUsedLogin = true;
+				} else {
+					$('#loginUsed[data-toggle="popover"]').popover('show');
+					$scope.inputLogin = '#f2dede';
+				}
+				$scope.cheking = false;
+			});
+		};
 		$scope.check_login = function() {
+			clearTimeout($scope.login_timeout);
+			$('#loginUsed[data-toggle="popover"]').popover('hide');
 			if(validateLogin()) {
-				$http.post('/api/form/login', {'login': $scope.login}).then(function(data) {
-					console.log(data.data);
-					if(data.data.answer == 'unused') {
-						$('#loginUsed[data-toggle="popover"]').popover('hide');
-						$scope.inputLogin = '#dff0d8';
-						$scope.notUsedLogin = true;
-					} else {
-						$('#loginUsed[data-toggle="popover"]').popover('show');
-						$scope.inputLogin = '#f2dede';
-					}
-				});
+				$scope.cheking = true;
+				login_timeout = setTimeout($scope.p_check_login, 1500);
 			}
 			$scope.showIfNo();
 		};
@@ -335,12 +425,14 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 			$scope.showIfNo();
 		};
 		$scope.signup = function() {
-			$scope.showIfNo();
 			var check = true;
-			check = check && validatePassword();
-			check = check && validateLogin();
-			check = check && validateEmail();
-			check = check && validateInvite();
+			check = check && !$scope.cheking;
+			check = check && $scope.corrPassd;
+			check = check && $scope.corrLogin;
+			check = check && $scope.corrEmail;
+			check = check && $scope.corrCode;
+			check = check && $scope.notUsedLogin;
+			check = check && $scope.notUsedEmail;
 			if(check) {
 				$http.post('/api/user/signup', {
 					'invite': $scope.invite,
@@ -355,6 +447,8 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 						location.reload();
 					}
 				});
+			} else {
+				$scope.blink();
 			}
 		};
 }]);
