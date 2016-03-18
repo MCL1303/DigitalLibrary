@@ -417,6 +417,35 @@ def api_terminal_user():
 		return jsonify(answer='inactive', invite=user['invite'], user=user)
 
 
+@app.route('/api/book/change', methods=['POST'])
+def api_book_change():
+	config = load_config('Server')
+	db = Database(config['database_name'], ['books'])
+	if session_priority(request.cookies.get('session_id')) != 'librarian':
+		return jsonify(answer='fail')
+	form = request.get_json()
+	if form['title'] == '':
+		return jsonify(answer='fail')
+	if form['author'] == '':
+		return jsonify(answer='fail')
+	try:
+		count = int(form['count'])
+	except:
+		return jsonify(answer='fail')
+	try:
+		book = db.books.get({'_id': ObjectId(form['book'])})
+	except:
+		return jsonify(answer='fail')
+	if book['handed'] > count:
+		return jsonify(answer='fail')
+	db.books.update(book, {
+		'author': form['author'],
+		'title': form['title'],
+		'count': count,
+	})
+	return jsonify(answer='ok')
+
+
 @app.route('/')
 def root():
 	session_id = request.cookies.get('session_id')

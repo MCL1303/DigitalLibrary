@@ -7,12 +7,19 @@
 		<img style="width: 100%" ng-src="{{book.image}}">
 	</div>
 	<div class="col-md-8 c_title">
-		<h2 ng-class="{'hider': titleEditing}">{{book.title}} <img src="edit.png" class="pointer" data-toggle="tooltip" data-placement="right" title="Редактировать" ng-click="editTitle()"></h2>
-		<div ng-class="{'hider': !titleEditing}" style="margin: 24px;" data-toggle="popover" data-placement="top" data-content="Название не может быть пустым" id="titleErr">
-			<input type="text" class="form-control" style="float: left;" ng-model="titleEdited"> <span style="margin-left: -35px;"><a class="pointer"><img src="save.png" style="margin-top: 4px;" ng-click="saveTitle()"></a></span>
+		<h2 ng-class="{'hider': titleEditing}" style="font-weight: bold;">{{book.title}} <img src="edit24.png" class="pointer" data-toggle="tooltip" data-placement="right" title="Редактировать" ng-click="editTitle()"></h2>
+		<div>
+			<div ng-class="{'hider': !titleEditing}" style="margin: 23.5px; width: 70%; margin-left: 15%;">
+				<input type="text" class="form-control" style="float: left;" ng-model="titleEdited" id="title"> <span style="margin-left: -35px;"><a class="pointer"><img src="save24.png" style="margin-top: 4px;" ng-click="saveTitle()"></a></span>
+			</div>
 		</div>
-		<h3>{{book.author}}</h3>
-		<h4>Всего книг: {{book.count}}</h4>
+		<h3 ng-class="{'hider': authorEditing}">{{book.author}} <img src="edit16.png" class="pointer" data-toggle="tooltip" data-placement="right" title="Редактировать" ng-click="editAuthor()"></h3>
+		<div>
+			<div ng-class="{'hider': !authorEditing}" style="margin-bottom: 19px; margin-top: 0px; ;width: 50%; margin-left: 25%;">
+				<input type="text" class="form-control" style="float: left;" ng-model="authorEdited" id="author"> <span style="margin-left: -35px;"><a class="pointer"><img src="save24.png" style="margin-top: 4px;" ng-click="saveAuthor()"></a></span>
+			</div>
+		</div>
+		<h4>Всего книг: {{book.count}} <img src="plus.png" ng-click="change_count(1)"> <img src="minus.png" ng-click="change_count(-1)"></h4>
 		<h4>Выдано: {{book.handed}}</h4>
 		<h4>Осталось: {{book.count - book.handed}}</h4>
 		<br>
@@ -25,7 +32,7 @@
 				<h3 style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="#/users/{{user.user_id}}">{{user.user_name}}</a></h3>
 			</div>
 			<div ng-class="{'hider': book.handed != 0}">
-				<h1>Все экземпляры в библиотеке</h1>
+				<h3>Все экземпляры в библиотеке</h3>
 			</div>
 		</div>
 	</div>

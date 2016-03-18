@@ -129,6 +129,7 @@ DigitalLibraryControllers.controller('SignupCtrl', ['$scope', '$http', '$cookies
 			var WLogin = false;
 			var UEmail = false;
 			var ULogin = false;
+
 			for(var i = 0; i < showed.length; i++) {
 				if(showed[i].innerHTML == 'Введён неверный код') {
 					WCode = true;

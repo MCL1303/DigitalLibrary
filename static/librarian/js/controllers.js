@@ -209,7 +209,7 @@ DigitalLibraryControllers.controller('HandlogCtrl', ['$scope', '$rootScope', '$h
 				}
 			});
 		};
-		if($scope.rootScope.handlog[0]['user'] == 'Загрузка...'){
+		if($scope.rootScope.handlog[0]['user'] == 'Загрузка...') {
 			$scope.get_older();
 		}
 }]);
@@ -220,13 +220,17 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 		$rootScope.page = 1;
 		$scope.book = {'title': 'Ошибка'};
 		$scope.titleEditing = false;
+		$scope.authorEditing = false;
 		$('[data-toggle="tooltip"]').tooltip()
 		$http.post('/api/info/book', {
 			'book': $routeParams.book_id
 		}).then(function(data) {
 			if(data.data.answer == 'ok') {
 				$scope.book = data.data.book;
+				$scope.book.count = parseInt($scope.book.count);
+				$scope.book.handed = parseInt($scope.book.handed);
 				$scope.titleEdited = $scope.book.title;
+				$scope.authorEdited = $scope.book.author;
 				document.title = $scope.book.title;
 			} else if(data.data.answer == 'not_found') {
 				window.location.replace("/404");
@@ -235,17 +239,57 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 				location.reload();
 			}
 		});
-		// $('[data-toggle="popover"]').popover();
+		$(document).keypress(function(e) {
+			if(e.which == 13) {
+				if($scope.titleEditing) {
+					$scope.saveTitle();
+				}
+				if($scope.authorEditing) {
+					$scope.saveAuthor();
+				}
+			}
+		});
+		$scope.change_info = function() {
+			$http.post('/api/book/change', {
+				'title': $scope.book.title,
+				'author': $scope.book.author,
+				'count': $scope.book.count,
+				'book': $routeParams.book_id
+			}).then(function(data) {
+				if(data.data.answer != 'ok') {
+					$cookies.put('session_id', '');
+					location.reload();
+				}
+			});
+		};
 		$scope.editTitle = function() {
 			$scope.titleEditing = !$scope.titleEditing;
+			$('#title').focus();
+		};
+		$scope.editAuthor = function() {
+			$scope.authorEditing = !$scope.authorEditing;
+			$('#author').focus();
 		};
 		$scope.saveTitle = function() {
-			if($scope.titleEdited == ''){
-				$('#titleErr[data-toggle="popover"]').popover('show');
-			} else {
+			if($scope.titleEdited != '') {
 				$scope.titleEditing = !$scope.titleEditing;
+				$scope.book.title = $scope.titleEdited;
+				$scope.change_info();
 			}
 		};
+		$scope.saveAuthor = function() {
+			if($scope.authorEdited != '') {
+				$scope.authorEditing = !$scope.authorEditing;
+				$scope.book.author = $scope.authorEdited;
+				$scope.change_info();
+			}
+		};
+		$scope.change_count = function(value) {
+			if($scope.book.count + parseInt(value) >= 0 && $scope.book.count + parseInt(value) >= $scope.book.handed) {
+				$scope.book.count += parseInt(value);
+				$scope.change_info();
+			}
+		}
 }]);
 
 
