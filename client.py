@@ -61,21 +61,13 @@ class Browser(QObject):
 
 	def run(self, url):
 		assert current_thread_is_main()
-		self.webview.show()
+		self.webview.showFullScreen()
 		self.webview.load(url)
 		self.app.exec_()
 
 
 def opener_nonblock(path, mode):
 	return os.open(path, mode | os.O_NONBLOCK)
-
-
-# def readline_nonblock(fileobject) -> 'Optional[str]':
-#     try:
-#         return fileobject.readline() or None
-#     except OSError as err:
-#         if err.errno == errno.EAGAIN or err.errno == errno.EWOULDBLOCK:
-#             return None
 
 
 def user_scanner(config, browser):
@@ -87,8 +79,10 @@ def user_scanner(config, browser):
 			try:
 				scanner = open(config["user_scanner"])
 			except FileNotFoundError:
+				browser.execute_script('user_scanner_off()')
 				sleep(0.1)
 				continue
+			browser.execute_script('user_scanner_on()')
 			sleep(0.1)
 			continue
 		print('user:', repr(new_user))
@@ -101,7 +95,9 @@ def book_scanner(config, browser):
 			scanner = open(config["book_scanner"], "rb")
 		except FileNotFoundError:
 			sleep(0.1)
+			browser.execute_script('book_scanner_off()')
 			continue
+		browser.execute_script('book_scanner_on()')
 		i = 0
 		barcode = ""
 		while True:

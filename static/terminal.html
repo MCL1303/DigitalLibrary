@@ -10,6 +10,7 @@
 		<script src="terminal/js/app.js"></script>
 		<script src="terminal/js/controllers.js"></script>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<style type="text/css">html { overflow:  hidden; }</style>
 		<title>Библиотека МХЛ</title>
 	</head>
 
@@ -21,6 +22,14 @@
 					<img src="loading.gif">
 				</div>
 			</div>
+		<div style="position: absolute; right: 10px; bottom: 0px;">
+			<span style="font-weight: bolder; color: green;" id="book">
+				К
+			</span>
+			<span style="font-weight: bolder; color: green;" id="user">
+				П
+			</span>
+		</div>
 		</div>
 		<script src="js/jquery.js"></script>
 		<script src="js/bootstrap.js"></script>
@@ -30,6 +39,18 @@
 			};
 			function book(book) {
 				angular.element(document.getElementById('user')).scope().send_book(book);
+			};
+			function user_scanner_on() {
+				$('#user')[0].style.color = 'green';
+			};
+			function book_scanner_on() {
+				$('#book')[0].style.color = 'green';	
+			};
+			function user_scanner_off() {
+				$('#user')[0].style.color = 'red';
+			};
+			function book_scanner_off() {
+				$('#book')[0].style.color = 'red';
 			};
 		</script>
 	</body>
