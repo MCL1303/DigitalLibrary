@@ -1,0 +1,12 @@
+Package: digital-library-server
+Source: digital-library
+Version: 0.0.1
+Architecture: i386
+Maintainer: Igor Tarakanov <igortarakanov144999usa@gmail.com>
+Installed-Size: 135
+Depends: python3, mongodb, python3-flask, python3-pymongo
+Section: unknown
+Priority: optional
+Homepage: https://github.com/MCL1303/DigitalLibrary
+Description: Server
+ Digital Library server

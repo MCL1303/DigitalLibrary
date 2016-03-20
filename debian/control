@@ -1,0 +1,15 @@
+Source: digital-library
+Section: unknown
+Priority: optional
+Maintainer: Igor Tarakanov <igortarakanov144999usa@gmail.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: https://github.com/MCL1303/DigitalLibrary
+Vcs-Git: git://git@github.com:MCL1303/DigitalLibrary.git
+Vcs-Browser: https://github.com/MCL1303/DigitalLibrary
+
+Package: digital-library-server
+Architecture: any
+Depends: python3, mongodb, python3-flask, python3-pymongo
+Description: Server
+ Digital Library server

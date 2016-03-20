@@ -1,0 +1,7 @@
+digital_library/*
+statis/*
+books
+server.py
+config
+fill_books.py
+fill_users.py

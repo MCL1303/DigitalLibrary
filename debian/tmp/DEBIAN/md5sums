@@ -1,0 +1,16 @@
+02a53974cbecda14620328872b7274da  books
+8d2c4d67c5186b06fb7d31d579693cdb  config
+a079d76fe0924e1b5b32f232f6799109  digital_library/__pycache__/cover_searcher.cpython-34.pyc
+835fb262ae71b15f6d8e09ee2d344297  digital_library/__pycache__/database.cpython-34.pyc
+8e4488f9b8bfe5e9127b71d00cc5fba2  digital_library/__pycache__/sessions.cpython-34.pyc
+1fd53099adef3e61e8e19a94004b01c4  digital_library/__pycache__/validators.cpython-34.pyc
+8af45b403e6a9bf410cb74b82628798d  digital_library/cover_searcher.py
+d81897dc5d3addf3a10a5eb4a1bb69e9  digital_library/database.py
+73705c68dd89fcbd194e7db470278276  digital_library/resizer.py
+7cd9e7d5a5d17e155faa0dae6adc1b20  digital_library/sessions.py
+60f0e0df1be1c2a5fc8f4693972e6247  digital_library/validators.py
+ef196973165031606877fd2507adce44  fill_books.py
+6997b0cbeb0cc0d3073da4e3e34a1233  fill_users.py
+8b55a1d985ee8cb9ceb9f18227152b86  server.py
+3284f19fdedc14aa96cd7daca2c5c509  usr/share/doc/digital-library-server/changelog.gz
+d41d8cd98f00b204e9800998ecf8427e  usr/share/doc/digital-library-server/copyright
