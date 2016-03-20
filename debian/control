@@ -10,12 +10,6 @@ Vcs-Browser: https://github.com/MCL1303/DigitalLibrary
 
 Package: digital-library-server
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: python3, mongodb, python3-flask, python3-pymongo
 Description: Server
  Digital Library server
-
-Package: digital-library-terminal
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Client
- Digital Library kiosk (terminal client)

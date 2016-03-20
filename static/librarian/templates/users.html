@@ -1,0 +1,44 @@
+<div>
+	<div class="input-group" style="width: 50%; margin: auto;">
+		<input type="text" class="form-control" placeholder="Запрос" ng-model="request">
+		<a class="input-group-addon btn btn-default" ng-click="search()">Поиск</a>
+	</div>
+	<br>
+	<div style="margin: auto; width: 50%;">
+		<h4 style="float: left">Примеры: &nbsp&nbsp</h4>
+		<a class="btn btn-default" ng-click="set_ex('Иванов')">Иванов</a>
+		<a class="btn btn-default" ng-click="set_ex('Иван')">Иван</a>
+		<a class="btn btn-default" ng-click="set_ex('10')">10</a>
+		<a class="btn btn-default" ng-click="set_ex('Хим')">Хим</a>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div class="media" style="width: 70%; margin: auto;">
+		<div ng-repeat="user in results">
+			<div class="media-left">
+				<a href="#/users/{{user._id}}">
+					<img class="media-object" src="{{user.image}}">
+				</a>
+			</div>
+			<div class="media-body">
+				<br>
+				<h3 class="media-heading"><a href="#/users/{{user._id}}">{{user.name}}</a></h3>
+				<h4>Класс: {{user.number}} {{user.direction}}</h4>
+				<h4>Выдано: {{user.handed}}</h4>
+			</div>
+			<br>
+			<br>
+			<br>
+		</div>
+
+	</div>
+	<div style="text-align: center;">
+		<h4 ng-class="{'hider': (results.length != 0)}" style="margin: auto;">Поиск не дал результатов</h4>
+		<br>
+		<br>
+		<a class="btn btn-primary" ng-click="show_more()" style="margin: auto;" ng-class="{'hider': !more}">Показать еще</a>
+		<br>
+		<br>
+	</div>
+</div>

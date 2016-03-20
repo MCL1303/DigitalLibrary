@@ -1,0 +1,13 @@
+<div ng-controller="UserCtrl" class="c_title" id="user">
+	<div style="margin: 10% 0%">
+		<h1>Здравствуйте, {{rootScope.user.name}}</h1>
+		<h2 ng-class="{'hider': rootScope.active}">Вы еще не зарегистировались на сайте library.1303.ru.</h2> 
+		<h2 ng-class="{'hider': rootScope.active}"> Ваш пригласительный код: {{rootScope.invite}}</h2>
+
+		<h2>Для того, чтобы взять или вернуть книгу отсканируйте ее штрих-код</h2>
+		<img src="how_to_scann_book.jpg" alt="">
+		<h2 ng-class="{'hider': sended}">У вас осталось <span id="sec">20</span> секунд</h2>
+		<img src="loading.gif" alt="" ng-class="{'hider': !sended}">
+		{{scope.sended}}
+	</div>
+</div>

@@ -1,0 +1,28 @@
+.pointer {
+	cursor: pointer;
+}
+
+.c_title {
+	text-align: center; 
+}
+
+.borderer {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+}
+
+.hider {
+	display: none;
+}
+
+body {
+	overflow-y: scroll; 
+}
+
+.Xscrollable {
+	overflow: auto;
+	overflow-y: hidden;
+	margin: 0 auto;
+	white-space: nowrap;
+}

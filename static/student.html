@@ -1,0 +1,57 @@
+<!doctype html>
+<html ng-app='DigitalLibraryApp' ng-controller="MainCtrl">
+	<head>
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<link href="css/styles.css" rel="stylesheet">
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+		<script src="student/js/angular.js"></script>
+		<script src="student/js/angular-route.js"></script>
+		<script src="student/js/angular-cookie.js"></script>
+		<script src="student/js/app.js"></script>
+		<script src="student/js/controllers.js"></script>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Библиотека МХЛ</title>
+	</head>
+
+	<body cz-shortcut-listen="true">
+		<nav class='navbar navbar-default navbar-static-top'>
+		</nav>
+		<nav class='navbar navbar-default navbar-fixed-top'>
+			<div class='container'>
+				<div class='navbar-header'>
+					<a class="navbar-brand" href="#/top">Библиотека МХЛ</a>
+				</div>
+				<div class='navbar-collapse collapse'>
+					<ul class='nav navbar-nav'>
+						<li ng-class="{'active': page == 1}">
+							<a href="#/users">На руках</a>
+						</li>
+						<li ng-class="{'active': page == 2}">
+							<a href="#/books">Книги</a>
+						</li>
+					</ul>
+					<ul class='nav navbar-nav navbar-right'>
+						<li>
+							<a id="DropdownUserMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="pointer">{{user.name}}</a>
+							<ul class="dropdown-menu" aria-labelledby="DropdownUserMenu">
+							    <li><a class='pointer'>Книг на руках: {{user.handed}}</a></li>
+							    <li role="separator" class="divider"></li>
+							    <li><a class='pointer' ng-click="signout()">Выход</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="container">
+			<div ng-view>
+				<div class='c_title'>
+					<h1>Загрузка</h1>
+					<img src="loading.gif">
+				</div>
+			</div>
+		</div>
+		<script src="js/jquery.js"></script>
+		<script src="js/bootstrap.js"></script>
+	</body>
+</html>
