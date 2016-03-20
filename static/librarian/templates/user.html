@@ -14,12 +14,12 @@
 		<br>
 		<div class="c_title Xscrollable row">
 			<div style="display: inline-block;" ng-repeat="book in user.books">
-				<img ng-src="{{book.book_image}}" alt="" style="background-size: 100%;">
+				<img src="/books/{{book.book_image}}" alt="" style="background-size: 100%;">
 				<br>
 				<h3 style="width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><a href="#/books/{{book.book_id}}">{{book.book_title}}</a></h3>
 			</div>
 			<div ng-class="{'hider': user.handed != 0}">
-				<h1>На руках нет книг</h1>
+				<h3>На руках нет книг</h3>
 			</div>
 		</div>
 	</div>

@@ -1,0 +1,9 @@
+Package: DigitalLibrary
+Version: 0.3
+Section: misc
+Priority: extra
+Maintainer: Tarakanov Igor 
+Architecture: all
+Depends: python3, mongodb, python3-flask, python3-pymongo
+Description: Electronic library management system.
+

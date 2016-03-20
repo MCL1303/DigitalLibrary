@@ -4,7 +4,7 @@
 
 <div class="row">
 	<div class="col-md-4">
-		<img style="width: 100%" ng-src="{{book.image}}">
+		<img style="width: 100%" src="/books/{{book.image}}">
 	</div>
 	<div class="col-md-8 c_title">
 		<h2 ng-class="{'hider': titleEditing}" style="font-weight: bold;">{{book.title}} <img src="edit16.png" class="pointer" data-toggle="tooltip" data-placement="right" title="Редактировать" ng-click="editTitle()"></h2>

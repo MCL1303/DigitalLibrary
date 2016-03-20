@@ -264,11 +264,11 @@ DigitalLibraryControllers.controller('BookCtrl', ['$scope', '$rootScope', '$rout
 		};
 		$scope.editTitle = function() {
 			$scope.titleEditing = !$scope.titleEditing;
-			$('#title').focus();
+			setTimeout(function(){$('#title')[0].focus();}, 1);
 		};
 		$scope.editAuthor = function() {
 			$scope.authorEditing = !$scope.authorEditing;
-			$('#author').focus();
+			setTimeout(function(){$('#author')[0].focus();}, 1);
 		};
 		$scope.saveTitle = function() {
 			if($scope.titleEdited != '') {

@@ -4,7 +4,7 @@ remember = 604800
 no_remember = 300
 
 [Server]
-host = 127.0.0.1
+host = 109.234.39.165
 port = 80
 database_name = digital_library
 

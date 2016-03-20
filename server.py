@@ -438,10 +438,14 @@ def api_book_change():
 		return jsonify(answer='fail')
 	if book['handed'] > count:
 		return jsonify(answer='fail')
+	new_personality = form['title'].lower() + ' ' + form['author'].lower()
+	for i in book['tags']:
+		new_personality += ' ' + i.lower()
 	db.books.update(book, {
 		'author': form['author'],
 		'title': form['title'],
 		'count': count,
+		'personality': new_personality,
 	})
 	return jsonify(answer='ok')
 
@@ -490,7 +494,7 @@ def main():
 		fill_users.fill()
 	# if len(db.handlog.get_page({}, 1)) == 0:
 	# 	fill_handlog.fill()
-	app.run(host=config['host'], port=int(config['port']), debug=True)
+	app.run(host=config['host'], port=int(config['port']))
 
 
 if __name__ == '__main__':
